@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منصة نخلة — درس النص السماعي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@500;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FBF7F0; --surface:#FFFFFF; --paper:#FCF9F2; --tint:#EEF4EC;
+  --green-900:#16352A; --green-700:#2D6A4F; --green-600:#358062;
+  --green-500:#40916C; --green-300:#95D5B2; --green-100:#D8F0E2;
+  --amber:#C0813B; --amber-soft:#F4E6CF; --ink:#1E2B26; --ink-soft:#5C6B63;
+  --line:#E8E1D4; --red:#C96B6B; --red-bg:#F7E3E3; --red-ink:#7A2E2E;
+  --listen:#33617F; --listen-700:#244B64; --listen-soft:#E3EDF4; --listen-100:#D2E3EF;
+  --shadow:0 10px 30px -12px rgba(22,53,42,.22);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:"Tajawal",system-ui,sans-serif}
+body{min-height:100vh;line-height:1.6}
+::selection{background:var(--green-300)}
+.topbar{display:flex;align-items:center;gap:16px;padding:14px 26px;background:linear-gradient(120deg,var(--listen-700),var(--listen));color:#fff;box-shadow:var(--shadow);position:sticky;top:0;z-index:40}
+.mascot{width:46px;height:46px;flex:0 0 auto;background:#fff;border-radius:50%;display:grid;place-items:center;box-shadow:inset 0 0 0 3px var(--green-300)}
+.crumbs{font-family:"Cairo";font-size:.82rem;opacity:.85}
+.lesson-title{font-family:"Cairo";font-weight:800;font-size:1.18rem;line-height:1.2}
+.topbar .meta{margin-inline-start:auto;display:flex;gap:18px;font-size:.8rem;opacity:.92;font-family:"Cairo"}
+.topbar .meta span{display:flex;align-items:center;gap:6px}
+.wrap{max-width:760px;margin:24px auto;padding:0 18px}
+.pane{background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
+.illus{background:linear-gradient(160deg,#DCE7EF,#C9D9E5);border-bottom:1px solid var(--line)}
+.illus svg{display:block;width:100%;height:auto}
+.body{padding:20px 24px 28px}
+.doc-card{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;background:var(--listen-soft);border:1px solid #cfe0ec;border-radius:14px;padding:12px 16px;margin-bottom:16px;font-family:"Cairo";font-size:.84rem}
+.doc-card b{color:var(--listen-700)}
+.doc-card .src{color:var(--ink-soft)}
+.badge{margin-inline-start:auto;background:var(--listen-100);color:var(--listen-700);border:1px solid #b9d2e3;border-radius:999px;padding:4px 12px;font-weight:700;font-size:.78rem}
+.title-ar{font-family:"Cairo";font-weight:800;font-size:1.5rem;color:var(--listen-700);margin-bottom:4px;text-align:center}
+.title-rule{width:64px;height:4px;background:var(--listen);border-radius:4px;margin:6px auto 18px;opacity:.5}
+.audio-wrap{background:linear-gradient(165deg,#274F69,#1C3B50);border-radius:16px;padding:16px 16px 18px;color:#fff;box-shadow:0 12px 28px -14px rgba(28,59,80,.7);margin-bottom:8px}
+.audio-label{font-family:"Cairo";font-size:.86rem;opacity:.92;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.audio-wrap audio{width:100%;display:block;border-radius:10px}
+.aud-load{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:12px}
+.aud-note{font-family:"Cairo";font-size:.72rem;opacity:.8}
+.wave{display:flex;align-items:flex-end;justify-content:center;gap:4px;height:26px;margin-top:12px;opacity:.55}
+.wave i{width:4px;background:var(--green-300);border-radius:2px;animation:bar 1.2s ease-in-out infinite}
+.wave i:nth-child(1){height:40%;animation-delay:0s}.wave i:nth-child(2){height:75%;animation-delay:.1s}
+.wave i:nth-child(3){height:55%;animation-delay:.2s}.wave i:nth-child(4){height:95%;animation-delay:.3s}
+.wave i:nth-child(5){height:60%;animation-delay:.4s}.wave i:nth-child(6){height:85%;animation-delay:.5s}
+.wave i:nth-child(7){height:45%;animation-delay:.6s}.wave i:nth-child(8){height:70%;animation-delay:.7s}
+.wave i:nth-child(9){height:50%;animation-delay:.8s}
+@keyframes bar{0%,100%{transform:scaleY(.5)}50%{transform:scaleY(1)}}
+.listen-hint{font-family:"Cairo";font-size:.78rem;color:var(--ink-soft);text-align:center;margin:8px 0 4px}
+.qs-divider{display:flex;align-items:center;gap:10px;margin:18px 0 14px;color:var(--listen-700);font-family:"Cairo";font-weight:800;font-size:.95rem}
+.qs-divider::before,.qs-divider::after{content:'';flex:1;height:1px;background:var(--line)}
+.step-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.step-count{font-family:"Cairo";font-weight:800;color:var(--listen-700);font-size:.92rem;white-space:nowrap}
+.progress{flex:1;height:8px;background:var(--listen-soft);border-radius:999px;overflow:hidden}
+.progress > i{display:block;height:100%;width:0;background:var(--listen);border-radius:999px;transition:width .3s}
+.step{display:none}.step.on{display:block;animation:fade .25s}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.step-nav{display:flex;justify-content:space-between;gap:10px;margin-top:6px}
+.phase{font-family:"Cairo";font-weight:800;font-size:.9rem;color:var(--listen-700);margin:0 0 12px;padding:7px 13px;background:var(--listen-soft);border-inline-start:4px solid var(--listen);border-radius:10px;display:flex;align-items:center;gap:8px}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:8px;box-shadow:0 4px 14px -8px rgba(22,53,42,.18)}
+.q-head{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px}
+.lvl{font-family:"Cairo";font-size:.7rem;font-weight:700;border-radius:999px;padding:3px 10px}
+.lvl.l1{background:#E3F1EA;color:#2D6A4F}.lvl.l2{background:#E5EEF7;color:#2E5C8A}
+.lvl.l3{background:#F4ECDB;color:#8a5a1c}.lvl.l4{background:#F0E6F3;color:#6b3b7b}
+.qtype{font-family:"Cairo";font-size:.7rem;font-weight:700;color:var(--ink-soft);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.goal{font-family:"Tajawal";font-size:.78rem;color:var(--ink-soft);margin:2px 0 12px;padding-inline-start:10px;border-inline-start:3px solid var(--green-300)}
+.goal b{color:var(--green-700)}
+.q-stem{font-family:"Cairo";font-weight:600;font-size:1.02rem;margin-bottom:12px;color:var(--green-900);line-height:1.7}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:11px 14px;cursor:pointer;background:var(--paper);font-size:.98rem;transition:.14s;text-align:right}
+.opt:hover{border-color:var(--green-300);background:var(--green-100)}
+.opt.correct{background:var(--green-100);border-color:var(--green-500);color:var(--green-900);font-weight:700;cursor:default}
+.opt.wrong{background:var(--red-bg);border-color:var(--red);color:var(--red-ink)}
+.opt.locked{pointer-events:none;opacity:.65}
+.opt .mk{width:22px;height:22px;flex:0 0 auto;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:.8rem}
+.opt.correct .mk{background:var(--green-500);border-color:var(--green-500);color:#fff}
+.opt.wrong .mk{background:var(--red);border-color:var(--red);color:#fff}
+.fb{margin-top:10px;font-size:.9rem;border-radius:10px;padding:10px 12px;display:none;font-family:"Tajawal";line-height:1.55}
+.fb.show{display:block}
+.fb.ok{background:var(--green-100);color:var(--green-900);border:1px solid var(--green-300)}
+.fb.no{background:var(--red-bg);color:var(--red-ink);border:1px solid #e7b4b4}
+.match{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.match .col{display:flex;flex-direction:column;gap:8px}
+.match .col h5{font-family:"Cairo";font-size:.78rem;color:var(--ink-soft);text-align:center;margin-bottom:2px}
+.chip{border:1px solid var(--line);border-radius:11px;padding:10px 12px;background:var(--paper);cursor:pointer;font-size:.95rem;text-align:center;transition:.14s}
+.chip:hover{border-color:var(--green-300)}
+.chip.sel{background:var(--amber-soft);border-color:var(--amber)}
+.chip.done{font-weight:700;cursor:default;pointer-events:none}
+.chip.shake{animation:shk .3s}
+@keyframes shk{0%,100%{transform:none}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.tf{display:flex;flex-direction:column;gap:10px}
+.tf-row{border:1px solid var(--line);border-radius:12px;padding:11px 14px;background:var(--paper)}
+.tf-stmt{font-family:"Cairo";font-size:.98rem;color:var(--green-900);margin-bottom:9px;line-height:1.6}
+.tf-btns{display:flex;gap:8px}
+.tf-b{font-family:"Cairo";font-weight:700;font-size:.86rem;border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:6px 18px;cursor:pointer;transition:.14s}
+.tf-b:hover{border-color:var(--green-300)}.tf-b:disabled{opacity:.55}
+.tf-b.sel-ok{background:var(--green-500);border-color:var(--green-500);color:#fff}
+.tf-b.sel-no{background:var(--red);border-color:var(--red);color:#fff}
+.tf-fb{display:none;margin-top:9px;font-family:"Tajawal";font-size:.86rem;border-radius:9px;padding:8px 11px;line-height:1.5}
+.tf-fb.show{display:block}.tf-fb.ok{background:var(--green-100);color:var(--green-900);border:1px solid var(--green-300)}
+.tf-fb.no{background:var(--red-bg);color:var(--red-ink);border:1px solid #e7b4b4}
+.ord{display:flex;flex-direction:column;gap:9px}
+.ord-item{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:12px;padding:11px 14px;background:var(--paper);cursor:pointer;font-size:.97rem;transition:.14s;font-family:"Cairo";line-height:1.5}
+.ord-item:hover{border-color:var(--listen);background:var(--listen-soft)}
+.ord-badge{width:26px;height:26px;flex:0 0 auto;border-radius:8px;border:2px solid var(--listen);color:var(--listen-700);display:grid;place-items:center;font-family:"Cairo";font-weight:800;font-size:.9rem;background:#fff}
+.ord-item.picked{background:var(--listen-soft);border-color:var(--listen)}
+.ord-item.picked .ord-badge{background:var(--listen);color:#fff;border-color:var(--listen)}
+.ord-item.ord-ok{background:var(--green-100);border-color:var(--green-500)}
+.ord-item.ord-ok .ord-badge{background:var(--green-500);border-color:var(--green-500);color:#fff}
+.ord-item.ord-no{background:var(--red-bg);border-color:var(--red)}
+.ord-item.ord-no .ord-badge{background:var(--red);border-color:var(--red);color:#fff}
+.free textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-family:"Tajawal";font-size:1rem;resize:vertical;background:var(--paper);line-height:1.7}
+.free textarea:focus{outline:2px solid var(--green-300);border-color:var(--green-500)}
+.model-box{display:none;margin-top:10px;background:var(--tint);border:1px solid var(--green-300);border-radius:12px;padding:12px 14px;font-family:"Amiri";font-size:1.05rem;line-height:1.9;color:var(--green-900)}
+.model-box.show{display:block}
+.crit{display:none;margin-top:10px;background:var(--tint);border:1px solid var(--green-300);border-radius:12px;padding:12px 14px}
+.crit.show{display:block}
+.crit-note{font-family:"Tajawal";font-size:.85rem;color:var(--ink-soft);margin-bottom:10px;line-height:1.6}
+.crit-item{display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:7px 0;font-size:.96rem;font-family:"Tajawal";line-height:1.5}
+.crit-box{width:22px;height:22px;flex:0 0 auto;border:2px solid var(--green-500);border-radius:6px;display:grid;place-items:center;font-size:.85rem;color:#fff;transition:.14s;margin-top:1px}
+.crit-item.on .crit-box{background:var(--green-500)}.crit-item.on .crit-box::after{content:'✓'}
+.crit-done{display:none;margin-top:10px;background:var(--green-100);border:1px solid var(--green-300);border-radius:10px;padding:9px 12px;font-family:"Cairo";font-weight:700;color:var(--green-700);font-size:.9rem}
+.crit-done.show{display:block}
+.btn{font-family:"Cairo";font-weight:700;border:0;border-radius:11px;padding:10px 22px;cursor:pointer;font-size:.92rem;transition:.14s}
+.btn.primary{background:var(--listen);color:#fff}.btn.primary:hover{background:var(--listen-700)}.btn.primary:disabled{opacity:.45;cursor:default}
+.btn.ghost{background:var(--paper);color:var(--listen-700);border:1px solid var(--listen)}.btn.ghost:hover{background:var(--listen-soft)}.btn.ghost:disabled{opacity:.4;cursor:default}
+.btn.sm{background:var(--paper);color:var(--green-700);border:1px solid var(--green-300);padding:9px 18px}.btn.sm:hover{background:var(--green-100)}
+.btn.light{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.4)}.btn.light:hover{background:rgba(255,255,255,.25)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+@media(max-width:560px){.topbar .meta{display:none}.body{padding:18px 16px 24px}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="mascot"><svg width="30" height="30" viewBox="0 0 30 30"><path d="M15 3c1 4 0 7-2 9 3-1 6 0 8 3-3 0-5 1-6 4 0-3-1-5-3-6 1 4 0 8-3 11 0-5-2-8-5-9 3-1 5-3 6-6 1 3 3 4 5 4-2-3-2-7-1-10 1 2 3 3 4 3-2-2-3-4-3-7z" fill="#2D6A4F"/></svg></div>
+  <div>
+    <div class="crumbs">منصّة نخلة · السنة الأولى إعدادي · مكوّن فهم المسموع (الاستماع)</div>
+    <div class="lesson-title">درس النصّ السماعيّ</div>
+  </div>
+  <div class="meta"><span>🎧 نصّ سرديّ مسموع</span><span>● تقويم تكوينيّ</span></div>
+</div>
+
+<div class="wrap">
+  <section class="pane">
+    <div class="illus">
+      <svg viewBox="0 0 600 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="كوخٌ متواضعٌ وطائرٌ ويدٌ تُقدّمُ نقودًا وموجاتُ صوت">
+        <defs>
+          <linearGradient id="bgL" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E2EAF0"/><stop offset="1" stop-color="#CDDBE6"/></linearGradient>
+          <radialGradient id="coin" cx="50%" cy="40%" r="60%"><stop offset="0" stop-color="#F7E08A"/><stop offset="1" stop-color="#D9A93B"/></radialGradient>
+        </defs>
+        <rect width="600" height="250" fill="url(#bgL)"/>
+        <path d="M0 188 Q150 168 300 182 T600 176 L600 250 L0 250 Z" fill="#B7C7B0"/>
+        <g transform="translate(430,96)">
+          <rect x="0" y="40" width="120" height="70" fill="#C9B79B" stroke="#9c8a6e" stroke-width="2"/>
+          <path d="M-12 40 L60 2 L132 40 Z" fill="#8C7A55" stroke="#6e5e3f" stroke-width="2"/>
+          <rect x="44" y="74" width="32" height="36" rx="2" fill="#6E5E3F"/>
+          <rect x="16" y="56" width="20" height="18" fill="#7FB3C9" opacity=".7"/>
+        </g>
+        <g transform="translate(300,70)" opacity=".9">
+          <path d="M0 0 q-14 -10 -30 -6 q12 -8 26 -4 q-8 -10 -2 -20 q6 10 10 18 q10 -6 22 -2 q-12 4 -18 12 q14 2 22 12 q-16 -4 -30 -2 Z" fill="#6b6f78"/>
+          <circle cx="-26" cy="-4" r="2" fill="#33617F"/>
+        </g>
+        <g transform="translate(120,110)">
+          <path d="M-30 26 q-6 -22 14 -30 q6 -2 12 0 l30 8 q8 2 6 8 q-2 5 -10 4 l-20 -3 q14 6 22 10 q6 4 1 9 q-4 4 -11 1 l-22 -9 q10 8 14 14 q4 6 -3 8 q-6 2 -11 -4 q-10 -12 -22 -16 Z" fill="#E2C39A" stroke="#b9966a" stroke-width="1.5"/>
+        </g>
+        <g transform="translate(96,80)">
+          <circle r="22" fill="url(#coin)" stroke="#B8860B" stroke-width="3"/>
+          <circle r="16" fill="none" stroke="#C9A33B" stroke-width="2"/>
+          <path d="M22 -18 l7 -5 M28 -8 l9 -3" stroke="#F4D87A" stroke-width="3" stroke-linecap="round"/>
+        </g>
+        <g transform="translate(150,64)"><circle r="15" fill="url(#coin)" stroke="#B8860B" stroke-width="2.5"/></g>
+        <g transform="translate(548,212)" stroke="#33617F" stroke-width="3" fill="none" opacity=".7">
+          <circle r="7"/><path d="M12 -10 A18 18 0 0 1 12 10"/><path d="M22 -20 A33 33 0 0 1 22 20"/>
+        </g>
+        <circle cx="548" cy="212" r="3" fill="#33617F" opacity=".8"/>
+      </svg>
+    </div>
+
+    <div class="body">
+      <div class="doc-card">
+        <span><b>الكاتب/المصدر:</b> <span class="src">(يُحدِّدُه الأستاذ)</span></span>
+        <span class="badge">🎧 نصّ سماعيّ</span>
+      </div>
+
+      <h2 class="title-ar">الطّائِرُ المَيِّت</h2>
+      <div class="title-rule"></div>
+
+      <div class="audio-wrap">
+        <div class="audio-label">🎧 استمِعْ إلى النصِّ جيّدًا — أعِدِ الاستماعَ كلّما احتجتَ قبلَ الإجابةِ عن الأسئلة</div>
+        <!-- ضع صوتك هنا: استبدل قيمة src بمسارِ ملفك أو بـ data:audio/mpeg;base64,XXXX ليُحفَظ دائمًا داخل الملف -->
+        <audio id="lesson-audio" controls preload="metadata" src="">متصفّحُك لا يدعمُ تشغيلَ الصوت.</audio>
+        <div class="aud-load">
+          <input type="file" id="aud-file" accept="audio/*" style="display:none" onchange="loadAudio(event)">
+          <button class="btn light" onclick="document.getElementById('aud-file').click()">📂 أدرِجْ ملفَّ الصوت</button>
+          <span class="aud-note">تشغيلٌ محليٌّ للمعاينة، أو استبدِلِ المصدرَ داخلَ الكودِ ليُحفَظ دائمًا.</span>
+        </div>
+        <div class="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+      <div class="listen-hint">أجِبْ عن الأسئلةِ اعتمادًا على ما سمعتَه — ينتقلُ سؤالٌ بعدَ سؤال.</div>
+
+      <div class="qs-divider">الأسئلة</div>
+
+      <div class="step-head">
+        <span class="step-count" id="step-count"></span>
+        <span class="progress"><i id="prog"></i></span>
+      </div>
+
+      <div id="steps"></div>
+
+      <div class="step-nav">
+        <button class="btn ghost" id="btn-prev" onclick="go(-1)">السابق</button>
+        <button class="btn primary" id="btn-next" onclick="go(1)">التالي</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+/* ===================== audio loader (teacher inserts own audio) ===================== */
+function loadAudio(ev){const f=ev.target.files&&ev.target.files[0];if(!f)return;const a=document.getElementById('lesson-audio');a.src=URL.createObjectURL(f);a.load();}
+
+/* ===================== engines ===================== */
+const LVL={1:["l1","مستوى مباشر"],2:["l2","مستوى استنتاجيّ"],3:["l3","مستوى ضمنيّ"],4:["l4","مستوى إبداعيّ"]};
+function qHead(lvl,type){const [cls,label]=LVL[lvl];return `<div class="q-head"><span class="lvl ${cls}">${label}</span><span class="qtype">${type}</span></div>`;}
+function goal(t){return `<div class="goal"><b>الهدف:</b> ${t}</div>`;}
+function MCQ(o){const id='m'+Math.random().toString(36).slice(2,8);let html=`<div class="q">${qHead(o.lvl,o.type)}${goal(o.goal)}<div class="q-stem">${o.stem}</div><div class="opts" id="${id}">`;o.options.forEach((op,i)=>{html+=`<div class="opt" data-i="${i}"><span class="mk"></span><span>${op.t}</span></div>`;});html+=`</div><div class="fb" id="${id}-fb"></div></div>`;setTimeout(()=>bindMCQ(id,o),0);return html;}
+function bindMCQ(id,o){const box=document.getElementById(id);const fb=document.getElementById(id+'-fb');box.querySelectorAll('.opt').forEach(opt=>{opt.addEventListener('click',()=>{const op=o.options[+opt.dataset.i];fb.className='fb show '+(op.ok?'ok':'no');fb.innerHTML=op.fb;if(op.ok){opt.classList.add('correct');opt.querySelector('.mk').textContent='✓';box.querySelectorAll('.opt').forEach(x=>x.classList.add('locked'));opt.classList.remove('locked');}else{opt.classList.add('wrong');opt.querySelector('.mk').textContent='✕';setTimeout(()=>{opt.classList.remove('wrong');opt.querySelector('.mk').textContent='';},1400);}});});}
+function MATCH(o){const id='g'+Math.random().toString(36).slice(2,8);let html=`<div class="q">${qHead(o.lvl,o.type)}${goal(o.goal)}<div class="q-stem">${o.stem}</div><div class="match"><div class="col"><h5>${o.h1||''}</h5>`;o.left.forEach((t,i)=>html+=`<div class="chip" data-side="L" data-i="${i}" data-g="${id}">${t}</div>`);html+=`</div><div class="col"><h5>${o.h2||''}</h5>`;o.right.forEach((t,i)=>html+=`<div class="chip" data-side="R" data-i="${i}" data-g="${id}">${t}</div>`);html+=`</div></div></div>`;setTimeout(()=>bindMatch(id,o),0);return html;}
+let matchSel={},matchIdx={};
+const PAIR_COLORS=[{bg:'#D8F0E2',bd:'#40916C',tx:'#16352A'},{bg:'#F4E6CF',bd:'#C0813B',tx:'#7a4e14'},{bg:'#DCEAF7',bd:'#2E6FA8',tx:'#173e63'},{bg:'#ECE0F2',bd:'#7B4B9B',tx:'#4a2c5e'}];
+function paintPair(a,b,idx){const c=PAIR_COLORS[idx%PAIR_COLORS.length];[a,b].forEach(el=>{el.style.background=c.bg;el.style.borderColor=c.bd;el.style.color=c.tx;});}
+function bindMatch(id,o){matchSel[id]=null;matchIdx[id]=0;document.querySelectorAll(`.chip[data-g="${id}"]`).forEach(chip=>{chip.addEventListener('click',()=>{if(chip.classList.contains('done'))return;const side=chip.dataset.side,i=+chip.dataset.i;if(!matchSel[id]){matchSel[id]={side,i,el:chip};chip.classList.add('sel');return;}const s=matchSel[id];if(s.side===side){s.el.classList.remove('sel');matchSel[id]={side,i,el:chip};chip.classList.add('sel');return;}const L=side==='L'?i:s.i, R=side==='R'?i:s.i;s.el.classList.remove('sel');if(o.pairs[L]===R){chip.classList.add('done');s.el.classList.add('done');paintPair(chip,s.el,matchIdx[id]);matchIdx[id]++;}else{chip.classList.add('shake');s.el.classList.add('shake');setTimeout(()=>{chip.classList.remove('shake');s.el.classList.remove('shake');},300);}matchSel[id]=null;});});}
+function TF(o){const id='tf'+Math.random().toString(36).slice(2,8);let rows=o.items.map((it,i)=>`<div class="tf-row" data-g="${id}" data-i="${i}"><div class="tf-stmt">${it.t}</div><div class="tf-btns"><button class="tf-b" data-v="1">صَحّ</button><button class="tf-b" data-v="0">خطأ</button></div><div class="tf-fb"></div></div>`).join('');setTimeout(()=>bindTF(id,o),0);return `<div class="q">${qHead(o.lvl,o.type)}${goal(o.goal)}<div class="q-stem">${o.stem}</div><div class="tf">${rows}</div></div>`;}
+function bindTF(id,o){document.querySelectorAll(`.tf-row[data-g="${id}"]`).forEach(row=>{const it=o.items[+row.dataset.i];const fb=row.querySelector('.tf-fb');row.querySelectorAll('.tf-b').forEach(b=>{b.addEventListener('click',()=>{const correct=((+b.dataset.v===1)===it.ans);if(correct){b.classList.add('sel-ok');row.querySelectorAll('.tf-b').forEach(x=>x.disabled=true);fb.className='tf-fb show ok';fb.innerHTML=it.fb||'إجابةٌ صحيحة.';}else{b.classList.add('sel-no');fb.className='tf-fb show no';fb.innerHTML='أعِدِ الاستماعَ إلى هذا الجزءِ وحاوِلْ مرّةً أخرى.';setTimeout(()=>{b.classList.remove('sel-no');fb.classList.remove('show');},1500);}});});});}
+function ORDER(o){const id='or'+Math.random().toString(36).slice(2,8);let chips=o.items.map((it,i)=>`<div class="ord-item" data-g="${id}" data-i="${i}" data-n="${it.n}"><span class="ord-badge"></span><span>${it.t}</span></div>`).join('');setTimeout(()=>{ordSel[id]=[];},0);return `<div class="q">${qHead(o.lvl,o.type)}${goal(o.goal)}<div class="q-stem">${o.stem}</div><div class="ord" id="${id}">${chips}</div><div class="row"><button class="btn sm" onclick="checkOrder('${id}')">تحقّق</button><button class="btn sm" onclick="resetOrder('${id}')">إعادة</button></div><div class="fb" id="${id}-fb"></div></div>`;}
+let ordSel={};
+document.addEventListener('click',e=>{const it=e.target.closest('.ord-item');if(!it)return;const id=it.dataset.g;if(!ordSel[id])ordSel[id]=[];if(it.classList.contains('picked'))return;ordSel[id].push(it);it.classList.add('picked');it.querySelector('.ord-badge').textContent=ordSel[id].length;});
+function resetOrder(id){ordSel[id]=[];document.querySelectorAll(`.ord-item[data-g="${id}"]`).forEach(it=>{it.classList.remove('picked','ord-ok','ord-no');it.querySelector('.ord-badge').textContent='';});document.getElementById(id+'-fb').className='fb';}
+function checkOrder(id){const sel=ordSel[id]||[];const fb=document.getElementById(id+'-fb');const total=document.querySelectorAll(`.ord-item[data-g="${id}"]`).length;if(sel.length<total){fb.className='fb show no';fb.innerHTML='انقُرِ الأحداثَ كلَّها بالترتيبِ الذي سمعتَه أوّلًا.';return;}let ok=true;sel.forEach((it,idx)=>{const c=(+it.dataset.n===idx+1);it.classList.toggle('ord-ok',c);it.classList.toggle('ord-no',!c);if(!c)ok=false;});fb.className='fb show '+(ok?'ok':'no');fb.innerHTML=ok?'أحسنت، الترتيبُ مطابقٌ لتسلسلِ الأحداثِ كما سمعتَها.':'بعضُ الأحداثِ في غيرِ موضعِها (بالأحمر). اضغطْ «إعادة» وجرّبْ من جديد.';}
+function CRIT(o){const id='cr'+Math.random().toString(36).slice(2,8);const crit=o.criteria.map(c=>`<label class="crit-item" data-g="${id}"><span class="crit-box"></span><span>${c}</span></label>`).join('');const ex=o.examples?`<div class="row"><button class="btn sm" onclick="document.getElementById('${id}-ex').classList.toggle('show')">أمثلةٌ استرشاديّةٌ (لا للمطابقة)</button></div><div class="model-box" id="${id}-ex">${o.examples}</div>`:'';setTimeout(()=>bindCrit(id),0);return `<div class="q">${qHead(o.lvl,o.type)}${goal(o.goal)}<div class="q-stem">${o.stem}</div><div class="free"><textarea placeholder="اكتُبْ إجابتَك هنا..."></textarea></div><div class="row"><button class="btn sm" onclick="document.getElementById('${id}-c').classList.toggle('show')">تحقّقْ من إجابتي وفقَ المعايير</button></div><div class="crit" id="${id}-c"><p class="crit-note">للإجابةِ الإبداعيّةِ صِيَغٌ كثيرةٌ صحيحة؛ تأكّدْ من سلامةِ إجابتِك بمطابقتِها هذه المعاييرَ لا جوابًا واحدًا:</p>${crit}<div class="crit-done" id="${id}-done">أحسنت — إجابتُك مستوفيةٌ لجميعِ معاييرِ النجاح.</div></div>${ex}</div>`;}
+function bindCrit(id){const items=document.querySelectorAll(`.crit-item[data-g="${id}"]`);items.forEach(it=>it.addEventListener('click',()=>{it.classList.toggle('on');document.getElementById(id+'-done').classList.toggle('show',[...items].every(x=>x.classList.contains('on')));}));}
+
+/* ===================== questions (sequential) ===================== */
+const STEPS=[
+ {phase:"قبلَ الاستماع · التوقّع", html: CRIT({lvl:4,type:"توقّع وصياغة فرضيّة",goal:"أن يَبنيَ المتعلّمُ فرضيّةً حولَ المضمونِ من العنوانِ والصورة، ثمّ يتحقّقَ منها.",
+   stem:"قبلَ الاستماع: انطلاقًا من العنوانِ والصورة (كوخٌ متواضعٌ، طائرٌ، يدٌ تُقدّمُ نقودًا)، توقّعْ موضوعَ النصِّ وما قد يحدثُ فيه. وبعدَ الاستماعِ قارِنْ فرضيتَك بما سمعتَه.",
+   criteria:["صُغتُ فرضيةً واضحةً قبلَ الاستماع.","ربطتُها بدلالةِ العنوانِ أو الصورة.","بعدَ الاستماعِ قارنتُ فرضيتي بمضمونِ النصّ (هل تحقّقت؟).","عبّرتُ بلغةٍ سليمةٍ ومفهومة."]})},
+
+ {phase:"الاستماعُ الأوّل · الفهمُ الإجماليّ", html: MCQ({lvl:1,type:"الفكرة العامّة · اختيار من متعدّد",goal:"أن يحدّدَ المتعلّمُ الموضوعَ العامَّ للنصِّ بعد استماعٍ أوّل.",
+   stem:"ما الموضوعُ العامُّ للنصِّ الذي استمعتَ إليه؟",
+   options:[
+     {t:"فتاةٌ يتيمةٌ دفعها الجوعُ إلى التقاطِ طائرٍ ميتٍ من المزبلةِ لتأكلَه، فيُشفِقُ عليها رجلٌ كريمٌ ويتصدّقُ عليها بكلِّ مالِه",ok:true,fb:"صحيح. هذا هو محورُ النصّ: مأساةُ الفتاةِ الجائعةِ ثمّ كرمُ الرجلِ ورحمتُه بها."},
+     {t:"صيّادٌ يَصطادُ الطيورَ ويَبيعُها في السوق",ok:false,fb:"هل دارَ النصُّ حولَ صيدٍ وبيعٍ للطيور؟ تذكّرْ لماذا التقطتِ الفتاةُ الطائرَ، ثمّ أعِدِ الاختيار."},
+     {t:"خلافٌ بين رجلين حولَ مكانِ رميِ النفايات",ok:false,fb:"هل كان النزاعُ موضوعَ النصّ، أم أنّ الذهابَ إلى المزبلةِ كان بدايةً لحدثٍ آخر؟ تأمّلْ ما جرى بعد ذلك."}
+   ]})},
+
+ {phase:"الاستماعُ الأوّل · الفهمُ الإجماليّ", html: MCQ({lvl:1,type:"الشخصيّات · اختيار من متعدّد",goal:"أن يلتقطَ المتعلّمُ الشخصيّتين الرئيسيتين سماعًا.",
+   stem:"مَنِ الشخصيّتانِ الرئيسيّتانِ في النصّ؟",
+   options:[
+     {t:"الرجلُ الكريمُ (ابنُ المبارك) والفتاةُ",ok:true,fb:"صحيح. تدورُ الأحداثُ حولَ لقاءِ الرجلِ الكريمِ بالفتاةِ الجائعة."},
+     {t:"صاحبُ الطائرِ الميتِ وأخو الفتاة",ok:false,fb:"هذانِ شخصيّتانِ ثانويّتانِ؛ مَنِ اللذانِ دارَ بينهما الحوارُ والموقفُ كلُّه؟"},
+     {t:"الأمُّ والأب",ok:false,fb:"هل ظهرتِ الأمُّ في النصّ؟ ومتى ذُكِرَ الأبُ وكيف؟ تأمّلْ مَنْ تحاورَ في المشهدِ فعلًا."}
+   ]})},
+
+ {phase:"الاستماعُ الأوّل · الفهمُ الإجماليّ", html: MCQ({lvl:2,type:"نوع النصّ · اختيار من متعدّد",goal:"أن يتعرّفَ المتعلّمُ نمطَ النصِّ المسموع.",
+   stem:"إلى أيِّ نمطٍ ينتمي النصُّ المسموع؟",
+   options:[
+     {t:"نصٌّ سرديٌّ يتخلّلُه حوارٌ (يَروي أحداثًا متسلسلةً ويَنقلُ كلامَ الشخصيّات)",ok:true,fb:"صحيح. النصُّ يَسردُ الأحداثَ ويُكثِرُ من الحوارِ بين الرجلِ والفتاة."},
+     {t:"نصٌّ وصفيٌّ خالصٌ لا أحداثَ فيه",ok:false,fb:"هل يخلو النصُّ من الأحداثِ والحوار؟ تذكّرْ ما جرى بين الرجلِ والفتاة، ثمّ راجِعْ تصنيفَك."},
+     {t:"نصٌّ تفسيريٌّ علميّ",ok:false,fb:"هل يَشرحُ النصُّ ظاهرةً علميّةً، أم يَحكي قصّةً بأحداثٍ وحوار؟ أعِدِ النظر."}
+   ]})},
+
+ {phase:"الاستماعُ الثاني · الفهمُ المُركّز", html: TF({lvl:2,type:"التقاط المعطيات · صحّ أو خطأ",goal:"أن يلتقطَ المتعلّمُ معطياتٍ دقيقةً ويُميّزَ الصوابَ من الخطأ.",
+   stem:"بعدَ إعادةِ الاستماع، احكُمْ على كلِّ عبارةٍ بِـ«صحّ» أو «خطأ»:",
+   items:[
+     {t:"اختطفتِ الفتاةُ الطائرَ الميتَ من المزبلةِ وأسرعت به إلى كوخِها.",ans:true,fb:"صحّ، وردَ ذلك في بدايةِ النصّ."},
+     {t:"طلبَ الرجلُ من الفتاةِ أن تأكلَ الطائرَ الميت.",ans:false,fb:"خطأ؛ بل استنكرَ ذلك وقال: «أستغفرُ الله، هذا حرام»."},
+     {t:"كان أبو الفتاةِ يَكدحُ من أجلِ أبنائِه، وكان لهم مالٌ ومتاعٌ قبلَ أن يُقتَل.",ans:true,fb:"صحّ، قالت: «كنّا سعداء، وكان أبي يكدحُ... وكان لدينا المالُ والمتاع»."},
+     {t:"تعيشُ الفتاةُ مع أبيها وأمّها في رغدٍ من العيش.",ans:false,fb:"خطأ؛ هي تعيشُ مع أخيها بلا عائلٍ ولا سند، وقد قُتِلَ أبوها."},
+     {t:"أعطى الرجلُ الفتاةَ كلَّ ما معه من مال.",ans:true,fb:"صحّ، «تناولَ كلَّ ما معه من مالٍ ثمّ أقبلَ على الفتاة»."}
+   ]})},
+
+ {phase:"الاستماعُ الثاني · الفهمُ المُركّز", html: MCQ({lvl:2,type:"معلومة محدّدة · اختيار من متعدّد",goal:"أن يلتقطَ المتعلّمُ تفصيلًا دقيقًا سمعَه.",
+   stem:"كم يومًا عذّبَ الجوعُ الفتاةَ وأخاها؟",
+   options:[
+     {t:"يومين كاملين",ok:true,fb:"صحيح. قالت: «إنّ الجوعَ قد عذّبني أنا وأخي طِيلةَ يومين كاملين»."},
+     {t:"أسبوعًا كاملًا",ok:false,fb:"أعِدِ الاستماعَ إلى جوابِ الفتاةِ حين سألها عن سببِ اختطافِ الطائر، وانتبِهْ للمدّةِ بالضبط."},
+     {t:"يومًا واحدًا",ok:false,fb:"ركّزْ على العددِ الذي ذكرتْه الفتاةُ للأيّام، فهو أكثرُ من يوم."}
+   ]})},
+
+ {phase:"الاستماعُ الثاني · الفهمُ المُركّز", html: MCQ({lvl:2,type:"معلومة محدّدة · اختيار من متعدّد",goal:"أن يستردَّ المتعلّمُ ردَّ الفتاةِ على قولِ الرجلِ «هذا حرام».",
+   stem:"بمَ ردّتِ الفتاةُ حين قال لها الرجلُ إنّ أكلَ الميتةِ حرام؟",
+   options:[
+     {t:"«وحرامٌ أيضًا يا سيّدي أن نموتَ جوعًا»",ok:true,fb:"صحيح. ردّت بأنّ الموتَ جوعًا حرامٌ كذلك، تعبيرًا عن شدّةِ الضرورة."},
+     {t:"اعتذرت وألقت الطائرَ وانصرفت صامتة",ok:false,fb:"هل صمتت وانصرفت، أم دافعت عن نفسِها بكلمةٍ مؤثّرة؟ أعِدِ الاستماعَ إلى ردِّها."},
+     {t:"طلبت منه أن يشتريَ لها طعامًا بدلَ الميتة",ok:false,fb:"هذا الطلبُ لم يقعْ في ردِّها؛ تذكّرِ الجملةَ التي قابلت بها كلمةَ «حرام»."}
+   ]})},
+
+ {phase:"الاستماعُ الثاني · الفهمُ المُركّز", html: MCQ({lvl:3,type:"استنتاج · اختيار من متعدّد",goal:"أن يستنتجَ المتعلّمُ دلالةَ تصرّفِ الفتاةِ مع الطائر.",
+   stem:"أسرعتِ الفتاةُ بالطائرِ الميتِ نحوَ كوخِها «كأنّها حصلت على كنزٍ ثمين». علامَ يدلُّ ذلك؟",
+   options:[
+     {t:"على شدّةِ جوعِها وفقرِها، حتّى صارَ الطعامُ مهما كان عندَها أثمنَ من كنز",ok:true,fb:"صحيح. الصورةُ تُبرِزُ قسوةَ الجوعِ الذي جعلَ ميتةً طعامًا يُتهافَتُ عليه."},
+     {t:"على أنّها تَجمعُ الطيورَ هوايةً",ok:false,fb:"هل التقطتْه للهوايةِ أم لحاجةٍ مُلِحّة؟ اربِطْ تصرّفَها بما قالته عن الجوع."},
+     {t:"على أنّها تُريدُ بيعَه في السوق",ok:false,fb:"هل ذُكِرَ بيعٌ في النصّ؟ تأمّلْ سببَ تهافتِها عليه كما لو كان كنزًا."}
+   ]})},
+
+ {phase:"الاستماعُ الثاني · الفهمُ المُركّز", html: MCQ({lvl:3,type:"استنتاج · اختيار من متعدّد",goal:"أن يفهمَ المتعلّمُ المقصودَ بـ«الذئاب البشريّة».",
+   stem:"مَن «الذئابُ البشريّةُ» التي ذكرتها الفتاة؟",
+   options:[
+     {t:"قومٌ ظَلَمةٌ ناصبوا أباها العداءَ وجرّدوه من مالِه ثمّ قتلوه",ok:true,fb:"صحيح. هي استعارةٌ لأناسٍ ظالمين فتكوا بالأبِ وسلبوه كلَّ شيء."},
+     {t:"حيواناتٌ مفترسةٌ هاجمت بيتَهم",ok:false,fb:"هل تَقصِدُ ذئابًا حقيقيّة؟ تأمّلْ وصفَها «ذئابٌ بشريّة... قومٌ»: مَن هم في الحقيقة؟"},
+     {t:"تجّارٌ خدعوا أباها في البيعِ والشراء",ok:false,fb:"النصُّ يتحدّثُ عن ظلمٍ وقتلٍ لا عن خداعٍ تجاريّ؛ أعِدِ الاستماعَ إلى ما فعلوه بالأب."}
+   ]})},
+
+ {phase:"الاستماعُ الثاني · الفهمُ المُركّز", html: ORDER({lvl:2,type:"ترتيب الأحداث · رتّبْ سماعًا",goal:"أن يُعيدَ المتعلّمُ ترتيبَ أحداثِ النصِّ وفقَ تسلسلِها كما سمعَها.",
+   stem:"رتّبِ الأحداثَ الآتيةَ حسبَ تسلسلِها في النصّ، بالنقرِ عليها واحدًا تِلوَ الآخرِ بالترتيبِ الصحيح:",
+   items:[
+     {t:"أعطى الرجلُ الفتاةَ كلَّ ما معه من مالٍ وأمرها أن تشتريَ طعامًا وكساء.",n:4},
+     {t:"ذهبَ الرجلُ وصاحبُه إلى المزبلةِ لرميِ الطائرِ الميت.",n:1},
+     {t:"أخذتِ الفتاةُ المالَ مذهولةً واندفعت نحوَ الكوخ.",n:5},
+     {t:"اختطفتِ الفتاةُ الطائرَ وأسرعت به إلى كوخِها فتبِعها الرجل.",n:2},
+     {t:"أمسكَ بها الرجلُ، فروَتْ له قصّةَ جوعِها ومقتلِ أبيها.",n:3}
+   ]})},
+
+ {phase:"التحليلُ والتأويل", html: MCQ({lvl:2,type:"الحالة النفسيّة · اختيار من متعدّد",goal:"أن يحدّدَ المتعلّمُ مشاعرَ الفتاةِ عندَ القبضِ عليها.",
+   stem:"كيف بدتِ الفتاةُ حينَ أمسكَ بها الرجلُ أوّلَ مرّة؟",
+   options:[
+     {t:"خائفةً مرتعدةً (ارتعدت فرائصُها، وشحبَ وجهُها، ونظرت بعينين خائفتين)",ok:true,fb:"صحيح. النصُّ صوّرَ رعبَها بدقّةٍ قبلَ أن يُطمئنَها الرجل."},
+     {t:"غاضبةً متحدّيةً",ok:false,fb:"هل أظهرت غضبًا وتحدّيًا، أم خوفًا وتوسّلًا؟ تذكّرْ وصفَ النصِّ لِحالِها."},
+     {t:"فرِحةً مطمئنّة",ok:false,fb:"متى اطمأنّت الفتاة؟ أبعدَ كلامِ الرجلِ أم قبلَه؟ تأمّلْ لحظةَ الإمساكِ بها أوّلًا."}
+   ]})},
+
+ {phase:"التحليلُ والتأويل", html: MATCH({lvl:2,type:"الشخصيّات والصفات · صِل بسهم",goal:"أن يربطَ المتعلّمُ كلَّ طرفٍ بصفتِه أو دورِه.",
+   stem:"صِلْ كلَّ طرفٍ بما يُناسبُه (يأخذُ كلُّ زوجٍ صحيحٍ لونًا خاصًّا):",
+   h1:"الطرف",h2:"صفتُه / دورُه",
+   left:["الرجلُ (ابنُ المبارك)","الفتاةُ","الذئابُ البشريّة"],
+   right:["يتيمةٌ فقيرةٌ عفيفةٌ دفعها الجوع","ظَلَمةٌ سلبوا الأبَ مالَه وقتلوه","رجلٌ كريمٌ رحيمٌ تصدّقَ بكلِّ مالِه"],
+   pairs:{0:2,1:0,2:1}})},
+
+ {phase:"التحليلُ والتأويل", html: MCQ({lvl:3,type:"التأويل · اختيار من متعدّد",goal:"أن يؤوّلَ المتعلّمُ دلالةَ قولِ الفتاةِ «وحرامٌ أن نموتَ جوعًا».",
+   stem:"قولُ الفتاةِ «وحرامٌ أيضًا أن نموتَ جوعًا» يكشفُ عن...",
+   options:[
+     {t:"وعيِها بأنّ الضرورةَ الشديدةَ قد تُبيحُ ما هو ممنوعٌ في الأصل، وصِدقِ مأساتِها",ok:true,fb:"صحيح. تُوازِنُ بين حُرمتين، فتُبرِزُ أنّ حفظَ النفسِ من الهلاكِ مقدَّم."},
+     {t:"جهلِها بأحكامِ الدين",ok:false,fb:"هل يدلُّ كلامُها على جهلٍ، أم على إدراكٍ لموازنةٍ دقيقةٍ بين ضررين؟ أعِدِ التأمّل."},
+     {t:"رغبتِها في تبريرِ السرقة",ok:false,fb:"هل سرقتْ مالًا أم التقطت ميتةً من مزبلةٍ تحت وطأةِ الجوع؟ تأمّلِ المقصودَ من ردِّها."}
+   ]})},
+
+ {phase:"التحليلُ والتأويل", html: MCQ({lvl:3,type:"القيمة · اختيار من متعدّد",goal:"أن يستخلصَ المتعلّمُ القيمةَ التي يُجسّدُها موقفُ الرجل.",
+   stem:"أيَّ قيمةٍ يُجسّدُها موقفُ الرجلِ حين أعطى الفتاةَ كلَّ مالِه؟",
+   options:[
+     {t:"الكرمَ والرحمةَ وإغاثةَ الملهوفِ والإحسانَ إلى اليتيمِ والفقير",ok:true,fb:"صحيح. بذلُه كلَّ مالِه لفتاةٍ غريبةٍ تجسيدٌ صادقٌ للكرمِ والرحمة."},
+     {t:"حبَّ الظهورِ أمامَ الناس",ok:false,fb:"هل كان حولَه جمهورٌ يُبادِلُه الإعجاب، أم موقفٌ خفيٌّ مع فتاةٍ محتاجة؟ تأمّلِ الدافع."},
+     {t:"الرغبةَ في مقابلٍ أو منفعة",ok:false,fb:"هل طلبَ مقابلًا لعطائِه؟ تذكّرْ كيف ألحَّ أنّ المالَ كلَّه لها دونَ شرط."}
+   ]})},
+
+ {phase:"التحليلُ والتأويل", html: MCQ({lvl:4,type:"المغزى والقيمة · تقويم",goal:"أن يُقوّمَ المتعلّمُ الدرسَ المركزيَّ للنصّ.",
+   stem:"ما الدرسُ المركزيُّ الذي يَدعو إليه النصّ؟",
+   options:[
+     {t:"الدعوةُ إلى الرحمةِ والتكافلِ ونجدةِ المحتاجين، والتنديدُ بالظلمِ الذي يُيتّمُ ويُفقِر",ok:true,fb:"صحيح. يلتقي موقفُ الكرمِ ومأساةُ اليتمِ على هذا الدرسِ الإنسانيّ."},
+     {t:"أنّ الفقرَ قَدَرٌ لا حيلةَ في تغييرِه",ok:false,fb:"هل استسلمَ النصُّ للفقر، أم أظهرَ أنّ العطاءَ يُخفّفُ المأساة؟ أعِدِ التأمّلَ في موقفِ الرجل."},
+     {t:"أنّ التقاطَ الطعامِ من المزابلِ أمرٌ عاديّ",ok:false,fb:"هذا تفصيلٌ مأساويٌّ يُبرِزُ شدّةَ الجوع، لا درسًا يَدعو إليه النصّ. ابحَثْ عن المغزى الأعمق."}
+   ]})},
+
+ {phase:"التحليلُ والتأويل · إبداع", html: CRIT({lvl:4,type:"تقويم وإبداع",goal:"أن يستخلصَ المتعلّمُ قيمةً/درسًا من النصِّ ويدعمَه بشاهدٍ مسموع.",
+   stem:"استخلِصْ قيمةً أو درسًا من النصِّ، وادعَمْه بشاهدٍ (عبارةٍ) ممّا سمعتَه.",
+   criteria:["حدّدتُ قيمةً أو درسًا واضحًا (كالرحمةِ أو الكرمِ أو التكافل).","دعمتُ ذلك بشاهدٍ ممّا سمعتُه.","الشاهدُ مناسبٌ ويخدمُ القيمةَ فعلًا.","عبّرتُ بلغةٍ سليمة."],
+   examples:"من القيمِ الممكنةِ (لا الوحيدة): <b>الكرمُ والإيثار</b> — «تناولَ كلَّ ما معه من مالٍ» فأعطاه لها؛ <b>الرحمةُ بالضعيف</b> — «لا تخافي يا ابنتي»؛ <b>عفّةُ المحتاجِ</b> — ظنّت العطاءَ سخريةً فلم تَستجدِ؛ <b>التنديدُ بالظلم</b> — «ظلموا أبي وجرّدوه... ثمّ قتلوه»."})}
+];
+
+/* ===================== stepper ===================== */
+let cur=0; const total=STEPS.length;
+document.getElementById('steps').innerHTML=STEPS.map((s,i)=>`<div class="step" data-i="${i}"><div class="phase">🎧 ${s.phase}</div>${s.html}</div>`).join('');
+function showStep(i){cur=Math.max(0,Math.min(total-1,i));document.querySelectorAll('.step').forEach(st=>st.classList.toggle('on',+st.dataset.i===cur));document.getElementById('step-count').textContent=`السؤال ${cur+1} من ${total}`;document.getElementById('prog').style.width=((cur+1)/total*100)+'%';document.getElementById('btn-prev').disabled=(cur===0);const nx=document.getElementById('btn-next');if(cur===total-1){nx.textContent='انتهت الأسئلة ✓';nx.disabled=true;}else{nx.textContent='التالي';nx.disabled=false;}}
+function go(d){showStep(cur+d);document.querySelector('.qs-divider').scrollIntoView({behavior:'smooth',block:'start'});}
+showStep(0);
+</script>
+</body>
+</html>

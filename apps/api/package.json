@@ -1,0 +1,32 @@
+{
+  "name": "@teaching-app/api",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node ../../scripts/free-port.mjs 3000 && tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "lint": "biome check src",
+    "lint:fix": "biome check --write src",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.7",
+    "@teaching-app/shared": "workspace:*",
+    "bcrypt": "^5.1.1",
+    "better-sqlite3": "^11.7.0",
+    "hono": "^4.6.14",
+    "jose": "^5.9.6",
+    "nodemailer": "^9.0.3",
+    "ws": "^8.19.0"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^22.10.2",
+    "@types/nodemailer": "^8.0.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

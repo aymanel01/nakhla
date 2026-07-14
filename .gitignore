@@ -1,0 +1,42 @@
+# Dependencies
+node_modules
+
+# Build outputs
+dist
+.turbo
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+
+# Database
+*.db
+*.sqlite
+*.db-shm
+*.db-wal
+
+# API uploads (runtime user/admin files)
+apps/api/uploads/*
+!apps/api/uploads/seed_*
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Expo
+.expo
+
+# Android / Gradle build cache
+**/.gradle/
+**/android/app/build/
+**/android/build/

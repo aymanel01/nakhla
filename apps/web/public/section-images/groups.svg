@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="420" viewBox="0 0 720 420" role="img" aria-label="المجموعات">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#047857"/><stop offset="0.58" stop-color="#059669"/><stop offset="1" stop-color="#14b8a6"/></linearGradient>
+    <radialGradient id="r" cx="25%" cy="20%" r="70%"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#111827" flood-opacity=".22"/></filter>
+  </defs>
+  <rect width="720" height="420" rx="58" fill="url(#g)"/>
+  <rect width="720" height="420" rx="58" fill="url(#r)"/>
+  <circle cx="108" cy="82" r="72" fill="#fff" opacity=".18"/>
+  <circle cx="608" cy="340" r="105" fill="#fff" opacity=".14"/>
+  <g filter="url(#shadow)"><circle cx="360" cy="150" r="48" fill="#fff"/><circle cx="280" cy="174" r="38" fill="#d1fae5"/><circle cx="440" cy="174" r="38" fill="#ccfbf1"/><path d="M258 278c18-55 185-55 204 0" fill="#fff" opacity=".96"/><path d="M210 284c13-44 115-44 130 0" fill="#d1fae5" opacity=".95"/><path d="M380 284c13-44 115-44 130 0" fill="#ccfbf1" opacity=".95"/></g>
+  <text x="360" y="365" text-anchor="middle" font-family="Cairo, Arial, sans-serif" font-size="42" font-weight="800" fill="#fff">المجموعات</text>
+</svg>

@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منصة نخلة — تمثال من المرمر (تقويم تكوينيّ)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@500;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FBF7F0; --surface:#FFFFFF; --paper:#FCF9F2; --tint:#EEF4EC;
+  --green-900:#16352A; --green-700:#2D6A4F; --green-600:#358062;
+  --green-500:#40916C; --green-300:#95D5B2; --green-100:#D8F0E2;
+  --amber:#C0813B; --amber-soft:#F4E6CF; --ink:#1E2B26; --ink-soft:#5C6B63;
+  --line:#E8E1D4; --red:#C96B6B; --red-bg:#F7E3E3; --red-ink:#7A2E2E;
+  --shadow:0 10px 30px -12px rgba(22,53,42,.22);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:"Tajawal",system-ui,sans-serif}
+body{min-height:100vh;line-height:1.6}
+::selection{background:var(--green-300)}
+
+.topbar{display:flex;align-items:center;gap:16px;padding:14px 26px;
+  background:linear-gradient(120deg,var(--green-700),var(--green-500));color:#fff;
+  box-shadow:var(--shadow);position:sticky;top:0;z-index:40}
+.mascot{width:46px;height:46px;flex:0 0 auto;background:#fff;border-radius:50%;display:grid;place-items:center;box-shadow:inset 0 0 0 3px var(--green-300)}
+.crumbs{font-family:"Cairo";font-size:.82rem;opacity:.85}
+.lesson-title{font-family:"Cairo";font-weight:800;font-size:1.18rem;line-height:1.2}
+.topbar .meta{margin-inline-start:auto;display:flex;gap:18px;font-size:.8rem;opacity:.9;font-family:"Cairo"}
+.topbar .meta span{display:flex;align-items:center;gap:6px}
+
+.layout{max-width:1280px;margin:24px auto;padding:0 20px;display:grid;grid-template-columns:1.05fr .95fr;gap:22px;align-items:start}
+.pane{background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
+
+.text-pane{position:sticky;top:90px;max-height:calc(100vh - 110px);overflow-y:auto}
+.text-card{background:var(--paper)}
+.figure{position:relative;margin:0}
+.figure svg{display:block;width:100%;height:auto}
+.figure figcaption{position:absolute;bottom:10px;inset-inline-start:14px;background:rgba(22,53,42,.78);color:#fff;font-size:.72rem;font-family:"Cairo";padding:5px 11px;border-radius:30px;backdrop-filter:blur(3px)}
+.text-body{padding:22px 26px 26px}
+.text-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;border-bottom:2px dashed var(--green-300);padding-bottom:14px;margin-bottom:18px}
+.text-head h1{font-family:"Cairo";font-weight:800;color:var(--green-900);font-size:1.5rem}
+.pattern{display:inline-block;margin-top:7px;background:var(--amber-soft);color:var(--amber);font-family:"Cairo";font-weight:700;font-size:.72rem;padding:3px 12px;border-radius:30px}
+.byline{text-align:left;font-size:.76rem;color:var(--ink-soft);font-family:"Cairo";line-height:1.7;flex:0 0 auto}
+.byline b{color:var(--green-700);font-weight:700}
+.passage{font-family:"Amiri";font-size:1.28rem;line-height:2.2;color:#23332c;text-align:justify}
+.passage p{margin-bottom:.7em}
+.passage .say{color:var(--amber);font-weight:700}
+.vocab{color:var(--green-700);font-weight:700;cursor:pointer;border-bottom:2px dotted var(--green-500);border-radius:3px;transition:background .15s;padding:0 2px}
+.vocab:hover,.vocab.active{background:var(--green-100)}
+.hint-row{margin-top:16px;font-size:.78rem;color:var(--ink-soft);font-family:"Cairo";display:flex;align-items:center;gap:7px;background:var(--tint);padding:9px 13px;border-radius:12px}
+.hint-row .dot{color:var(--green-700);font-weight:700}
+
+.pop{position:fixed;z-index:60;max-width:290px;background:var(--green-900);color:#fff;border-radius:14px;padding:13px 16px;box-shadow:0 18px 40px -10px rgba(0,0,0,.4);font-family:"Tajawal";font-size:.95rem;opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity .16s,transform .16s}
+.pop.show{opacity:1;transform:translateY(0)}
+.pop .w{font-family:"Cairo";font-weight:800;color:var(--green-300);font-size:1.05rem;margin-bottom:3px}
+.pop::after{content:"";position:absolute;bottom:-7px;inset-inline-start:24px;border:7px solid transparent;border-top-color:var(--green-900);border-bottom:0}
+
+.tabs{display:flex;background:var(--tint);padding:7px;gap:5px;position:sticky;top:0;z-index:5}
+.tab{flex:1;border:0;background:transparent;font-family:"Cairo";font-weight:700;font-size:.92rem;color:var(--ink-soft);padding:11px 4px;border-radius:13px;cursor:pointer;transition:.18s;display:flex;flex-direction:column;align-items:center;gap:3px}
+.tab .ic{font-size:1.15rem;line-height:1}
+.tab:hover{color:var(--green-700)}
+.tab.active{background:var(--surface);color:var(--green-700);box-shadow:0 4px 12px -4px rgba(22,53,42,.25)}
+.panels{padding:24px 26px 30px;min-height:420px}
+.panel{display:none;animation:fade .35s ease}
+.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.panel h2{font-family:"Cairo";font-weight:800;color:var(--green-900);font-size:1.18rem;display:flex;align-items:center;gap:9px;margin-bottom:6px}
+.panel h2 .bar{width:6px;height:22px;background:var(--amber);border-radius:4px}
+.panel .lead{color:var(--ink-soft);font-size:.88rem;margin-bottom:18px;font-family:"Cairo"}
+
+/* ===== MCQ card ===== */
+.mcq{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:15px 17px;margin-bottom:15px}
+.obj{display:flex;gap:7px;align-items:flex-start;background:#fff;border:1px dashed var(--green-300);border-radius:10px;padding:7px 11px;margin-bottom:11px;font-family:"Cairo";font-size:.76rem;color:var(--green-700);line-height:1.5}
+.obj .bloom{flex:0 0 auto;background:var(--green-100);color:var(--green-700);font-weight:800;font-size:.66rem;padding:2px 8px;border-radius:20px;margin-inline-start:auto}
+.qhead{font-size:1.04rem;font-weight:500;margin-bottom:12px}
+.qhead .num{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--green-100);color:var(--green-700);font-family:"Cairo";font-weight:800;font-size:.85rem;margin-inline-end:9px;vertical-align:middle}
+.opts{display:grid;gap:8px}
+.opt{text-align:start;font-family:"Tajawal";font-size:.97rem;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:11px 13px;cursor:pointer;transition:.15s;color:var(--ink);display:flex;gap:10px;align-items:center}
+.opt:hover{border-color:var(--green-500);background:var(--tint)}
+.opt .key{flex:0 0 auto;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:var(--tint);font-family:"Cairo";font-weight:800;font-size:.9rem;color:var(--green-700)}
+.opt.correct{border-color:var(--green-500);background:var(--green-100)}
+.opt.correct .key{background:var(--green-500);color:#fff}
+.opt.wrong{border-color:var(--red);background:var(--red-bg)}
+.opt.wrong .key{background:var(--red);color:#fff}
+.opt.dim{opacity:.5}
+.fb{margin-top:11px;border-radius:11px;padding:11px 14px;font-size:.92rem;display:none;font-family:"Tajawal";line-height:1.65}
+.fb.show{display:block;animation:fade .3s}
+.fb.ok{background:var(--green-100);color:var(--green-900);border-inline-start:4px solid var(--green-500)}
+.fb.no{background:var(--red-bg);color:var(--red-ink);border-inline-start:4px solid var(--red)}
+.fb .h{font-family:"Cairo";font-weight:800;display:block;margin-bottom:2px}
+
+.narr{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.narr div{background:var(--tint);border-radius:13px;padding:12px 14px;font-size:.92rem}
+.narr div b{font-family:"Cairo";color:var(--green-700);display:block;margin-bottom:3px;font-size:.82rem}
+.reveal-row{background:var(--tint);border-radius:14px;padding:13px 15px;margin-bottom:16px}
+.reveal-row .lbl{font-family:"Cairo";font-weight:700;color:var(--green-700);font-size:.95rem}
+.reveal-row button{margin-top:9px;font-size:.78rem;font-family:"Cairo";font-weight:700;color:var(--green-700);background:#fff;border:1px dashed var(--green-500);border-radius:30px;padding:5px 14px;cursor:pointer}
+.reveal-row .body{display:none;margin-top:10px}
+.reveal-row .body.show{display:block;animation:fade .3s}
+
+.lex{display:grid;gap:10px}
+.lex-item{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 15px}
+.lex-item .word{font-family:"Cairo";font-weight:800;color:var(--green-700);font-size:1.08rem;background:var(--green-100);padding:4px 13px;border-radius:30px;white-space:nowrap}
+.lex-item .def{font-size:.96rem}
+
+.subtabs{display:flex;gap:7px;margin-bottom:16px}
+.subtab{border:1px solid var(--green-300);background:#fff;color:var(--green-700);font-family:"Cairo";font-weight:700;font-size:.86rem;padding:7px 16px;border-radius:30px;cursor:pointer;transition:.15s}
+.subtab.active{background:var(--green-700);color:#fff;border-color:var(--green-700)}
+.subpanel{display:none}.subpanel.active{display:block;animation:fade .3s}
+.rule{background:linear-gradient(120deg,var(--green-700),var(--green-600));color:#fff;border-radius:16px;padding:16px 18px;margin-bottom:15px}
+.rule .lbl{font-family:"Cairo";font-weight:700;font-size:.74rem;opacity:.85;letter-spacing:1px}
+.rule p{font-family:"Cairo";font-weight:600;font-size:1.02rem;margin-top:4px;line-height:1.7}
+.ex{background:var(--amber-soft);border-radius:13px;padding:12px 15px;margin-bottom:10px;font-family:"Amiri";font-size:1.18rem;line-height:1.9}
+.ex .tag{font-family:"Cairo";font-size:.7rem;font-weight:700;color:var(--amber);background:#fff;padding:2px 9px;border-radius:20px;margin-inline-start:8px;vertical-align:middle;white-space:nowrap}
+.mark{color:var(--green-700);font-weight:700;text-decoration:underline;text-decoration-color:var(--green-300);text-underline-offset:5px}
+
+.dock-btn{position:fixed;inset-block-end:22px;inset-inline-end:22px;z-index:70;background:var(--green-900);color:#fff;border:0;border-radius:40px;padding:13px 20px;font-family:"Cairo";font-weight:700;font-size:.9rem;cursor:pointer;box-shadow:var(--shadow);display:flex;align-items:center;gap:8px}
+.dock{position:fixed;inset-block:0;inset-inline-end:-440px;width:420px;max-width:90vw;z-index:80;background:var(--surface);box-shadow:-20px 0 50px -20px rgba(0,0,0,.4);transition:inset-inline-end .35s;overflow-y:auto;padding:26px 24px 40px}
+.dock.open{inset-inline-end:0}
+.dock h3{font-family:"Cairo";font-weight:800;color:var(--green-900);font-size:1.22rem;margin-bottom:4px}
+.dock .sub{color:var(--ink-soft);font-size:.83rem;font-family:"Cairo";margin-bottom:20px}
+.dock .close{position:absolute;top:18px;inset-inline-start:18px;border:0;background:var(--tint);width:34px;height:34px;border-radius:50%;font-size:1.1rem;cursor:pointer;color:var(--green-700)}
+.rcard{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.rcard .n{font-family:"Cairo";font-weight:800;color:var(--green-700);font-size:.95rem;margin-bottom:5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.rcard .n i{font-style:normal;background:var(--green-100);color:var(--green-700);font-size:.7rem;padding:3px 9px;border-radius:20px}
+.rcard p{font-size:.9rem;color:#33453d}
+.overlay{position:fixed;inset:0;background:rgba(22,53,42,.35);z-index:75;opacity:0;pointer-events:none;transition:.3s}
+.overlay.show{opacity:1;pointer-events:auto}
+
+.vmode{display:flex;align-items:center;gap:7px;margin:0 0 14px;font-family:"Cairo";font-size:.76rem;color:var(--ink-soft);flex-wrap:wrap}
+.vbtn{border:1px solid var(--green-300);background:#fff;color:var(--green-700);font-family:"Cairo";font-weight:700;font-size:.75rem;padding:5px 13px;border-radius:30px;cursor:pointer;transition:.15s}
+.vbtn.active{background:var(--green-700);color:#fff;border-color:var(--green-700)}
+
+/* differentiated comprehension + new question types */
+.lvl{font-family:"Cairo";font-weight:800;font-size:.62rem;padding:2px 9px;border-radius:20px;color:#fff;margin-inline-start:auto;flex:0 0 auto}
+.lvl.l1{background:#40916C}.lvl.l2{background:#C0813B}.lvl.l3{background:#7C6BAE}.lvl.l4{background:#C96B8E}
+.ttype{font-family:"Cairo";font-weight:700;font-size:.62rem;color:var(--ink-soft);background:var(--tint);padding:2px 9px;border-radius:20px;margin-inline-end:7px;vertical-align:middle}
+.match{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mcol{display:grid;gap:8px;align-content:start}
+.mitem{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:11px 10px;cursor:pointer;font-size:.92rem;text-align:center;transition:.15s}
+.mitem:hover{border-color:var(--green-500)}
+.mitem.sel{border-color:var(--green-700);background:var(--tint)}
+.mitem.matched{background:var(--green-100);border-color:var(--green-500);cursor:default;font-weight:700;color:var(--green-900)}
+.mitem.bad{border-color:var(--red);background:var(--red-bg)}
+.blank{display:inline-block;min-width:84px;border-bottom:2px dashed var(--green-500);text-align:center;color:var(--green-700);font-weight:700;padding:0 6px;font-family:"Tajawal"}
+.blank.filled{border-bottom-style:solid}
+.blank.no{color:var(--red);border-color:var(--red)}
+.bank{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{background:#fff;border:1.5px solid var(--green-300);border-radius:30px;padding:7px 16px;cursor:pointer;font-family:"Tajawal";font-weight:700;color:var(--green-700);transition:.15s;font-size:.95rem}
+.chip:hover{background:var(--tint)}
+.chip.used{opacity:.4;pointer-events:none}
+.qcard textarea,.dimaj textarea{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px;font-family:"Tajawal";font-size:1rem;resize:vertical;min-height:90px;background:#fff;color:var(--ink);line-height:1.9}
+textarea:focus{outline:none;border-color:var(--green-500)}
+.btn-primary{margin-top:10px;margin-inline-end:8px;background:var(--green-700);color:#fff;border:0;border-radius:30px;padding:9px 18px;font-family:"Cairo";font-weight:700;font-size:.84rem;cursor:pointer}
+.btn-primary:hover{filter:brightness(1.06)}
+.status{margin-top:12px;border-radius:11px;padding:11px 14px;font-size:.92rem;font-family:"Tajawal";line-height:1.6}
+.status.pending{background:var(--amber-soft);color:#7a5a2a}
+.status.returned{background:var(--green-100);color:var(--green-900)}
+.status .h{font-family:"Cairo";font-weight:800;display:block;margin-bottom:3px}
+.commu-model{display:none}
+.commu-model.show{display:block}
+
+/* lexicon enrichment */
+.lexsub{font-family:"Cairo";font-weight:800;color:var(--green-900);font-size:1rem;margin:22px 0 12px;padding-top:16px;border-top:2px dashed var(--green-300)}
+.enrich{display:grid;gap:11px}
+.erow{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px 16px}
+.erow .top{display:flex;align-items:center;gap:9px;margin-bottom:7px;flex-wrap:wrap}
+.erow .word{font-family:"Cairo";font-weight:800;color:var(--green-700);font-size:1.08rem;background:var(--green-100);padding:3px 14px;border-radius:30px}
+.erow .method{font-family:"Cairo";font-weight:700;font-size:.66rem;color:#fff;padding:3px 11px;border-radius:20px}
+.method.m1{background:#40916C}.method.m2{background:#C96B6B}.method.m3{background:#C0813B}.method.m4{background:#7C6BAE}
+.erow .edef{font-size:.98rem;color:#33453d;line-height:1.75;font-family:"Tajawal"}
+.erow .elink{display:block;margin-top:6px;font-family:"Cairo";font-size:.74rem;color:var(--ink-soft)}
+
+@media(max-width:880px){
+  .layout{grid-template-columns:1fr;gap:16px}
+  .text-pane{position:static;max-height:none}
+  .passage{font-size:1.18rem;line-height:2.05}
+  .topbar .meta{display:none}
+  .tab .ic{font-size:1rem}.tab{font-size:.78rem}
+  .narr{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="mascot">
+    <svg width="30" height="30" viewBox="0 0 40 40">
+      <ellipse cx="20" cy="33" rx="11" ry="4" fill="#95D5B2"/>
+      <rect x="17.5" y="20" width="5" height="13" rx="2.5" fill="#8a5a2b"/>
+      <g fill="#2D6A4F"><path d="M20 20 C10 16 6 8 5 4 C12 6 18 11 20 18Z"/><path d="M20 20 C30 16 34 8 35 4 C28 6 22 11 20 18Z"/><path d="M20 20 C16 9 18 4 20 1 C22 4 24 9 20 20Z"/></g>
+      <circle cx="20" cy="17" r="2" fill="#C0813B"/></svg>
+  </div>
+  <div>
+    <div class="crumbs">السنة الأولى إعدادي ‹ مكوّن القراءة ‹ النمط السرديّ</div>
+    <div class="lesson-title">تمثالٌ من المَرمَر</div>
+  </div>
+  <div class="meta"><span>⏱ ٣٠ دقيقة</span><span>📖 نصّ سرديّ</span></div>
+</header>
+
+<main class="layout">
+
+  <!-- النص -->
+  <section class="pane text-pane">
+    <div class="text-card">
+      <figure class="figure">
+        <svg viewBox="0 0 600 250" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a2d22"/><stop offset="1" stop-color="#5a4533"/></linearGradient>
+            <radialGradient id="glow" cx="50%" cy="35%" r="60%"><stop offset="0" stop-color="#f6e3c0" stop-opacity=".9"/><stop offset="1" stop-color="#f6e3c0" stop-opacity="0"/></radialGradient>
+            <linearGradient id="marble" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e3e8ee"/></linearGradient>
+          </defs>
+          <rect width="600" height="250" fill="url(#wall)"/><rect width="600" height="250" fill="url(#glow)"/>
+          <path d="M70 235 V90 Q70 40 130 40 H470 Q530 40 530 90 V235" fill="none" stroke="#caa15f" stroke-width="9"/>
+          <line x1="300" y1="40" x2="300" y2="235" stroke="#caa15f" stroke-width="5"/>
+          <rect x="255" y="180" width="90" height="55" rx="4" fill="#2a2018"/><rect x="248" y="172" width="104" height="12" rx="3" fill="#3c2e22"/>
+          <g fill="url(#marble)" stroke="#cfd6de" stroke-width="1">
+            <circle cx="300" cy="92" r="13"/>
+            <path d="M300 104 C282 108 278 150 280 172 H320 C322 150 318 108 300 104Z"/>
+            <path d="M286 120 C276 128 274 150 280 158 C284 144 285 130 290 124Z"/>
+            <path d="M314 120 C324 128 326 150 320 158 C316 144 315 130 310 124Z"/></g>
+          <ellipse cx="300" cy="174" rx="30" ry="5" fill="#ffffff" opacity=".25"/>
+          <circle cx="120" cy="70" r="4" fill="#f2c14e"/><circle cx="170" cy="58" r="4" fill="#e07a5f"/>
+          <circle cx="430" cy="58" r="4" fill="#f2c14e"/><circle cx="480" cy="70" r="4" fill="#e07a5f"/>
+        </svg>
+        <figcaption>تمثالٌ من المَرمَر في واجهة حانوتٍ ليلةَ عيد — صورة توضيحيّة</figcaption>
+      </figure>
+      <div class="text-body">
+        <div class="text-head">
+          <div><h1>تمثالٌ من المَرمَر</h1><span class="pattern">النمط: سرديّ</span></div>
+          <div class="byline"><b>الكاتب:</b> مصطفى لطفي المنفلوطي<br><b>المصدر:</b> «النظرات»، ط 2001،<br>الدار النموذجيّة، ص 50 وما بعدها (بتصرّف)</div>
+        </div>
+        <div class="vmode"><span>ضبط النص:</span><button class="vbtn active" data-m="wasl">وصل (الإعراب)</button><button class="vbtn" data-m="waqf">وقف (القراءة)</button></div>
+        <div class="passage">
+          <p>وَقَفَتِ امْرَأَةٌ <span class="vocab" data-def="فقيرةٌ شديدةُ الفقرِ والتعاسة">بَائِسَةٌ</span> لَيْلَةَ عِيدٍ مِنَ الْأَعْيَادِ بِحَانُوتِ تَمَاثِيلَ بِبَارِيسَ، فَوَقَعَ نَظَرُهَا عَلَى تِمْثَالٍ صَغِيرٍ مِنَ <span class="vocab" data-def="حجرٌ أبيضُ كريمٌ يُنحَتُ منه">الْمَرْمَرِ</span> وَهُوَ آيَةُ الْآيَاتِ فِي حُسْنِهِ وَجَمَالِهِ، فَابْتَهَجَتْ بِمَرْآهُ ابْتِهَاجًا عَظِيمًا. كَانَتْ تَنْظُرُ إِلَيْهِ بِعَيْنِ وَلَدِهَا الصَّغِيرِ الَّذِي تَرَكَتْهُ فِي مَنْزِلِهَا يَنْتَظِرُ عَوْدَتَهَا بِلُعْبَةِ الْعِيدِ. أَخَذَتْ <span class="vocab" data-def="تُفاوِضُه على الثمنِ لخفضِه">تُسَاوِمُ</span> صَاحِبَ الْحَانُوتِ سَاعَةً كَامِلَةً، وَالرَّجُلُ <span class="vocab" data-def="يرفعُ الثمنَ ويُبالِغُ فيه">يُغَالِي</span> بِهِ مُغَالَاةً شَدِيدَةً، حَتَّى عَلِمَتْ أَنَّ يَدَهَا لَا تَسْتَطِيعُ الْوُصُولَ إِلَى ثَمَنِهِ؛ فَلَمْ يَكُنْ فِي مَحْفَظَتِهَا إِلَّا الْقَلِيلُ مِنَ الْمَالِ.</p>
+          <p>فَسَاقَتْهَا الضَّرُورَةُ، فَمَدَّتْ يَدَهَا <span class="vocab" data-def="سِرًّا في الخفاء دون أن يراها أحد">خُفْيَةً</span> إِلَى التِّمْثَالِ لِتَسْرِقَهُ خِلْسَةً، ثُمَّ رَجَعَتْ <span class="vocab" data-def="عادت من حيثُ أتت">أَدْرَاجَهَا</span> وَقَلْبُهَا يَخْفِقُ خَفْقَتَيْنِ: خَفْقَةَ الْخَوْفِ مِنْ <span class="vocab" data-def="نتيجةُ الأمرِ وما يؤولُ إليه">عَاقِبَةِ</span> فِعْلِهَا، وَخَفْقَةَ السُّرُورِ بِالْهَدِيَّةِ الْجَمِيلَةِ الَّتِي سَتُقَدِّمُهَا إِلَى وَلَدِهَا.</p>
+          <p>وَلِلْأَسَفِ كَشَفَ صَاحِبُ الْحَانُوتِ أَمْرَهَا وَتَبِعَهَا حَتَّى عَرَفَ مَنْزِلَهَا، ثُمَّ جَاءَ بِجُنْدِيَّيْنِ لِلْقَبْضِ عَلَيْهَا. وَصَعِدُوا إِلَى الْغُرْفَةِ الَّتِي تَسْكُنُهَا فَفَاجَأُوهَا وَهِيَ جَالِسَةٌ بَيْنَ يَدَيْ وَلَدِهَا تَنْظُرُ إِلَى ابْتِهَاجِهِ بِتِمْثَالِهِ نَظَرَاتِ <span class="vocab" data-def="الفرحِ والسرورِ من غيرِ حسد">الْغِبْطَةِ</span>. فَهَجَمَ الْجُنْدِيَّانِ عَلَى الْأُمِّ فَاعْتَقَلَاهَا، وَهَجَمَ الرَّجُلُ عَلَى الْوَلَدِ فَانْتَزَعَ مِنْهُ التِّمْثَالَ، فَصَرَخَ الْوَلَدُ صَرْخَةً عُظْمَى — لَا عَلَى التِّمْثَالِ بَلْ عَلَى أُمِّهِ <span class="vocab" data-def="المرتجفةِ من شدّةِ الخوف">الْمُرْتَعِدَةِ</span> — قَائِلًا: <span class="say">«رَحْمَاكَ بِأُمِّي يَا مَوْلَايَ»</span>، وَظَلَّ يَبْكِي بُكَاءً شَدِيدًا.</p>
+          <p>جَمَدَ الرَّجُلُ أَمَامَ هَذَا الْمَنْظَرِ الْمُؤَثِّرِ، وَصَعُبَ عَلَيْهِ أَنْ يَتْرُكَ هَذِهِ الْأُسْرَةَ الصَّغِيرَةَ الْمِسْكِينَةَ حَزِينَةً <span class="vocab" data-def="مصابةً بمصيبةٍ وبلاء">وَمَنْكُوبَةً</span> فِي يَوْمٍ يَفْرَحُ فِيهِ النَّاسُ جَمِيعًا. فَالْتَفَتَ إِلَى الْجُنْدِيَّيْنِ وَقَالَ: إِنِّي أَخْطَأْتُ فِي اتِّهَامِ هَذِهِ الْمَرْأَةِ، فَإِنِّي لَا أَبِيعُ هَذَا النَّوْعَ مِنَ التَّمَاثِيلِ. فَانْصَرَفَا لِشَأْنِهِمَا.</p>
+        </div>
+        <div class="hint-row"><span class="dot">●</span>انقُر على الكلمات المُلوَّنة لتظهرَ معانيها في موضعها.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- الأنشطة -->
+  <section class="pane">
+    <div class="tabs">
+      <button class="tab active" data-p="fahm"><span class="ic">🔍</span>الفهم</button>
+      <button class="tab" data-p="tahlil"><span class="ic">🧩</span>التحليل</button>
+      <button class="tab" data-p="muajam"><span class="ic">📚</span>المعجم</button>
+      <button class="tab" data-p="qawaid"><span class="ic">✍️</span>القواعد</button>
+      <button class="tab" data-p="dimaj"><span class="ic">🌱</span>التركيب</button>
+    </div>
+
+    <div class="panels">
+      <!-- ===== الفهم ===== -->
+      <div class="panel active" id="fahm">
+        <h2><span class="bar"></span>الفهم</h2>
+        <p class="lead">عشرةُ أسئلةٍ متدرّجةٍ في المستوى (مباشر ← استنتاجي ← ضمني ← إبداعي) ومتنوّعةٍ في الصيغة.</p>
+
+        <div class="mcq" data-correct="b">
+          <div class="obj"><span>🎯</span><span>أن يحدّدَ المتعلّمُ مكانَ الحدثِ وزمانَه.</span><span class="lvl l1">مباشر</span></div>
+          <div class="qhead"><span class="num">١</span><span class="ttype">اختيار من متعدد</span>أين وقفت المرأةُ، وفي أيّ مناسبةٍ؟</div>
+          <div class="opts">
+            <button class="opt" data-k="a" data-fb="ليس متجرَ ملابس؛ اقرأ الجملةَ الأولى وانتبه إلى «حانوت» و«ليلة».">في متجرِ ملابسٍ صباحَ يومِ عطلة</button>
+            <button class="opt" data-k="b" data-fb="حدّدتَ المكانَ والزمانَ بدقّةٍ من مفتتحِ القصّة.">في حانوتِ تماثيلَ بباريس ليلةَ عيد</button>
+            <button class="opt" data-k="c" data-fb="المكانُ ليس حديقةً بل مكانٌ مغلقٌ تُعرَضُ فيه التماثيل.">في حديقةٍ عامّةٍ يومَ عيد</button>
+          </div><div class="fb"></div>
+        </div>
+
+        <div class="mcq" data-correct="b">
+          <div class="obj"><span>🎯</span><span>أن يستخرجَ المتعلّمُ معلومةً صريحةً من النصّ.</span><span class="lvl l1">مباشر</span></div>
+          <div class="qhead"><span class="num">٢</span><span class="ttype">اختيار من متعدد</span>بمن كانت المرأةُ تفكّرُ وهي تنظرُ إلى التمثال؟</div>
+          <div class="opts">
+            <button class="opt" data-k="a" data-fb="النصُّ لم يذكر زوجًا؛ ابحث عمّن «تركته في منزلها ينتظر».">بزوجها الغائب</button>
+            <button class="opt" data-k="b" data-fb="نعم، كانت تتخيّلُ فرحةَ ولدها الذي ينتظرُ لعبةَ العيد.">بولدها الصغيرِ الذي ينتظرها</button>
+            <button class="opt" data-k="c" data-fb="صاحبُ الحانوتِ طرفٌ في البيعِ لا موضوعَ تفكيرها.">بصاحب الحانوت</button>
+          </div><div class="fb"></div>
+        </div>
+
+        <div class="mcq" data-correct="c">
+          <div class="obj"><span>🎯</span><span>أن يربطَ المتعلّمُ بين السببِ والنتيجةِ في الأحداث.</span><span class="lvl l1">مباشر</span></div>
+          <div class="qhead"><span class="num">٣</span><span class="ttype">اختيار من متعدد</span>لماذا لم تستطع المرأةُ شراءَ التمثال؟</div>
+          <div class="opts">
+            <button class="opt" data-k="a" data-fb="الحانوتُ كان مفتوحًا، فقد ساومت صاحبَه ساعةً. السببُ مادّيّ.">لأنّ الحانوتَ كان مغلقًا</button>
+            <button class="opt" data-k="b" data-fb="لم يُبَع لأحد؛ المشكلةُ في ثمنِه لا في توفّره.">لأنّ التمثالَ بِيع لشخصٍ آخر</button>
+            <button class="opt" data-k="c" data-fb="بالضبط: «يدُها لا تستطيع الوصولَ إلى ثمنِه... إلا القليلُ من المال».">لأنّ ثمنَه كان غاليًا ولا تملكُ ما يكفي</button>
+          </div><div class="fb"></div>
+        </div>
+
+        <div class="mcq" data-correct="b">
+          <div class="obj"><span>🎯</span><span>أن يتعرّفَ المتعلّمُ الحدثَ المِفصليَّ (العقدة).</span><span class="lvl l1">مباشر</span></div>
+          <div class="qhead"><span class="num">٤</span><span class="ttype">اختيار من متعدد</span>ماذا فعلت المرأةُ لتحصلَ على التمثال؟</div>
+          <div class="opts">
+            <button class="opt" data-k="a" data-fb="لم يَرِد اقتراضٌ؛ ابحث عن فعلٍ تمّ «خُفية».">اقترضت المالَ من صاحب الحانوت</button>
+            <button class="opt" data-k="b" data-fb="هذه عقدةُ القصّة: «مدّت يدَها خُفيةً... لتسرقَه».">سرقت التمثالَ خُفيةً ثم رجعت</button>
+            <button class="opt" data-k="c" data-fb="لم تَعِدْ بالدفع؛ الحدثُ أخطرُ من ذلك.">وعدت بدفعِ الثمنِ لاحقًا</button>
+          </div><div class="fb"></div>
+        </div>
+
+        <div class="mcq" data-correct="c">
+          <div class="obj"><span>🎯</span><span>أن يحدّدَ المتعلّمُ نهايةَ (حلَّ) القصّة.</span><span class="lvl l1">مباشر</span></div>
+          <div class="qhead"><span class="num">٥</span><span class="ttype">اختيار من متعدد</span>كيف تصرّف صاحبُ الحانوتِ في النهاية؟</div>
+          <div class="opts">
+            <button class="opt" data-k="a" data-fb="على العكس؛ الفقرةُ الأخيرةُ تُظهِرُ تراجعَه.">أصرّ على معاقبتها وسجنها</button>
+            <button class="opt" data-k="b" data-fb="لم يطلب ثمنًا؛ بل تنازل عن حقّه كلِّه.">طلب ثمنَ التمثالِ مضاعفًا</button>
+            <button class="opt" data-k="c" data-fb="نعم: «أخطأتُ في اتهامِ هذه المرأة...»، فانصرف الجنديّان.">تراجع وادّعى أنه لا يبيعُ هذا النوع</button>
+          </div><div class="fb"></div>
+        </div>
+
+        <div class="mcq" data-correct="b">
+          <div class="obj"><span>🎯</span><span>أن يستخرجَ المتعلّمُ تفصيلًا وصفيًّا صريحًا من النصّ.</span><span class="lvl l1">مباشر</span></div>
+          <div class="qhead"><span class="num">٦</span><span class="ttype">اختيار من متعدد</span>مِمَّ صُنِعَ التمثالُ الذي أعجبَ المرأة؟</div>
+          <div class="opts">
+            <button class="opt" data-k="a" data-fb="ليس من الذهب؛ عُد إلى وصفِ التمثالِ في أوّلِ النص.">من الذهب</button>
+            <button class="opt" data-k="b" data-fb="صحيح: «تِمْثَالٍ صَغِيرٍ مِنَ الْمَرْمَر».">من المَرمَر</button>
+            <button class="opt" data-k="c" data-fb="ليس من الخشب؛ النصُّ يذكرُ حجرًا أبيضَ كريمًا.">من الخشب</button>
+          </div><div class="fb"></div>
+        </div>
+
+        <div class="mcq match-q">
+          <div class="obj"><span>🎯</span><span>أن يستنتجَ المتعلّمُ دافعَ كلِّ شخصيّةٍ من سياقِ الأحداث.</span><span class="lvl l2">استنتاجي</span></div>
+          <div class="qhead"><span class="num">٧</span><span class="ttype">صِلْ بسهم</span>صِلْ كلَّ شخصيّةٍ بدافعِها كما يُفهَمُ من النص (انقُرْ شخصيّةً ثمّ دافعَها).</div>
+          <div class="match">
+            <div class="mcol">
+              <div class="mitem" data-col="a" data-k="k1">المرأة</div>
+              <div class="mitem" data-col="a" data-k="k2">الطفل</div>
+              <div class="mitem" data-col="a" data-k="k3">صاحبُ الحانوت</div>
+            </div>
+            <div class="mcol">
+              <div class="mitem" data-col="b" data-k="k3">الرحمةُ والتسامح</div>
+              <div class="mitem" data-col="b" data-k="k1">عاطفةُ الأمومةِ ورغبةُ الإسعاد</div>
+              <div class="mitem" data-col="b" data-k="k2">حبُّ الأمِّ والبِرُّ بها</div>
+            </div>
+          </div><div class="fb"></div>
+        </div>
+
+        <div class="mcq fill-q" data-correct="k1">
+          <div class="obj"><span>🎯</span><span>أن يُدرِكَ المتعلّمُ المعنى الضمنيَّ الكامنَ وراءَ موقفٍ في النص.</span><span class="lvl l3">ضمني</span></div>
+          <div class="qhead"><span class="num">٨</span><span class="ttype">ملء الفراغ</span>أكمِلْ: بكاءُ الطفلِ «على أمّه لا على التمثال» يكشفُ أنّه يُقدّمُ <span class="blank">…</span> على متاعِه.</div>
+          <div class="bank">
+            <button class="chip" data-k="k1" data-fb="فبكاؤه على أمّه يكشفُ بِرَّه وتقديمَه إيّاها على اللعبة.">أُمَّه</button>
+            <button class="chip" data-k="x1" data-fb="بل بكى على أمّه لا على اللعبة؛ أعِدْ قراءةَ الجملة.">لُعبتَه</button>
+            <button class="chip" data-k="x2" data-fb="انتبه: لم يبكِ خوفًا على نفسِه بل حبًّا لأمّه.">نفسَه</button>
+          </div><div class="fb"></div>
+        </div>
+
+        <div class="mcq" data-correct="b">
+          <div class="obj"><span>🎯</span><span>أن يميّزَ المتعلّمُ بين ما يدعمُه النصُّ وما يُخالِفُه.</span><span class="lvl l2">استنتاجي</span></div>
+          <div class="qhead"><span class="num">٩</span><span class="ttype">اكتشاف الخطأ</span>إحدى العباراتِ الآتيةِ يُخالِفُها النصّ، انقُرْ عليها:</div>
+          <div class="opts">
+            <button class="opt" data-k="a" data-fb="هذه العبارةُ يدعمُها النصّ، فليست هي الخطأ.">دفعت المرأةَ إلى السرقةِ عاطفتُها نحوَ ولدها.</button>
+            <button class="opt" data-k="b" data-fb="أحسنت، هذه هي العبارةُ الخطأ؛ النصُّ يُثبتُ عكسَها، فقد رحمها وتراجع.">كان صاحبُ الحانوتِ قاسيًا لم يرحمِ المرأة.</button>
+            <button class="opt" data-k="c" data-fb="هذه العبارةُ يدعمُها النصّ، فليست هي الخطأ.">تأثّر صاحبُ الحانوتِ بصرخةِ الطفل.</button>
+          </div><div class="fb"></div>
+        </div>
+
+        <div class="mcq commu-q qcard">
+          <div class="obj"><span>🎯</span><span>أن يُنتِجَ المتعلّمُ خطابًا تواصليًّا ملائمًا لموقفٍ من النص.</span><span class="lvl l4">إبداعي</span></div>
+          <div class="qhead"><span class="num">١٠</span><span class="ttype">وضعية تواصلية</span>تخيّلْ أنّكَ مكانَ صاحبِ الحانوت؛ ماذا تقولُ للمرأةِ وأنتَ تتركُها تذهبُ بسلام؟ أتمِّمِ الحوار:</div>
+          <p style="font-family:'Amiri';font-size:1.12rem;color:#3a4a42;margin-bottom:8px">— قال صاحبُ الحانوتِ للمرأة: «…»</p>
+          <textarea placeholder="اكتُبْ ما يقولُه صاحبُ الحانوت..."></textarea>
+          <button class="btn-primary commu-reveal" type="button">أظهِرْ إجابةً مقترحة</button>
+          <div class="commu-model status returned"><span class="h">إجابةٌ مقترحة</span>«اذهبي بسلامٍ يا سيّدتي، وخُذي التمثالَ هديّةً لولدِك؛ فما كان لي أن أُحزِنَ طفلًا بريئًا في ليلةِ عيد.»</div>
+        </div>
+      </div>
+
+      <!-- ===== التحليل ===== -->
+      <div class="panel" id="tahlil">
+        <h2><span class="bar"></span>أسئلة التحليل</h2>
+        <p class="lead">أسئلةٌ تدعوك إلى التفكيرِ وإصدارِ الأحكامِ وربطِ النصِّ بالقيم.</p>
+
+        <div class="reveal-row">
+          <span class="lbl">📌 عناصر النصّ السرديّ</span>
+          <button>إظهار العناصر</button>
+          <div class="body">
+            <div class="narr">
+              <div><b>الشخصيّات</b>المرأةُ، ولدُها، صاحبُ الحانوت، الجنديّان.</div>
+              <div><b>الزمان</b>ليلةُ عيدٍ من الأعياد.</div>
+              <div><b>المكان</b>حانوتُ التماثيل بباريس، ثم غرفةُ المرأة.</div>
+              <div><b>الأحداث</b>الإعجابُ ← العجزُ عن الشراء ← السرقةُ ← المطاردةُ ← العفو.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mcq" data-correct="b">
+          <div class="obj"><span>🎯</span><span>أن يحلّلَ المتعلّمُ دوافعَ الشخصيّةِ ويميّزَ بين الباعثِ والفعل.</span><span class="bloom">تحليل</span></div>
+          <div class="qhead"><span class="num">١</span>ما الحكمُ الأدقُّ على دافعِ المرأةِ إلى السرقة؟</div>
+          <div class="opts">
+            <button class="opt" data-k="a" data-fb="الدافعُ نبيلٌ فعلًا، لكن هل يجعلُ نُبلُ الباعثِ الفعلَ نفسَه صوابًا؟ فكّر مرّةً أخرى.">دافعُها نبيلٌ، فالسرقةُ مبرّرةٌ تمامًا</button>
+            <button class="opt" data-k="b" data-fb="تحليلٌ دقيق: ميّزتَ بين نُبلِ الباعثِ (حبُّ الأمّ) وخطأِ الوسيلة (السرقة).">دافعُها حبُّ ولدها، لكنّ نُبلَ الدافعِ لا يجعلُ السرقةَ صوابًا</button>
+            <button class="opt" data-k="c" data-fb="بل الدافعُ واضحٌ جدًّا: إسعادُ ولدها بلعبةِ العيد. أعد القراءة.">تصرّفت دون دافعٍ واضح</button>
+          </div>
+          <div class="fb"></div>
+        </div>
+
+        <div class="mcq" data-correct="c">
+          <div class="obj"><span>🎯</span><span>أن يستنتجَ المتعلّمُ الدلالةَ العميقةَ لموقفٍ في النصّ.</span><span class="bloom">تحليل</span></div>
+          <div class="qhead"><span class="num">٢</span>علامَ تدلُّ صرخةُ الولد: «رحماكَ بأمي يا مولاي»؟</div>
+          <div class="opts">
+            <button class="opt" data-k="a" data-fb="انتبه: النصُّ يقول إنه بكى «لا على التمثال». فما الذي بكى عليه إذًا؟">على حزنِه الشديدِ لفقدانِ اللعبة</button>
+            <button class="opt" data-k="b" data-fb="الخوفُ حاضرٌ، لكنّ صرختَه كانت من أجلِ أمّه لا من أجلِ نفسه.">على خوفِه من الجنودِ على نفسِه</button>
+            <button class="opt" data-k="c" data-fb="أصبتَ: بكاؤه على أمّه لا على اللعبةِ يكشفُ بِرَّه ونُبلَه، وهو ما أثّر في الرجل.">على بِرِّه بأمّه وحبِّه لها أكثرَ من اللعبة</button>
+          </div>
+          <div class="fb"></div>
+        </div>
+
+        <div class="mcq" data-correct="b">
+          <div class="obj"><span>🎯</span><span>أن يقوّمَ المتعلّمُ موقفًا أخلاقيًّا ويستخلصَ القيمةَ الكامنةَ فيه.</span><span class="bloom">تقويم</span></div>
+          <div class="qhead"><span class="num">٣</span>لماذا تراجع صاحبُ الحانوت؟ وما القيمةُ التي جسّدها؟</div>
+          <div class="opts">
+            <button class="opt" data-k="a" data-fb="لا ذكرَ لخوفٍ من القانون؛ هو مَن جاء بالجنديّين أصلًا. ابحث عن باعثٍ إنسانيّ.">خاف من عقوبةِ القانون</button>
+            <button class="opt" data-k="b" data-fb="نعم: تأثّر بالمشهدِ ورِقّةِ قلبِ الطفل، فآثر الرحمةَ والعفوَ على حقّه — وهي قيمةُ السموِّ الأخلاقيّ.">تأثّر بالمشهدِ الإنسانيّ فآثر الرحمةَ والعفو</button>
+            <button class="opt" data-k="c" data-fb="بل كان التمثالُ «آيةَ الآياتِ في حسنه»؛ فلم يكن بلا قيمة.">اكتشف أنّ التمثالَ بلا قيمة</button>
+          </div>
+          <div class="fb"></div>
+        </div>
+      </div>
+
+      <!-- ===== المعجم ===== -->
+      <div class="panel" id="muajam">
+        <h2><span class="bar"></span>المعجم والرصيد اللغويّ</h2>
+        <p class="lead">الكلماتُ نفسُها التي وردت في النصّ، مجموعةً للمراجعةِ والتثبيت.</p>
+        <div class="lex">
+          <div class="lex-item"><span class="word">بائسة</span><span class="def">فقيرةٌ شديدةُ الفقرِ والتعاسة.</span></div>
+          <div class="lex-item"><span class="word">المَرمَر</span><span class="def">حجرٌ أبيضُ كريمٌ يُنحَتُ منه.</span></div>
+          <div class="lex-item"><span class="word">تُساوِم</span><span class="def">تُفاوِضُ على الثمنِ لخفضِه.</span></div>
+          <div class="lex-item"><span class="word">يُغالي</span><span class="def">يرفعُ الثمنَ ويُبالِغُ فيه.</span></div>
+          <div class="lex-item"><span class="word">خُفيةً</span><span class="def">سِرًّا دون أن يراها أحد.</span></div>
+          <div class="lex-item"><span class="word">رجعت أدراجَها</span><span class="def">عادت من حيثُ أتت.</span></div>
+          <div class="lex-item"><span class="word">عاقبة</span><span class="def">نتيجةُ الأمرِ وما يؤولُ إليه.</span></div>
+          <div class="lex-item"><span class="word">الغِبطة</span><span class="def">الفرحُ والسرورُ من غيرِ حسد.</span></div>
+          <div class="lex-item"><span class="word">المرتعِدة</span><span class="def">المرتجفةُ خوفًا.</span></div>
+          <div class="lex-item"><span class="word">منكوبة</span><span class="def">مصابةٌ بمصيبةٍ وبلاء.</span></div>
+        </div>
+
+        <h3 class="lexsub">أنشطةُ إثراءِ الرصيدِ اللغويّ — من حقلِ قضيّةِ النصّ</h3>
+        <p class="lead" style="margin-bottom:14px">أجِبْ عن الأنشطةِ المتنوّعةِ في طريقةِ الشرح (مرادف، ضدّ، تركيب، اشتقاق).</p>
+
+        <div class="mcq match-q">
+          <div class="obj"><span>🎯</span><span>أن يُثريَ المتعلّمُ رصيدَه بالمرادفات.</span><span class="method m1" style="margin-inline-start:auto">مرادف</span></div>
+          <div class="qhead"><span class="num">١</span><span class="ttype">صِلْ بسهم</span>صِلْ كلَّ كلمةٍ بمرادفِها (انقُرْ كلمةً ثمّ مرادفَها).</div>
+          <div class="match">
+            <div class="mcol">
+              <div class="mitem" data-col="a" data-k="s1">الرَّأْفَة</div>
+              <div class="mitem" data-col="a" data-k="s2">الفَاقَة</div>
+              <div class="mitem" data-col="a" data-k="s3">الإيثار</div>
+            </div>
+            <div class="mcol">
+              <div class="mitem" data-col="b" data-k="s3">التضحية</div>
+              <div class="mitem" data-col="b" data-k="s1">الرَّحمة</div>
+              <div class="mitem" data-col="b" data-k="s2">الفقر</div>
+            </div>
+          </div><div class="fb"></div>
+        </div>
+
+        <div class="mcq" data-correct="b">
+          <div class="obj"><span>🎯</span><span>أن يتعرّفَ المتعلّمُ ضدَّ الكلمة.</span><span class="method m2" style="margin-inline-start:auto">ضدّ</span></div>
+          <div class="qhead"><span class="num">٢</span><span class="ttype">اختيار من متعدد</span>ما ضدُّ كلمةِ «القَسْوَة»؟</div>
+          <div class="opts">
+            <button class="opt" data-k="a" data-fb="الغِلظةُ قريبةٌ من القسوةِ لا ضدٌّ لها.">الغِلظة</button>
+            <button class="opt" data-k="b" data-fb="صحيح، الرحمةُ ضدُّ القسوة، وهي ما غلب على صاحبِ الحانوت.">الرَّحمة</button>
+            <button class="opt" data-k="c" data-fb="الشِّدّةُ من معاني القسوةِ لا ضدِّها.">الشِّدّة</button>
+          </div><div class="fb"></div>
+        </div>
+
+        <div class="mcq fill-q" data-correct="t1">
+          <div class="obj"><span>🎯</span><span>أن يُوظّفَ المتعلّمُ الكلمةَ في تركيبٍ سليم.</span><span class="method m3" style="margin-inline-start:auto">تركيب</span></div>
+          <div class="qhead"><span class="num">٣</span><span class="ttype">ملء الفراغ</span>أكمِلِ الجملةَ بالكلمةِ المناسبةِ من حقلِ النصّ: «دفعتِ <span class="blank">…</span> المرأةَ إلى مدِّ يدِها.»</div>
+          <div class="bank">
+            <button class="chip" data-k="t1" data-fb="أحسنت، الفاقةُ (شدّةُ الحاجة) هي ما اضطرّها.">الفاقةُ</button>
+            <button class="chip" data-k="t2" data-fb="الغِبطةُ فرحٌ، ولا تُناسبُ سياقَ الاضطرار.">الغِبطةُ</button>
+            <button class="chip" data-k="t3" data-fb="الرفاهيةُ نقيضُ حالِها؛ فالمرأةُ كانت بائسة.">الرفاهيةُ</button>
+          </div><div class="fb"></div>
+        </div>
+
+        <div class="mcq" data-correct="b">
+          <div class="obj"><span>🎯</span><span>أن يميّزَ المتعلّمُ المصدرَ من سائرِ المشتقّات.</span><span class="method m4" style="margin-inline-start:auto">اشتقاق</span></div>
+          <div class="qhead"><span class="num">٤</span><span class="ttype">اختيار من متعدد</span>ما المصدرُ المشتقُّ من الفعلِ «رَحِمَ يَرحَمُ»؟</div>
+          <div class="opts">
+            <button class="opt" data-k="a" data-fb="«راحِم» اسمُ فاعلٍ لا مصدر.">راحِم</button>
+            <button class="opt" data-k="b" data-fb="صحيح، «رَحْمة» مصدرُ رَحِمَ يَرحَمُ.">رَحْمة</button>
+            <button class="opt" data-k="c" data-fb="«رحيم» صفةٌ مشبَّهةٌ لا مصدر.">رحيم</button>
+          </div><div class="fb"></div>
+        </div>
+      </div>
+
+      <!-- ===== القواعد ===== -->
+      <div class="panel" id="qawaid">
+        <h2><span class="bar"></span>قواعد اللغة</h2>
+        <p class="lead">ثلاثُ ظواهرَ مُستخرَجةٌ من النصّ. اختر الظاهرة:</p>
+        <div class="subtabs">
+          <button class="subtab active" data-s="g1">النعت</button>
+          <button class="subtab" data-s="g2">الجملة الفعلية</button>
+          <button class="subtab" data-s="g3">الحال</button>
+        </div>
+
+        <div class="subpanel active" id="g1">
+          <div class="rule"><span class="lbl">القاعدة</span><p>النَّعتُ تابعٌ يصفُ الاسمَ الذي قبلَه (المنعوت)، ويُوافِقُه في الإعرابِ وفي التعريفِ والتنكير.</p></div>
+          <div class="ex">امرأةٌ <span class="mark">بائسةٌ</span> <span class="tag">نعت مرفوع</span></div>
+          <div class="ex">تمثالٌ <span class="mark">صغيرٌ</span> <span class="tag">نعت مرفوع</span></div>
+          <div class="ex">الأسرةَ <span class="mark">الصغيرةَ</span> <span class="tag">نعت منصوب</span></div>
+          <div class="mcq" data-correct="b">
+            <div class="obj"><span>🎯</span><span>أن يطبّقَ المتعلّمُ قاعدةَ النعتِ بتمييزِه عن المنعوت.</span><span class="bloom">تطبيق</span></div>
+            <div class="qhead">✏️ في عبارةِ «بكاءً شديدًا»، ما النعتُ وما المنعوت؟</div>
+            <div class="opts">
+              <button class="opt" data-k="a" data-fb="انتبه إلى الترتيب: المنعوتُ يأتي أوّلًا والنعتُ يصفُه بعده.">المنعوت: شديدًا — النعت: بكاءً</button>
+              <button class="opt" data-k="b" data-fb="صحيح: «بكاءً» منعوت، و«شديدًا» نعتٌ منصوبٌ يصفُه ويتبعُه في الإعراب.">المنعوت: بكاءً — النعت: شديدًا</button>
+              <button class="opt" data-k="c" data-fb="بل فيها نعتٌ واضح: كلمةٌ تصفُ «بكاءً» وتبيّنُ شدّتَه.">لا نعتَ في العبارة</button>
+            </div>
+            <div class="fb"></div>
+          </div>
+        </div>
+
+        <div class="subpanel" id="g2">
+          <div class="rule"><span class="lbl">القاعدة</span><p>الجملةُ الفعليّةُ جملةٌ تبدأُ بفعلٍ، وتتكوّنُ من: فعلٍ + فاعلٍ (+ مفعولٍ به عند اللزوم).</p></div>
+          <div class="ex"><span class="mark">وقفت</span> امرأةٌ بائسةٌ <span class="tag">فعل + فاعل</span></div>
+          <div class="ex"><span class="mark">مدّت</span> يدَها إلى التمثال <span class="tag">فعل + فاعل + مفعول به</span></div>
+          <div class="ex"><span class="mark">جمد</span> الرجلُ أمام المنظرِ <span class="tag">فعل + فاعل</span></div>
+          <div class="mcq" data-correct="b">
+            <div class="obj"><span>🎯</span><span>أن يطبّقَ المتعلّمُ مكوّناتِ الجملةِ الفعليّةِ (فعل/فاعل).</span><span class="bloom">تطبيق</span></div>
+            <div class="qhead">✏️ في جملةِ «صرخ الولدُ»، حدّد الفعلَ والفاعل.</div>
+            <div class="opts">
+              <button class="opt" data-k="a" data-fb="الفعلُ هو ما يدلُّ على حدثٍ في زمن؛ و«الولدُ» اسمٌ لا حدث. أعد النظر.">الفعل: الولدُ — الفاعل: صرخ</button>
+              <button class="opt" data-k="b" data-fb="ممتاز: «صرخ» فعلٌ ماضٍ، و«الولدُ» فاعلٌ مرفوعٌ قام بالصراخ.">الفعل: صرخ — الفاعل: الولدُ</button>
+              <button class="opt" data-k="c" data-fb="الجملةُ تبدأُ بفعلٍ هو «صرخ»، فهي فعليّةٌ لا اسميّة.">جملة اسمية لا فعلية</button>
+            </div>
+            <div class="fb"></div>
+          </div>
+        </div>
+
+        <div class="subpanel" id="g3">
+          <div class="rule"><span class="lbl">القاعدة</span><p>الحالُ وصفٌ يُبيّنُ هيئةَ صاحبِه حين وقوعِ الفعل، ويُجيبُ عن سؤال «كيف؟». يكونُ مفردًا أو جملةً.</p></div>
+          <div class="ex">مدّت يدَها <span class="mark">خُفيةً</span> <span class="tag">حال مفرد منصوب</span></div>
+          <div class="ex">رجعت أدراجَها <span class="mark">وقلبُها يخفقُ</span> <span class="tag">حال جملة</span></div>
+          <div class="ex">فاجأوها <span class="mark">وهي جالسةٌ</span> <span class="tag">حال جملة</span></div>
+          <div class="mcq" data-correct="c">
+            <div class="obj"><span>🎯</span><span>أن يميّزَ المتعلّمُ نوعَ الحالِ (مفرد / جملة).</span><span class="bloom">تطبيق</span></div>
+            <div class="qhead">✏️ ما نوعُ الحالِ في «صرخ الولدُ قائلًا»؟</div>
+            <div class="opts">
+              <button class="opt" data-k="a" data-fb="«قائلًا» كلمةٌ مفردةٌ لا جملةٌ كاملة. قارنها بـ«وقلبُها يخفق».">حال جملة</button>
+              <button class="opt" data-k="b" data-fb="بل فيها حالٌ يبيّنُ هيئةَ الولدِ حين الصراخ، ويُجيبُ عن «كيف صرخ؟».">لا حالَ في العبارة</button>
+              <button class="opt" data-k="c" data-fb="صحيح: «قائلًا» حالٌ مفردٌ منصوبٌ يبيّنُ هيئةَ الولدِ وهو يصرخ.">حال مفرد منصوب (قائلًا)</button>
+            </div>
+            <div class="fb"></div>
+          </div>
+        </div>
+      </div>
+      <!-- ===== التركيب ===== -->
+      <div class="panel" id="dimaj">
+        <h2><span class="bar"></span>التركيب والإنتاج</h2>
+        <p class="lead">مهمّةُ نقلٍ تربطُ قيمةَ النصِّ بحياتِك وتُوظّفُ ما تعلّمتَه، ثمّ تُرسَلُ إلى معلّمِك لتصحيحِها وإعادتِها.</p>
+        <div class="mcq dimaj qcard">
+          <div class="obj"><span>🎯</span><span>أن يَنقُلَ المتعلّمُ قيمةَ النصِّ إلى تجربتِه مُوظّفًا الظواهرَ اللغويّةَ المدروسة.</span><span class="lvl l4">تركيب</span></div>
+          <div class="qhead">استحضِرْ موقفًا حقيقيًّا سامحتَ فيه شخصًا أخطأ في حقِّك، أو ضحّيتَ فيه من أجلِ مَن تحبّ، ثمّ اكتُبْ فقرةً سرديّةً (نحوَ خمسةِ أسطر) تحكيه، مُوظّفًا فيها <b>جملةً فعليّةً</b> و<b>حالًا</b> و<b>نعتًا</b>.</div>
+          <textarea id="dimajAns" placeholder="اكتُبْ فقرتَك السرديّة هنا..."></textarea>
+          <button class="btn-primary" id="dimajSend" type="button">📤 أرسِلْ إلى المعلّم</button>
+          <button class="btn-primary" id="dimajRefresh" type="button" style="background:var(--ink-soft)">↻ تحقّقْ من التصحيح</button>
+          <div id="dimajStatus"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<div class="pop" id="pop"><div class="w" id="pop-w"></div><div id="pop-d"></div></div>
+
+<button class="dock-btn" id="tdockBtn" style="inset-block-end:74px;background:var(--amber)">🧑‍🏫 لوحة المعلّم</button>
+<aside class="dock" id="tdock">
+  <button class="close" id="tdockClose">✕</button>
+  <h3>لوحة المعلّم</h3>
+  <p class="sub">إجاباتُ المتعلّمين على مهمّةِ التركيبِ بانتظارِ التصحيح.</p>
+  <div id="tdockBody"></div>
+</aside>
+<button class="dock-btn" id="dockBtn">💡 الأساس النظريّ للتصميم</button>
+<div class="overlay" id="ovl"></div>
+<aside class="dock" id="dock">
+  <button class="close" id="dockClose">✕</button>
+  <h3>لماذا هذا التصميم؟</h3>
+  <p class="sub">ربطُ كلِّ قرارٍ بالمرجعيّةِ النظريّةِ في أطروحتك.</p>
+  <div class="rcard"><div class="n">هدفٌ تعليميٌّ لكلّ سؤال <i>التصميم بالأهداف</i></div>
+    <p>كلُّ بطاقةٍ تُصرّحُ بهدفها بصيغةٍ سلوكيّةٍ إجرائيّةٍ («أن + فعل»)، مع وسمِ المستوى المعرفيّ (تذكّر/فهم/تطبيق/تحليل/تقويم) وفق تصنيف بلوم، فيتّضحُ ما يُقاس بدقّة.</p></div>
+  <div class="rcard"><div class="n">تغذية راجعة خاصّة بكلّ اختيار <i>Black &amp; Wiliam</i></div>
+    <p>التغذيةُ الراجعةُ ليست «صحيح/خطأ» فحسب، بل رسالةٌ مخصّصةٌ لكلِّ بديلٍ تعالجُ التصوّرَ الخاطئَ وراءه وتُعيدُ المتعلّمَ إلى النصّ؛ وهذا جوهرُ التقويم التكوينيّ الذي يُحرّكُ التعلّمَ إلى الأمام.</p></div>
+  <div class="rcard"><div class="n">إتاحةُ إعادةِ المحاولة <i>تغذية راجعة مُنتِجة</i></div>
+    <p>الخطأُ لا يكشفُ الجوابَ مباشرةً بل يمنحُ تلميحًا، فتُتاحُ للمتعلّمِ فرصةُ التصحيحِ الذاتيّ بدل تلقّي الإجابةِ سلبيًّا.</p></div>
+  <div class="rcard"><div class="n">الاختيار من متعدّد كاسترجاع <i>Adesope</i></div>
+    <p>محاولةُ الإجابةِ نفسُها فعلُ استرجاعٍ يُقوّي الأثرَ في الذاكرة، ويتكاملُ مع تبويبِ المعجمِ ونظامِ لايتنر للمراجعة المتباعدة.</p></div>
+  <div class="rcard"><div class="n">القواعد من داخل النصّ <i>التماسك Coherence</i></div>
+    <p>كلُّ أمثلةِ وتطبيقاتِ القواعدِ مأخوذةٌ من جُملِ القصّةِ نفسِها، فيبقى التعلّمُ متماسكًا حول سياقٍ واحد.</p></div>
+</aside>
+
+<script>
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); document.getElementById(t.dataset.p).classList.add('active');
+}));
+document.querySelectorAll('.subtab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.subtab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.subpanel').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); document.getElementById(t.dataset.s).classList.add('active');
+}));
+
+// reveal rows
+document.querySelectorAll('.reveal-row button').forEach(b=>b.addEventListener('click',()=>{
+  b.nextElementSibling.classList.toggle('show');
+}));
+
+// MCQ engine: retry on wrong, lock on correct, per-option feedback
+document.querySelectorAll('.mcq').forEach(m=>{
+  const correct=m.dataset.correct, fb=m.querySelector('.fb');
+  m.querySelectorAll('.opt').forEach(o=>o.addEventListener('click',()=>{
+    if(m.classList.contains('done'))return;
+    const isOk=o.dataset.k===correct;
+    m.querySelectorAll('.opt').forEach(x=>x.classList.remove('wrong'));
+    if(isOk){
+      o.classList.add('correct'); m.classList.add('done');
+      m.querySelectorAll('.opt').forEach(x=>{if(x!==o)x.classList.add('dim');});
+      fb.className='fb show ok'; fb.innerHTML='<span class="h">✓ أحسنت</span>'+o.dataset.fb;
+    }else{
+      o.classList.add('wrong');
+      fb.className='fb show no'; fb.innerHTML='<span class="h">✗ حاول مرّةً أخرى</span>'+o.dataset.fb;
+    }
+  }));
+});
+
+const PASSAGES={wasl:`<p>وَقَفَتِ امْرَأَةٌ <span class="vocab" data-def="فقيرةٌ شديدةُ الفقرِ والتعاسة">بَائِسَةٌ</span> لَيْلَةَ عِيدٍ مِنَ الْأَعْيَادِ بِحَانُوتِ تَمَاثِيلَ بِبَارِيسَ، فَوَقَعَ نَظَرُهَا عَلَى تِمْثَالٍ صَغِيرٍ مِنَ <span class="vocab" data-def="حجرٌ أبيضُ كريمٌ يُنحَتُ منه">الْمَرْمَرِ</span> وَهُوَ آيَةُ الْآيَاتِ فِي حُسْنِهِ وَجَمَالِهِ، فَابْتَهَجَتْ بِمَرْآهُ ابْتِهَاجًا عَظِيمًا. كَانَتْ تَنْظُرُ إِلَيْهِ بِعَيْنِ وَلَدِهَا الصَّغِيرِ الَّذِي تَرَكَتْهُ فِي مَنْزِلِهَا يَنْتَظِرُ عَوْدَتَهَا بِلُعْبَةِ الْعِيدِ. أَخَذَتْ <span class="vocab" data-def="تُفاوِضُه على الثمنِ لخفضِه">تُسَاوِمُ</span> صَاحِبَ الْحَانُوتِ سَاعَةً كَامِلَةً، وَالرَّجُلُ <span class="vocab" data-def="يرفعُ الثمنَ ويُبالِغُ فيه">يُغَالِي</span> بِهِ مُغَالَاةً شَدِيدَةً، حَتَّى عَلِمَتْ أَنَّ يَدَهَا لَا تَسْتَطِيعُ الْوُصُولَ إِلَى ثَمَنِهِ؛ فَلَمْ يَكُنْ فِي مَحْفَظَتِهَا إِلَّا الْقَلِيلُ مِنَ الْمَالِ.</p><p>فَسَاقَتْهَا الضَّرُورَةُ، فَمَدَّتْ يَدَهَا <span class="vocab" data-def="سِرًّا في الخفاء دون أن يراها أحد">خُفْيَةً</span> إِلَى التِّمْثَالِ لِتَسْرِقَهُ خِلْسَةً، ثُمَّ رَجَعَتْ <span class="vocab" data-def="عادت من حيثُ أتت">أَدْرَاجَهَا</span> وَقَلْبُهَا يَخْفِقُ خَفْقَتَيْنِ: خَفْقَةَ الْخَوْفِ مِنْ <span class="vocab" data-def="نتيجةُ الأمرِ وما يؤولُ إليه">عَاقِبَةِ</span> فِعْلِهَا، وَخَفْقَةَ السُّرُورِ بِالْهَدِيَّةِ الْجَمِيلَةِ الَّتِي سَتُقَدِّمُهَا إِلَى وَلَدِهَا.</p><p>وَلِلْأَسَفِ كَشَفَ صَاحِبُ الْحَانُوتِ أَمْرَهَا وَتَبِعَهَا حَتَّى عَرَفَ مَنْزِلَهَا، ثُمَّ جَاءَ بِجُنْدِيَّيْنِ لِلْقَبْضِ عَلَيْهَا. وَصَعِدُوا إِلَى الْغُرْفَةِ الَّتِي تَسْكُنُهَا فَفَاجَأُوهَا وَهِيَ جَالِسَةٌ بَيْنَ يَدَيْ وَلَدِهَا تَنْظُرُ إِلَى ابْتِهَاجِهِ بِتِمْثَالِهِ نَظَرَاتِ <span class="vocab" data-def="الفرحِ والسرورِ من غيرِ حسد">الْغِبْطَةِ</span>. فَهَجَمَ الْجُنْدِيَّانِ عَلَى الْأُمِّ فَاعْتَقَلَاهَا، وَهَجَمَ الرَّجُلُ عَلَى الْوَلَدِ فَانْتَزَعَ مِنْهُ التِّمْثَالَ، فَصَرَخَ الْوَلَدُ صَرْخَةً عُظْمَى — لَا عَلَى التِّمْثَالِ بَلْ عَلَى أُمِّهِ <span class="vocab" data-def="المرتجفةِ من شدّةِ الخوف">الْمُرْتَعِدَةِ</span> — قَائِلًا: <span class="say">«رَحْمَاكَ بِأُمِّي يَا مَوْلَايَ»</span>، وَظَلَّ يَبْكِي بُكَاءً شَدِيدًا.</p><p>جَمَدَ الرَّجُلُ أَمَامَ هَذَا الْمَنْظَرِ الْمُؤَثِّرِ، وَصَعُبَ عَلَيْهِ أَنْ يَتْرُكَ هَذِهِ الْأُسْرَةَ الصَّغِيرَةَ الْمِسْكِينَةَ حَزِينَةً <span class="vocab" data-def="مصابةً بمصيبةٍ وبلاء">وَمَنْكُوبَةً</span> فِي يَوْمٍ يَفْرَحُ فِيهِ النَّاسُ جَمِيعًا. فَالْتَفَتَ إِلَى الْجُنْدِيَّيْنِ وَقَالَ: إِنِّي أَخْطَأْتُ فِي اتِّهَامِ هَذِهِ الْمَرْأَةِ، فَإِنِّي لَا أَبِيعُ هَذَا النَّوْعَ مِنَ التَّمَاثِيلِ. فَانْصَرَفَا لِشَأْنِهِمَا.</p>`,waqf:`<p>وَقَفَتِ امْرَأَةٌ <span class="vocab" data-def="فقيرةٌ شديدةُ الفقرِ والتعاسة">بَائِسَةٌ</span> لَيْلَةَ عِيدٍ مِنَ الْأَعْيَادِ بِحَانُوتِ تَمَاثِيلَ بِبَارِيسْ، فَوَقَعَ نَظَرُهَا عَلَى تِمْثَالٍ صَغِيرٍ مِنَ <span class="vocab" data-def="حجرٌ أبيضُ كريمٌ يُنحَتُ منه">الْمَرْمَرِ</span> وَهُوَ آيَةُ الْآيَاتِ فِي حُسْنِهِ وَجَمَالِهْ، فَابْتَهَجَتْ بِمَرْآهُ ابْتِهَاجًا عَظِيمَا. كَانَتْ تَنْظُرُ إِلَيْهِ بِعَيْنِ وَلَدِهَا الصَّغِيرِ الَّذِي تَرَكَتْهُ فِي مَنْزِلِهَا يَنْتَظِرُ عَوْدَتَهَا بِلُعْبَةِ الْعِيدْ. أَخَذَتْ <span class="vocab" data-def="تُفاوِضُه على الثمنِ لخفضِه">تُسَاوِمُ</span> صَاحِبَ الْحَانُوتِ سَاعَةً كَامِلَة، وَالرَّجُلُ <span class="vocab" data-def="يرفعُ الثمنَ ويُبالِغُ فيه">يُغَالِي</span> بِهِ مُغَالَاةً شَدِيدَة، حَتَّى عَلِمَتْ أَنَّ يَدَهَا لَا تَسْتَطِيعُ الْوُصُولَ إِلَى ثَمَنِهْ؛ فَلَمْ يَكُنْ فِي مَحْفَظَتِهَا إِلَّا الْقَلِيلُ مِنَ الْمَالْ.</p><p>فَسَاقَتْهَا الضَّرُورَة، فَمَدَّتْ يَدَهَا <span class="vocab" data-def="سِرًّا في الخفاء دون أن يراها أحد">خُفْيَةً</span> إِلَى التِّمْثَالِ لِتَسْرِقَهُ خِلْسَة، ثُمَّ رَجَعَتْ <span class="vocab" data-def="عادت من حيثُ أتت">أَدْرَاجَهَا</span> وَقَلْبُهَا يَخْفِقُ خَفْقَتَيْنْ: خَفْقَةَ الْخَوْفِ مِنْ <span class="vocab" data-def="نتيجةُ الأمرِ وما يؤولُ إليه">عَاقِبَةِ</span> فِعْلِهَا، وَخَفْقَةَ السُّرُورِ بِالْهَدِيَّةِ الْجَمِيلَةِ الَّتِي سَتُقَدِّمُهَا إِلَى وَلَدِهَا.</p><p>وَلِلْأَسَفِ كَشَفَ صَاحِبُ الْحَانُوتِ أَمْرَهَا وَتَبِعَهَا حَتَّى عَرَفَ مَنْزِلَهَا، ثُمَّ جَاءَ بِجُنْدِيَّيْنِ لِلْقَبْضِ عَلَيْهَا. وَصَعِدُوا إِلَى الْغُرْفَةِ الَّتِي تَسْكُنُهَا فَفَاجَأُوهَا وَهِيَ جَالِسَةٌ بَيْنَ يَدَيْ وَلَدِهَا تَنْظُرُ إِلَى ابْتِهَاجِهِ بِتِمْثَالِهِ نَظَرَاتِ <span class="vocab" data-def="الفرحِ والسرورِ من غيرِ حسد">الْغِبْطَة</span>. فَهَجَمَ الْجُنْدِيَّانِ عَلَى الْأُمِّ فَاعْتَقَلَاهَا، وَهَجَمَ الرَّجُلُ عَلَى الْوَلَدِ فَانْتَزَعَ مِنْهُ التِّمْثَالْ، فَصَرَخَ الْوَلَدُ صَرْخَةً عُظْمَى — لَا عَلَى التِّمْثَالِ بَلْ عَلَى أُمِّهِ <span class="vocab" data-def="المرتجفةِ من شدّةِ الخوف">الْمُرْتَعِدَة</span> — قَائِلَا: <span class="say">«رَحْمَاكَ بِأُمِّي يَا مَوْلَايْ»</span>، وَظَلَّ يَبْكِي بُكَاءً شَدِيدَا.</p><p>جَمَدَ الرَّجُلُ أَمَامَ هَذَا الْمَنْظَرِ الْمُؤَثِّرْ، وَصَعُبَ عَلَيْهِ أَنْ يَتْرُكَ هَذِهِ الْأُسْرَةَ الصَّغِيرَةَ الْمِسْكِينَةَ حَزِينَةً <span class="vocab" data-def="مصابةً بمصيبةٍ وبلاء">وَمَنْكُوبَةً</span> فِي يَوْمٍ يَفْرَحُ فِيهِ النَّاسُ جَمِيعَا. فَالْتَفَتَ إِلَى الْجُنْدِيَّيْنِ وَقَالْ: إِنِّي أَخْطَأْتُ فِي اتِّهَامِ هَذِهِ الْمَرْأَة، فَإِنِّي لَا أَبِيعُ هَذَا النَّوْعَ مِنَ التَّمَاثِيلْ. فَانْصَرَفَا لِشَأْنِهِمَا.</p>`};
+// vocab popover
+const pop=document.getElementById('pop'),pw=document.getElementById('pop-w'),pd=document.getElementById('pop-d');
+let cur=null;
+function hide(){pop.classList.remove('show');if(cur){cur.classList.remove('active');cur=null;}}
+function bindVocab(){
+  document.querySelectorAll('.vocab').forEach(v=>v.addEventListener('click',e=>{
+    e.stopPropagation();
+    if(cur===v){hide();return;}
+    if(cur)cur.classList.remove('active');
+    cur=v;v.classList.add('active');
+    pw.textContent=v.textContent; pd.textContent=v.dataset.def; pop.classList.add('show');
+    const r=v.getBoundingClientRect();
+    let top=r.top-pop.offsetHeight-12; if(top<10)top=r.bottom+12;
+    let left=r.left+r.width/2-30;
+    left=Math.max(10,Math.min(left,window.innerWidth-pop.offsetWidth-10));
+    pop.style.top=top+'px'; pop.style.left=left+'px';
+  }));
+}
+bindVocab();
+document.addEventListener('click',hide);
+window.addEventListener('scroll',hide,true);
+const passageEl=document.querySelector('.passage');
+document.querySelectorAll('.vbtn').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.vbtn').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); hide();
+  passageEl.innerHTML=PASSAGES[b.dataset.m]; bindVocab();
+}));
+
+const dock=document.getElementById('dock'),ovl=document.getElementById('ovl');
+function toggleDock(o){dock.classList.toggle('open',o);ovl.classList.toggle('show',o);}
+document.getElementById('dockBtn').onclick=()=>toggleDock(true);
+document.getElementById('dockClose').onclick=()=>toggleDock(false);
+ovl.onclick=()=>toggleDock(false);
+
+// ===== matching (صل بسهم) =====
+function initMatch(root){
+  let sel=null; const fb=root.querySelector('.fb');
+  const total=root.querySelectorAll('[data-col="a"]').length; let done=0;
+  root.querySelectorAll('.mitem').forEach(it=>it.addEventListener('click',()=>{
+    if(it.classList.contains('matched'))return;
+    if(!sel){sel=it;it.classList.add('sel');return;}
+    if(sel===it){it.classList.remove('sel');sel=null;return;}
+    if(sel.dataset.col===it.dataset.col){sel.classList.remove('sel');sel=it;it.classList.add('sel');return;}
+    if(sel.dataset.k===it.dataset.k){
+      sel.classList.remove('sel');sel.classList.add('matched');it.classList.add('matched');done++;sel=null;
+      if(done===total){fb.className='fb show ok';fb.innerHTML='<span class="h">✓ أحسنت</span>أصبتَ جميعَ الوصلاتِ الصحيحة.';}
+    }else{
+      const a=sel,b=it;a.classList.add('bad');b.classList.add('bad');a.classList.remove('sel');sel=null;
+      fb.className='fb show no';fb.innerHTML='<span class="h">✗ حاول مرّةً أخرى</span>هذا الوصلُ غيرُ صحيح؛ تأمّلْ دافعَ كلِّ شخصيّةٍ كما يُفهَمُ من النص.';
+      setTimeout(()=>{a.classList.remove('bad');b.classList.remove('bad');},700);
+    }
+  }));
+}
+document.querySelectorAll('.match-q').forEach(initMatch);
+
+// ===== fill blank (ملء الفراغ) =====
+function initFill(root){
+  const blank=root.querySelector('.blank'),correct=root.dataset.correct,fb=root.querySelector('.fb');
+  root.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{
+    if(root.classList.contains('done'))return;
+    blank.textContent=c.textContent;blank.classList.add('filled');
+    if(c.dataset.k===correct){
+      root.classList.add('done');blank.classList.remove('no');blank.classList.add('ok');
+      root.querySelectorAll('.chip').forEach(x=>x.classList.add('used'));
+      fb.className='fb show ok';fb.innerHTML='<span class="h">✓ أحسنت</span>'+(c.dataset.fb||'');
+    }else{
+      blank.classList.add('no');
+      fb.className='fb show no';fb.innerHTML='<span class="h">✗ حاول مرّةً أخرى</span>'+(c.dataset.fb||'');
+    }
+  }));
+}
+document.querySelectorAll('.fill-q').forEach(initFill);
+
+// ===== communicative model reveal =====
+document.querySelectorAll('.commu-reveal').forEach(b=>b.addEventListener('click',()=>{b.nextElementSibling.classList.toggle('show');}));
+
+// ===== integration: student <-> teacher =====
+const SUBKEY='nakhla_dimaj_v1'; let memSub=null;
+async function loadSub(){try{const r=await window.storage.get(SUBKEY,true);return r?JSON.parse(r.value):null;}catch(e){return memSub;}}
+async function saveSub(o){memSub=o;try{await window.storage.set(SUBKEY,JSON.stringify(o),true);}catch(e){}}
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+async function renderStudent(){
+  const sub=await loadSub();const st=document.getElementById('dimajStatus');const ta=document.getElementById('dimajAns');
+  if(!st)return; if(!sub){st.className='';st.innerHTML='';return;}
+  if(ta&&!ta.value)ta.value=sub.answer||'';
+  if(sub.status==='pending'){st.className='status pending';st.innerHTML='<span class="h">⏳ بانتظار التصحيح</span>أُرسِلت إجابتُك إلى المعلّم.';}
+  else if(sub.status==='returned'){st.className='status returned';st.innerHTML='<span class="h">✓ تصحيحُ المعلّم</span>'+esc(sub.feedback)||'(دون ملاحظات)';}
+}
+async function renderTeacher(){
+  const sub=await loadSub();const body=document.getElementById('tdockBody');if(!body)return;
+  if(!sub){body.innerHTML='<div class="status pending">لا توجدُ إجاباتٌ بانتظارِ التصحيح.</div>';return;}
+  body.innerHTML='<div class="rcard"><div class="n">إجابةُ المتعلّم <i>'+(sub.status==='returned'?'مُصحَّحة':'جديدة')+'</i></div><p style="white-space:pre-wrap">'+esc(sub.answer)+'</p></div>'+
+  '<label style="font-family:Cairo;font-weight:700;font-size:.8rem;color:var(--green-700)">تصحيحُك وملاحظاتُك:</label>'+
+  '<textarea id="tFb" style="width:100%;min-height:120px;margin-top:6px;border:1.5px solid var(--line);border-radius:12px;padding:11px;font-family:Tajawal;line-height:1.8">'+esc(sub.feedback)+'</textarea>'+
+  '<button class="btn-primary" id="tReturn" type="button" style="margin-top:10px">↩ أعِدْ إلى المتعلّم</button>';
+  document.getElementById('tReturn').addEventListener('click',async()=>{
+    const fb=document.getElementById('tFb').value.trim();
+    await saveSub({answer:sub.answer,status:'returned',feedback:fb});
+    renderTeacher();renderStudent();
+  });
+}
+(function(){
+  const send=document.getElementById('dimajSend'),refresh=document.getElementById('dimajRefresh');
+  if(send)send.addEventListener('click',async()=>{
+    const ta=document.getElementById('dimajAns'),st=document.getElementById('dimajStatus');const v=ta.value.trim();
+    if(!v){st.className='status pending';st.innerHTML='<span class="h">تنبيه</span>اكتُبْ فقرتَك أوّلًا قبل الإرسال.';return;}
+    await saveSub({answer:v,status:'pending',feedback:''});renderStudent();
+  });
+  if(refresh)refresh.addEventListener('click',renderStudent);
+  const tb=document.getElementById('tdockBtn'),tc=document.getElementById('tdockClose'),td=document.getElementById('tdock');
+  function toggleT(o){td.classList.toggle('open',o);ovl.classList.toggle('show',o);}
+  if(tb)tb.addEventListener('click',()=>{toggleT(true);renderTeacher();});
+  if(tc)tc.addEventListener('click',()=>toggleT(false));
+  ovl.addEventListener('click',()=>toggleT(false));
+  renderStudent();
+})();
+
+</script>
+</body>
+</html>

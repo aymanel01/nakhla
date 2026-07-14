@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منصة نخلة — الدرس اللغوي: الحال</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@500;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FBF7F0;--surface:#FFFFFF;--paper:#FCF9F2;--tint:#EEF1FA;
+  --ink:#1E2233;--ink-soft:#5C6173;--line:#E6E3D9;
+  --green-500:#40916C;--green-300:#95D5B2;--green-100:#D8F0E2;--green-700:#2D6A4F;--green-900:#16352A;
+  --red:#C96B6B;--red-bg:#F7E3E3;--red-ink:#7A2E2E;
+  --gram:#4C5CA8;--gram-700:#3a4790;--gram-soft:#E8EBF7;--gram-100:#D6DCF3;--amber-soft:#F4E6CF;
+  --shadow:0 10px 30px -12px rgba(33,40,80,.25);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:"Tajawal",system-ui,sans-serif;line-height:1.6}
+::selection{background:var(--gram-100)}
+.topbar{display:flex;align-items:center;gap:16px;padding:14px 26px;background:linear-gradient(120deg,var(--gram-700),var(--gram));color:#fff;box-shadow:var(--shadow);position:sticky;top:0;z-index:40}
+.mascot{width:46px;height:46px;flex:0 0 auto;background:#fff;border-radius:50%;display:grid;place-items:center;box-shadow:inset 0 0 0 3px var(--green-300)}
+.crumbs{font-family:"Cairo";font-size:.82rem;opacity:.85}
+.lesson-title{font-family:"Cairo";font-weight:800;font-size:1.18rem}
+.topbar .meta{margin-inline-start:auto;display:flex;gap:16px;font-size:.8rem;opacity:.92;font-family:"Cairo"}
+.wrap{max-width:880px;margin:24px auto;padding:0 18px}
+.pane{background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
+.tabs{display:flex;background:var(--paper);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.tabs button{flex:1;border:0;background:transparent;font-family:"Cairo";font-weight:700;font-size:.95rem;padding:15px 6px;cursor:pointer;color:var(--ink-soft);border-bottom:3px solid transparent;transition:.15s}
+.tabs button:hover{color:var(--gram)}
+.tabs button.on{color:var(--gram);border-bottom-color:var(--gram);background:var(--surface)}
+.tab-body{padding:22px 24px 30px;min-height:55vh}
+.tab-panel{display:none;animation:fade .25s}.tab-panel.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.intro{font-family:"Cairo";color:var(--ink-soft);font-size:.92rem;margin-bottom:16px;background:var(--tint);border:1px solid var(--gram-100);border-radius:12px;padding:12px 14px}
+.intro b{color:var(--gram-700)}
+.video-box{margin-bottom:16px}
+.video-ph{background:linear-gradient(160deg,#2b2f44,#1c2030);border:2px dashed #6b73a8;border-radius:16px;padding:26px 18px;text-align:center;color:#dfe3f5}
+.video-ph .film{font-size:2.6rem;margin-bottom:6px}
+.video-ph .vtxt{font-family:"Cairo";font-weight:800;font-size:1.05rem;margin-bottom:4px;color:#fff}
+.video-ph .vsub{font-family:"Tajawal";font-size:.82rem;opacity:.8;margin-bottom:14px;line-height:1.6}
+.vrow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.vrow input{flex:1;max-width:340px;border:1px solid #5b6296;background:#0f1322;color:#fff;border-radius:9px;padding:9px 12px;font-family:"Tajawal";font-size:.9rem}
+.start-row{text-align:center;margin:6px 0 4px}
+.btn{font-family:"Cairo";font-weight:700;border:0;border-radius:11px;padding:10px 20px;cursor:pointer;font-size:.92rem;transition:.14s}
+.btn.gram{background:var(--gram);color:#fff}.btn.gram:hover{background:var(--gram-700)}.btn.gram:disabled{opacity:.45;cursor:default}
+.btn.ghost{background:var(--paper);color:var(--gram-700);border:1px solid var(--gram)}.btn.ghost:hover{background:var(--gram-soft)}.btn.ghost:disabled{opacity:.4;cursor:default}
+.btn.sm{background:var(--paper);color:var(--green-700);border:1px solid var(--green-300);padding:9px 16px}.btn.sm:hover{background:var(--green-100)}
+.btn.big{font-size:1rem;padding:13px 30px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.apps{display:none}
+.step-head{display:flex;align-items:center;gap:12px;margin:6px 0 12px}
+.step-count{font-family:"Cairo";font-weight:800;color:var(--gram-700);font-size:.9rem;white-space:nowrap}
+.progress{flex:1;height:8px;background:var(--gram-100);border-radius:999px;overflow:hidden}
+.progress > i{display:block;height:100%;width:0;background:var(--gram);transition:width .3s}
+.step{display:none}.step.on{display:block;animation:fade .25s}
+.step-nav{display:flex;justify-content:space-between;gap:10px;margin-top:4px}
+.phase{font-family:"Cairo";font-weight:800;font-size:.84rem;color:var(--gram-700);margin:0 0 12px;padding:6px 12px;background:var(--gram-soft);border-inline-start:4px solid var(--gram);border-radius:9px}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:8px;box-shadow:0 4px 14px -8px rgba(33,40,80,.18)}
+.q-head{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px}
+.lvl{font-family:"Cairo";font-size:.7rem;font-weight:700;border-radius:999px;padding:3px 10px;background:var(--gram-100);color:var(--gram-700)}
+.qtype{font-family:"Cairo";font-size:.7rem;font-weight:700;color:var(--ink-soft);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.goal{font-family:"Tajawal";font-size:.78rem;color:var(--ink-soft);margin:2px 0 12px;padding-inline-start:10px;border-inline-start:3px solid var(--gram-100)}
+.goal b{color:var(--gram-700)}
+.q-stem{font-family:"Cairo";font-weight:600;font-size:1.04rem;margin-bottom:12px;color:var(--ink);line-height:1.8}
+.figure{display:flex;flex-direction:column;gap:8px;align-items:center;margin:6px 0 14px}
+.figure svg{height:150px;width:auto;background:var(--tint);border:1px solid var(--gram-100);border-radius:14px;padding:8px}
+.figbox{display:flex;justify-content:center}
+.figimg{max-height:180px;width:auto;border-radius:14px;border:1px solid var(--gram-100);background:var(--tint);padding:6px}
+.figctrl{text-align:center}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:11px 14px;cursor:pointer;background:var(--paper);font-size:1rem;transition:.14s;text-align:right;font-family:"Amiri"}
+.opt:hover{border-color:var(--gram-100);background:var(--gram-soft)}
+.opt.correct{background:var(--green-100);border-color:var(--green-500);color:var(--green-900);font-weight:700;cursor:default}
+.opt.wrong{background:var(--red-bg);border-color:var(--red);color:var(--red-ink)}
+.opt.locked{pointer-events:none;opacity:.6}
+.opt .mk{width:22px;height:22px;flex:0 0 auto;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:.8rem}
+.opt.correct .mk{background:var(--green-500);border-color:var(--green-500);color:#fff}
+.opt.wrong .mk{background:var(--red);border-color:var(--red);color:#fff}
+.fb{margin-top:10px;font-size:.92rem;border-radius:10px;padding:10px 12px;display:none;font-family:"Tajawal";line-height:1.6}
+.fb.show{display:block}.fb.ok{background:var(--green-100);color:var(--green-900);border:1px solid var(--green-300)}.fb.no{background:var(--red-bg);color:var(--red-ink);border:1px solid #e7b4b4}
+.match{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.match .col{display:flex;flex-direction:column;gap:8px}.match .col h5{font-family:"Cairo";font-size:.78rem;color:var(--ink-soft);text-align:center}
+.chip{border:1px solid var(--line);border-radius:11px;padding:10px 12px;background:var(--paper);cursor:pointer;font-size:1rem;text-align:center;transition:.14s;font-family:"Amiri"}
+.chip:hover{border-color:var(--gram-100)}.chip.sel{background:var(--amber-soft);border-color:#C0813B}
+.chip.done{font-weight:700;cursor:default;pointer-events:none}.chip.shake{animation:shk .3s}
+@keyframes shk{0%,100%{transform:none}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.bank{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.bank .word{border:1px dashed var(--gram);background:var(--gram-soft);color:var(--gram-700);border-radius:10px;padding:7px 13px;cursor:pointer;font-weight:700;font-size:1rem;font-family:"Amiri";transition:.14s}
+.bank .word.used{opacity:.35;pointer-events:none}
+.cloze{font-family:"Amiri";font-size:1.3rem;line-height:2.3;color:var(--ink)}
+.blank{display:inline-block;min-width:90px;border-bottom:2px solid var(--gram);text-align:center;margin:0 4px;cursor:pointer;color:var(--gram-700);font-weight:700;min-height:1.3em}
+.blank.filled{background:var(--gram-soft);border-radius:6px;padding:0 8px;border-bottom-color:transparent}
+.blank.ok{background:var(--green-100);color:var(--green-900)}.blank.no{background:var(--red-bg);color:var(--red-ink)}
+.free textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-family:"Amiri";font-size:1.15rem;line-height:2;resize:vertical;background:var(--paper)}
+.free textarea:focus{outline:2px solid var(--gram-100);border-color:var(--gram)}
+.crit{display:none;margin-top:10px;background:var(--tint);border:1px solid var(--gram-100);border-radius:12px;padding:12px 14px}
+.crit.show{display:block}
+.crit-note{font-family:"Tajawal";font-size:.85rem;color:var(--ink-soft);margin-bottom:10px;line-height:1.6}
+.crit-item{display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:7px 0;font-size:.96rem;font-family:"Tajawal";line-height:1.5}
+.crit-box{width:22px;height:22px;flex:0 0 auto;border:2px solid var(--gram);border-radius:6px;display:grid;place-items:center;font-size:.8rem;color:#fff;margin-top:1px;transition:.14s}
+.crit-item.on .crit-box{background:var(--gram)}.crit-item.on .crit-box::after{content:'✓'}
+.crit-done{display:none;margin-top:10px;background:var(--green-100);border:1px solid var(--green-300);border-radius:10px;padding:9px 12px;font-family:"Cairo";font-weight:700;color:var(--green-700);font-size:.9rem}
+.crit-done.show{display:block}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:8px 0 18px}
+.cmp .col{border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.cmp .ch{font-family:"Cairo";font-weight:800;color:#fff;padding:11px 14px;font-size:1rem;text-align:center;background:var(--gram)}
+.cmp ul{list-style:none;padding:12px 14px}
+.cmp li{font-family:"Tajawal";font-size:.95rem;line-height:1.7;margin-bottom:9px;padding-inline-start:16px;position:relative}
+.cmp li::before{content:'◆';position:absolute;inset-inline-start:0;font-size:.6rem;top:.55em;color:var(--gram)}
+.cmp .ex{font-family:"Amiri";background:var(--paper);border-radius:8px;padding:6px 10px;margin-top:4px;font-size:1.05rem}
+@media(max-width:600px){.cmp{grid-template-columns:1fr}.match{grid-template-columns:1fr}.topbar .meta{display:none}.tab-body{padding:18px 14px 24px}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="mascot"><svg width="30" height="30" viewBox="0 0 30 30"><path d="M15 3c1 4 0 7-2 9 3-1 6 0 8 3-3 0-5 1-6 4 0-3-1-5-3-6 1 4 0 8-3 11 0-5-2-8-5-9 3-1 5-3 6-6 1 3 3 4 5 4-2-3-2-7-1-10 1 2 3 3 4 3-2-2-3-4-3-7z" fill="#2D6A4F"/></svg></div>
+  <div>
+    <div class="crumbs">منصّة نخلة · السنة الأولى إعدادي · الدرس اللغويّ (الظواهر اللغويّة)</div>
+    <div class="lesson-title">درس الحال — المفهوم والأركان والأنواع والتوظيف</div>
+  </div>
+  <div class="meta"><span>🎬 فيديو + تطبيقات</span><span>● تعلّمٌ بالاكتشاف</span></div>
+</div>
+
+<div class="wrap">
+  <section class="pane">
+    <div class="tabs">
+      <button class="on" onclick="setTab('mafhoom',this)">المفهوم والأركان</button>
+      <button onclick="setTab('anwa',this)">أنواع الحال</button>
+      <button onclick="setTab('khulasa',this)">خلاصة وتمييز</button>
+      <button onclick="setTab('tawdif',this)">التوظيف</button>
+    </div>
+    <div class="tab-body">
+
+      <!-- ===== المفهوم والأركان ===== -->
+      <div id="mafhoom" class="tab-panel on">
+        <div class="intro">شاهِدْ أوّلًا <b>فيديوَ مفهومِ الحالِ وأركانِها</b>، ثمّ اضغطْ زرَّ البدءِ لِتظهرَ التطبيقاتُ <b>واحدًا تِلوَ الآخر</b>.</div>
+        <div class="video-box"><div class="video-ph" id="vidph-mafhoom">
+          <div class="film">🎬</div>
+          <div class="vtxt">فيديو الدرس: مفهومُ الحالِ وأركانُها</div>
+          <div class="vsub">الصقْ رابطَ الفيديو (يوتيوب أو MP4) ثمّ اضغطْ «تحميل»، أو استبدِلْ هذا العنصرَ في الكودِ بكودِ التضمين.</div>
+          <div class="vrow"><input id="vurl-mafhoom" placeholder="https://youtu.be/..."><button class="btn gram" onclick="loadVideo('mafhoom')">تحميل الفيديو</button></div>
+        </div></div>
+        <div class="start-row"><button class="btn gram big" id="startbtn-mafhoom" onclick="startApps('mafhoom')">شاهدتُ الفيديو ✓ ابدأِ التطبيقات</button></div>
+        <div class="apps" id="apps-mafhoom">
+          <div class="step-head"><span class="step-count" id="count-mafhoom"></span><span class="progress"><i id="prog-mafhoom"></i></span></div>
+          <div id="steps-mafhoom"></div>
+          <div class="step-nav"><button class="btn ghost" id="prev-mafhoom" onclick="stepGo('mafhoom',-1)">السابق</button><button class="btn gram" id="next-mafhoom" onclick="stepGo('mafhoom',1)">التالي</button></div>
+        </div>
+      </div>
+
+      <!-- ===== أنواع الحال ===== -->
+      <div id="anwa" class="tab-panel">
+        <div class="intro">شاهِدْ أوّلًا <b>فيديوَ أنواعِ الحال</b>، ثمّ اضغطْ زرَّ البدءِ لِتظهرَ التطبيقاتُ متسلسلةً.</div>
+        <div class="video-box"><div class="video-ph" id="vidph-anwa">
+          <div class="film">🎬</div>
+          <div class="vtxt">فيديو الدرس: أنواعُ الحال</div>
+          <div class="vsub">الصقْ رابطَ الفيديو (يوتيوب أو MP4) ثمّ اضغطْ «تحميل»، أو استبدِلْ هذا العنصرَ في الكودِ بكودِ التضمين.</div>
+          <div class="vrow"><input id="vurl-anwa" placeholder="https://youtu.be/..."><button class="btn gram" onclick="loadVideo('anwa')">تحميل الفيديو</button></div>
+        </div></div>
+        <div class="start-row"><button class="btn gram big" id="startbtn-anwa" onclick="startApps('anwa')">شاهدتُ الفيديو ✓ ابدأِ التطبيقات</button></div>
+        <div class="apps" id="apps-anwa">
+          <div class="step-head"><span class="step-count" id="count-anwa"></span><span class="progress"><i id="prog-anwa"></i></span></div>
+          <div id="steps-anwa"></div>
+          <div class="step-nav"><button class="btn ghost" id="prev-anwa" onclick="stepGo('anwa',-1)">السابق</button><button class="btn gram" id="next-anwa" onclick="stepGo('anwa',1)">التالي</button></div>
+        </div>
+      </div>
+
+      <!-- ===== خلاصة وتمييز ===== -->
+      <div id="khulasa" class="tab-panel">
+        <div class="intro">خلاصةٌ تجمعُ ما تعلّمتَه عن الحالِ (مفهومًا وأركانًا وأنواعًا)، ثمّ تطبيقُ <b>تمييزٍ</b> تُحدّدُ فيه نوعَ الحالِ في كلِّ جملة.</div>
+        <div class="cmp">
+          <div class="col"><div class="ch">المفهومُ والأركان</div><ul>
+            <li>الحالُ وصفٌ يُبيّنُ <b>هيئةَ</b> صاحبِه، ويُجيبُ عن <b>«كيف؟»</b>.</li>
+            <li>أركانُها: <b>الحالُ</b> + <b>صاحبُ الحالِ</b> (معرفة) + <b>العاملُ</b> (الفعل).</li>
+            <li class="ex">جاءَ الطالبُ مسرورًا.</li>
+          </ul></div>
+          <div class="col"><div class="ch">الأنواع</div><ul>
+            <li><b>مفردةٌ</b> (اسمٌ منصوب): «منتصرًا».</li>
+            <li><b>جملةٌ</b> فعليّةٌ أو اسميّةٌ في محلِّ نصب: «يبتسمُ» / «ووجهُهُ مُشرقٌ».</li>
+            <li><b>شبهُ جملةٍ</b> (جارٌّ ومجرورٌ أو ظرف) في محلِّ نصب: «على الغصنِ».</li>
+          </ul></div>
+        </div>
+        <div class="phase">🧭 تطبيقُ التمييز: حدّدْ نوعَ الحالِ في كلِّ جملة</div>
+        <div class="step-head"><span class="step-count" id="count-khulasa"></span><span class="progress"><i id="prog-khulasa"></i></span></div>
+        <div id="steps-khulasa"></div>
+        <div class="step-nav"><button class="btn ghost" id="prev-khulasa" onclick="stepGo('khulasa',-1)">السابق</button><button class="btn gram" id="next-khulasa" onclick="stepGo('khulasa',1)">التالي</button></div>
+      </div>
+
+      <!-- ===== التوظيف ===== -->
+      <div id="tawdif" class="tab-panel">
+        <div class="intro">التوظيفُ هو <b>الوضعيّةُ الإدماجيّةُ</b> في بيداغوجيا الكفايات: تُعبّئُ مواردَك ثمّ تُدمِجُها في إنتاجٍ مركّبٍ ذي معنًى. ابدأْ بتمهيدٍ يُعبّئُ المواردَ، ثمّ أنجِزِ الوضعيّةَ الإدماجيّة.</div>
+        <div class="cmp"><div class="col"><div class="ch">تذكّرْ قبلَ التوظيف</div><ul>
+          <li>الحالُ تُبيّنُ <b>هيئةَ</b> صاحبِها وتُجيبُ عن سؤال <b>«كيف؟»</b>.</li>
+          <li>أركانُها: <b>الحالُ</b> + <b>صاحبُ الحالِ</b> (معرفة) + <b>العاملُ</b> (الفعل).</li>
+          <li>أنواعُها: <b>مفردة</b> (منصوبة)، و<b>جملة</b> (اسمية/فعلية)، و<b>شبه جملة</b> (جار ومجرور/ظرف) في محلِّ نصب.</li>
+        </ul></div></div>
+        <div class="phase">🧩 تمهيد: تعبئةُ الموارد</div>
+        <div class="step-head"><span class="step-count" id="count-tawdif"></span><span class="progress"><i id="prog-tawdif"></i></span></div>
+        <div id="steps-tawdif"></div>
+        <div class="step-nav"><button class="btn ghost" id="prev-tawdif" onclick="stepGo('tawdif',-1)">السابق</button><button class="btn gram" id="next-tawdif" onclick="stepGo('tawdif',1)">التالي</button></div>
+        <div class="phase" style="margin-top:20px">★ الوضعيّةُ الإدماجيّة</div>
+        <div id="sit-crit"></div>
+      </div>
+
+    </div>
+  </section>
+</div>
+
+<script>
+function setTab(id,btn){document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('on'));document.getElementById(id).classList.add('on');btn.classList.add('on');}
+function loadVideo(key){const u=document.getElementById('vurl-'+key).value.trim();if(!u)return;const yt=u.match(/(?:youtu\.be\/|[?&]v=)([\w-]{11})/);let emb=yt?`<iframe src="https://www.youtube.com/embed/${yt[1]}" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;border-radius:12px"></iframe>`:`<video src="${u}" controls style="width:100%;border-radius:12px"></video>`;document.getElementById('vidph-'+key).innerHTML=emb;}
+function startApps(key){document.getElementById('apps-'+key).style.display='block';document.getElementById('startbtn-'+key).style.display='none';document.getElementById('apps-'+key).scrollIntoView({behavior:'smooth',block:'start'});}
+const STEP={};
+function buildStepper(key,steps){STEP[key]={cur:0,total:steps.length};document.getElementById('steps-'+key).innerHTML=steps.map((s,i)=>`<div class="step${i===0?' on':''}" data-i="${i}"><div class="phase">${s.p}</div>${s.h}</div>`).join('');stepShow(key,0);}
+function stepShow(key,i){const S=STEP[key];S.cur=Math.max(0,Math.min(S.total-1,i));document.querySelectorAll('#steps-'+key+' .step').forEach(st=>st.classList.toggle('on',+st.dataset.i===S.cur));document.getElementById('count-'+key).textContent='التطبيقُ '+(S.cur+1)+' من '+S.total;document.getElementById('prog-'+key).style.width=((S.cur+1)/S.total*100)+'%';document.getElementById('prev-'+key).disabled=(S.cur===0);const nx=document.getElementById('next-'+key);if(S.cur===S.total-1){nx.textContent='آخرُ تطبيق';nx.disabled=true;}else{nx.textContent='التالي';nx.disabled=false;}}
+function stepGo(key,d){stepShow(key,STEP[key].cur+d);}
+
+function qHead(type){return `<div class="q-head"><span class="lvl">تطبيق</span>${type?`<span class="qtype">${type}</span>`:''}</div>`;}
+function goal(t){return `<div class="goal"><b>الهدف:</b> ${t}</div>`;}
+function figBlock(o,id){if(!o.fig)return '';let f=`<div class="figure"><div class="figbox" id="${id}-fig">${o.fig}</div>`;if(o.imgEditable){f+=`<div class="figctrl"><button class="btn sm" onclick="document.getElementById('${id}-file').click()">📷 تغيير الصورة</button><input type="file" id="${id}-file" accept="image/*" style="display:none" onchange="changeFig('${id}-fig',event)"></div>`;}return f+`</div>`;}
+function changeFig(fid,ev){const f=ev.target.files&&ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{document.getElementById(fid).innerHTML=`<img src="${e.target.result}" alt="صورة" class="figimg">`;};r.readAsDataURL(f);}
+function MCQ(o){const id='m'+Math.random().toString(36).slice(2,8);let h=`<div class="q">${qHead(o.type)}${goal(o.goal)}<div class="q-stem">${o.stem}</div>${figBlock(o,id)}<div class="opts" id="${id}">`;o.options.forEach((op,i)=>h+=`<div class="opt" data-i="${i}"><span class="mk"></span><span>${op.t}</span></div>`);h+=`</div><div class="fb" id="${id}-fb"></div></div>`;setTimeout(()=>bindMCQ(id,o),0);return h;}
+function bindMCQ(id,o){const box=document.getElementById(id),fb=document.getElementById(id+'-fb');box.querySelectorAll('.opt').forEach(opt=>opt.addEventListener('click',()=>{const op=o.options[+opt.dataset.i];fb.className='fb show '+(op.ok?'ok':'no');fb.innerHTML=op.fb;if(op.ok){opt.classList.add('correct');opt.querySelector('.mk').textContent='✓';box.querySelectorAll('.opt').forEach(x=>x.classList.add('locked'));opt.classList.remove('locked');}else{opt.classList.add('wrong');opt.querySelector('.mk').textContent='✕';setTimeout(()=>{opt.classList.remove('wrong');opt.querySelector('.mk').textContent='';},1500);}}));}
+function MATCH(o){const id='g'+Math.random().toString(36).slice(2,8);let h=`<div class="q">${qHead(o.type)}${goal(o.goal)}<div class="q-stem">${o.stem}</div><div class="match"><div class="col"><h5>${o.h1||''}</h5>`;o.left.forEach((t,i)=>h+=`<div class="chip" data-side="L" data-i="${i}" data-g="${id}">${t}</div>`);h+=`</div><div class="col"><h5>${o.h2||''}</h5>`;o.right.forEach((t,i)=>h+=`<div class="chip" data-side="R" data-i="${i}" data-g="${id}">${t}</div>`);h+=`</div></div></div>`;setTimeout(()=>bindMatch(id,o),0);return h;}
+let mSel={},mIdx={};const PC=[{bg:'#D6DCF3',bd:'#4C5CA8',tx:'#28315e'},{bg:'#D8F0E2',bd:'#40916C',tx:'#16352A'},{bg:'#F4E6CF',bd:'#C0813B',tx:'#7a4e14'},{bg:'#D8EEF0',bd:'#2C7A7B',tx:'#16433f'}];
+function paint(a,b,i){const c=PC[i%PC.length];[a,b].forEach(e=>{e.style.background=c.bg;e.style.borderColor=c.bd;e.style.color=c.tx;});}
+function bindMatch(id,o){mSel[id]=null;mIdx[id]=0;document.querySelectorAll(`.chip[data-g="${id}"]`).forEach(chip=>chip.addEventListener('click',()=>{if(chip.classList.contains('done'))return;const side=chip.dataset.side,i=+chip.dataset.i;if(!mSel[id]){mSel[id]={side,i,el:chip};chip.classList.add('sel');return;}const s=mSel[id];if(s.side===side){s.el.classList.remove('sel');mSel[id]={side,i,el:chip};chip.classList.add('sel');return;}const L=side==='L'?i:s.i,R=side==='R'?i:s.i;s.el.classList.remove('sel');if(o.pairs[L]===R){chip.classList.add('done');s.el.classList.add('done');paint(chip,s.el,mIdx[id]);mIdx[id]++;}else{chip.classList.add('shake');s.el.classList.add('shake');setTimeout(()=>{chip.classList.remove('shake');s.el.classList.remove('shake');},300);}mSel[id]=null;}));}
+function CLOZE(o){const id='c'+Math.random().toString(36).slice(2,8);let body='';o.parts.forEach(p=>{if(typeof p==='string')body+=p;else body+=`<span class="blank" data-ans="${p.b}" onclick="clozeBlank('${id}',this)"></span>`;});const bank=o.bank.map(w=>`<span class="word" data-w="${w}" onclick="clozeWord('${id}',this)">${w}</span>`).join('');return `<div class="q">${qHead(o.type)}${goal(o.goal)}<div class="q-stem">${o.stem}</div><div class="bank" id="${id}-bank">${bank}</div><div class="cloze" id="${id}-cz">${body}</div><div class="row"><button class="btn sm" onclick="clozeCheck('${id}')">تحقّق</button></div><div class="fb" id="${id}-fb"></div></div>`;}
+function clozeWord(id,el){if(el.classList.contains('used'))return;const empty=[...document.querySelectorAll('#'+id+'-cz .blank')].find(b=>!b.classList.contains('filled'));if(!empty)return;empty.textContent=el.dataset.w;empty.classList.add('filled');empty.dataset.filled=el.dataset.w;empty.dataset.src=el.dataset.w;el.classList.add('used');}
+function clozeBlank(id,b){if(!b.classList.contains('filled'))return;const w=b.dataset.src;document.querySelectorAll('#'+id+'-bank .word').forEach(x=>{if(x.dataset.w===w)x.classList.remove('used');});b.textContent='';b.classList.remove('filled','ok','no');b.removeAttribute('data-filled');b.removeAttribute('data-src');}
+function clozeCheck(id){const blanks=[...document.querySelectorAll('#'+id+'-cz .blank')],fb=document.getElementById(id+'-fb');let all=true;blanks.forEach(b=>{const ok=(b.dataset.filled===b.dataset.ans);b.classList.toggle('ok',ok);b.classList.toggle('no',!ok);if(!ok)all=false;});fb.className='fb show '+(all?'ok':'no');fb.innerHTML=all?'أحسنت، الإجابةُ مطابقةٌ للقاعدة.':'راجِعِ القاعدةَ، وانقُرِ الفراغَ المملوءَ لتصحيحِه ثمّ أعِدِ المحاولة.';}
+function CRIT(o){const id='cr'+Math.random().toString(36).slice(2,8);const crit=o.criteria.map(c=>`<label class="crit-item" data-g="${id}"><span class="crit-box"></span><span>${c}</span></label>`).join('');setTimeout(()=>bindCrit(id),0);return `<div class="q">${qHead(o.type)}${goal(o.goal)}<div class="q-stem">${o.stem}</div>${figBlock(o,id)}<div class="free"><textarea placeholder="اكتُبْ هنا..."></textarea></div><div class="row"><button class="btn sm" onclick="document.getElementById('${id}-c').classList.toggle('show')">تحقّقْ وفقَ المعايير</button></div><div class="crit" id="${id}-c"><p class="crit-note">ليست للإجابةِ صيغةٌ واحدة؛ تأكّدْ من سلامتِها بمطابقتِها هذه المعايير:</p>${crit}<div class="crit-done" id="${id}-done">أحسنت — إجابتُك مستوفيةٌ للمعايير.</div></div></div>`;}
+function bindCrit(id){const items=document.querySelectorAll(`.crit-item[data-g="${id}"]`);items.forEach(it=>it.addEventListener('click',()=>{it.classList.toggle('on');document.getElementById(id+'-done').classList.toggle('show',[...items].every(x=>x.classList.contains('on')));}));}
+
+/* SVG real-life scene (replaceable): child running in a park */
+const FIG_SCENE="<svg viewBox='0 0 240 150' xmlns='http://www.w3.org/2000/svg'><rect width='240' height='150' fill='#cfe9f6'/><circle cx='205' cy='28' r='15' fill='#FCD34D'/><g stroke='#FCD34D' stroke-width='2'><line x1='205' y1='5' x2='205' y2='-1'/><line x1='226' y1='28' x2='232' y2='28'/><line x1='221' y1='12' x2='225' y2='8'/></g><rect y='112' width='240' height='38' fill='#bfe3a8'/><rect x='30' y='66' width='11' height='48' fill='#8a5a2b'/><circle cx='35' cy='58' r='24' fill='#5BA86B'/><circle cx='52' cy='66' r='16' fill='#5BA86B'/><circle cx='18' cy='66' r='15' fill='#5BA86B'/><g transform='translate(140,86)' stroke='#34406e' stroke-width='5' stroke-linecap='round'><circle cx='2' cy='-26' r='10' fill='#e8b98a' stroke='none'/><line x1='0' y1='-16' x2='8' y2='8'/><line x1='3' y1='-9' x2='-13' y2='-3'/><line x1='3' y1='-9' x2='19' y2='-14'/><line x1='8' y1='8' x2='-7' y2='25'/><line x1='8' y1='8' x2='23' y2='22'/></g></svg>";
+
+buildStepper('mafhoom',[
+ {p:'① تحديدُ المفهوم', h:MCQ({type:"اختيار من متعدّد",goal:"أن يُميّزَ المتعلّمُ الحالَ في الجملة.",
+   stem:"حدّدِ الحالَ في الجملة: «عادَ الجنديُّ منتصرًا.»",
+   options:[
+     {t:"منتصرًا",ok:true,fb:"صحيح. «منتصرًا» حالٌ منصوبٌ يُبيّنُ هيئةَ الجنديِّ حينَ عودتِه (كيف عادَ؟)."},
+     {t:"الجنديُّ",ok:false,fb:"«الجنديُّ» هو الذي تُبيَّنُ هيئتُه (صاحبُ الحال)، لا الحالُ نفسُه. ما الكلمةُ التي تَصِفُ هيئتَه؟"},
+     {t:"عادَ",ok:false,fb:"«عادَ» فعلٌ (وهو العاملُ الذي أحدثَ الحال)؛ ابحَثْ عن الوصفِ الذي يُبيّنُ كيف عاد."}
+   ]})},
+ {p:'② وظيفةُ الحال', h:MCQ({type:"اختيار من متعدّد",goal:"أن يَعرفَ المتعلّمُ أنّ الحالَ تُجيبُ عن «كيف؟».",
+   stem:"عن أيِّ سؤالٍ تُجيبُ الحالُ في الجملة؟",
+   options:[
+     {t:"كيف؟ (تُبيّنُ الهيئة)",ok:true,fb:"صحيح. الحالُ تُبيّنُ هيئةَ صاحبِها، فتُجيبُ عن السؤال «كيف؟»."},
+     {t:"متى؟ (تُبيّنُ الزمان)",ok:false,fb:"«متى؟» يُجيبُ عنها ظرفُ الزمان؛ أمّا الحالُ فتُبيّنُ الهيئةَ. جرّبْ سؤالًا آخر."},
+     {t:"أين؟ (تُبيّنُ المكان)",ok:false,fb:"«أين؟» يُجيبُ عنها ظرفُ المكان؛ والحالُ تَصِفُ هيئةَ الفاعلِ لا مكانَه."}
+   ]})},
+ {p:'③ صاحبُ الحال', h:MCQ({type:"اختيار من متعدّد",goal:"أن يحدّدَ المتعلّمُ صاحبَ الحال.",
+   stem:"مَن صاحبُ الحالِ في «رجعَ الفلاحونَ مُتعَبينَ»؟",
+   options:[
+     {t:"الفلاحونَ",ok:true,fb:"صحيح. «الفلاحونَ» هم مَن تُبيّنُ الحالُ هيئتَهم (مُتعَبينَ)، فهم صاحبُ الحال، وهو معرفة."},
+     {t:"مُتعَبينَ",ok:false,fb:"«مُتعَبينَ» هي الحالُ نفسُها (الوصف المنصوب)؛ والمطلوبُ مَنِ الموصوفُ بها."},
+     {t:"رجعَ",ok:false,fb:"«رجعَ» هو العاملُ (الفعل)؛ وصاحبُ الحالِ اسمٌ تُبيَّنُ هيئتُه."}
+   ]})},
+ {p:'④ العاملُ في الحال', h:MCQ({type:"اختيار من متعدّد",goal:"أن يحدّدَ المتعلّمُ العاملَ الذي أحدثَ الحال.",
+   stem:"ما العاملُ (الذي أحدثَ الحالَ) في «جاءَ الطالبُ مسرورًا»؟",
+   options:[
+     {t:"الفعلُ «جاءَ»",ok:true,fb:"صحيح. العاملُ غالبًا فعلٌ؛ هنا «جاءَ» هو الذي عمِلَ في الحالِ «مسرورًا»."},
+     {t:"«الطالبُ»",ok:false,fb:"«الطالبُ» صاحبُ الحالِ لا العاملُ فيها؛ العاملُ ما يُحدِثُ الهيئةَ ويَعملُ في الحال."},
+     {t:"«مسرورًا»",ok:false,fb:"«مسرورًا» هي الحالُ نفسُها؛ والمطلوبُ ما عَمِلَ فيها وأحدثَها."}
+   ]})},
+ {p:'⑤ علامةُ إعرابِ الحال', h:MCQ({type:"اختيار من متعدّد",goal:"أن يَعرفَ المتعلّمُ أنّ الحالَ المفردةَ منصوبة.",
+   stem:"الحالُ المفردةُ تكونُ اسمًا نكرةً، وعلامتُها الإعرابيّةُ أنّها دائمًا...",
+   options:[
+     {t:"منصوبةٌ",ok:true,fb:"صحيح. الحالُ المفردةُ منصوبةٌ دائمًا، وتكونُ نكرةً، وصاحبُها معرفةٌ غالبًا."},
+     {t:"مرفوعةٌ",ok:false,fb:"تأمّلِ الأمثلةَ: «منتصرًا، مسرورًا، مُتعَبينَ» — بأيِّ حركةٍ ضُبِطت آخِرُها؟"},
+     {t:"مجرورةٌ",ok:false,fb:"الجرُّ للأسماءِ بعدَ حروفِ الجرِّ أو بالإضافة؛ والحالُ ليست كذلك. انظُرْ إلى ضبطِ الأمثلة."}
+   ]})},
+ {p:'⑥ اكتشفِ الخطأ', h:MCQ({type:"اكتشاف الخطأ",goal:"أن يكتشفَ المتعلّمُ خطأَ ضبطِ الحال.",
+   stem:"في الجملِ الآتيةِ جملةٌ واحدةٌ بها خطأٌ في الحال. اكتشِفِ الجملةَ الخطأ:",
+   options:[
+     {t:"وصلَ المسافرُ مُتعَبًا.",ok:false,fb:"صحيحةٌ: «مُتعَبًا» حالٌ منصوبٌ نكرةٌ يُبيّنُ هيئةَ المسافر. الخطأُ في جملةٍ أخرى."},
+     {t:"خرجَ التلاميذُ مسرورونَ.",ok:true,fb:"أحسنت! هنا الخطأ: الحالُ يجبُ أن تكونَ منصوبةً، فالصوابُ «مسرورينَ» لا «مسرورونَ»."},
+     {t:"نامَ الطفلُ هادئًا.",ok:false,fb:"صحيحةٌ: «هادئًا» حالٌ منصوبٌ يُبيّنُ هيئةَ الطفل. ابحَثْ عن الخطأِ في غيرِها."}
+   ]})},
+ {p:'⑦ صِلْ أركانَ الحال', h:MATCH({type:"صِل بسهم",goal:"أن يَربطَ المتعلّمُ كلَّ رُكنٍ بمثالِه من الجملة.",
+   stem:"في الجملة «شاهدتُ الطائرَ مُحلّقًا»، صِلْ كلَّ رُكنٍ بما يُمثّلُه:",
+   h1:"الرُّكن",h2:"مثالُه",
+   left:["الحال","صاحبُ الحال","العامل"],
+   right:["الطائرَ","مُحلّقًا","شاهدتُ"],
+   pairs:{0:1,1:0,2:2}})}
+]);
+
+buildStepper('anwa',[
+ {p:'① الحالُ المفردة', h:MCQ({type:"اختيار من متعدّد",goal:"أن يتعرّفَ المتعلّمُ الحالَ المفردة.",
+   stem:"ما نوعُ الحالِ في «عادَ الجنديُّ منتصرًا»؟",
+   options:[
+     {t:"حالٌ مفردةٌ (اسمٌ منصوبٌ ليس جملةً ولا شبهَ جملة)",ok:true,fb:"صحيح. «منتصرًا» اسمٌ مفردٌ منصوبٌ، فهو حالٌ مفردة."},
+     {t:"حالٌ جملةٌ فعليّة",ok:false,fb:"هل «منتصرًا» جملةٌ فيها فعلٌ وفاعل؟ إنّها كلمةٌ واحدةٌ منصوبة."},
+     {t:"حالٌ شبهُ جملة",ok:false,fb:"شبهُ الجملةِ جارٌّ ومجرورٌ أو ظرف؛ و«منتصرًا» اسمٌ مفردٌ منصوب."}
+   ]})},
+ {p:'② الحالُ جملةٌ فعليّة', h:MCQ({type:"اختيار من متعدّد",goal:"أن يتعرّفَ المتعلّمُ الحالَ الجملةَ الفعليّة.",
+   stem:"ما نوعُ الحالِ (المُلوَّنِ معنًى) في «أقبلَ التلميذُ يبتسمُ»؟",
+   options:[
+     {t:"جملةٌ فعليّةٌ في محلِّ نصبٍ حال",ok:true,fb:"صحيح. «يبتسمُ» جملةٌ فعليّةٌ تُبيّنُ هيئةَ التلميذِ، وهي في محلِّ نصبٍ حال، رابطُها الضمير."},
+     {t:"حالٌ مفردة",ok:false,fb:"«يبتسمُ» فعلٌ مضارعٌ وفاعلُه مستترٌ، فهي جملةٌ لا كلمةٌ مفردة."},
+     {t:"شبهُ جملة",ok:false,fb:"لا جارَّ ولا ظرفَ هنا؛ بل فعلٌ مضارعٌ = جملةٌ فعليّة."}
+   ]})},
+ {p:'③ الحالُ جملةٌ اسميّة', h:MCQ({type:"اختيار من متعدّد",goal:"أن يتعرّفَ المتعلّمُ الحالَ الجملةَ الاسميّة.",
+   stem:"ما نوعُ الحالِ في «دخلَ الأبُ ووجهُهُ مُشرقٌ»؟",
+   options:[
+     {t:"جملةٌ اسميّةٌ في محلِّ نصبٍ حال",ok:true,fb:"صحيح. «وجهُهُ مُشرقٌ» جملةٌ اسميّةٌ (مبتدأ وخبر) في محلِّ نصبٍ حال، رابطُها الواوُ والضمير."},
+     {t:"حالٌ مفردة",ok:false,fb:"الحالُ هنا تركيبٌ من مبتدأ وخبرٍ، لا كلمةٌ واحدة."},
+     {t:"جملةٌ فعليّة",ok:false,fb:"هل تبدأُ الحالُ بفعلٍ؟ إنّها تبدأُ باسمٍ «وجهُهُ»، فهي جملةٌ اسميّة."}
+   ]})},
+ {p:'④ الحالُ شبهُ جملة', h:MCQ({type:"اختيار من متعدّد",goal:"أن يتعرّفَ المتعلّمُ الحالَ شبهَ الجملة.",
+   stem:"ما نوعُ الحالِ في «رأيتُ العصفورَ على الغصنِ»؟",
+   options:[
+     {t:"شبهُ جملةٍ (جارٌّ ومجرورٌ) في محلِّ نصبٍ حال",ok:true,fb:"صحيح. «على الغصنِ» جارٌّ ومجرورٌ (شبهُ جملة) يُبيّنُ هيئةَ العصفورِ، في محلِّ نصبٍ حال."},
+     {t:"حالٌ مفردة",ok:false,fb:"الحالُ هنا تركيبٌ من حرفِ جرٍّ واسمٍ مجرور، لا كلمةٌ مفردةٌ منصوبة."},
+     {t:"جملةٌ فعليّة",ok:false,fb:"لا فعلَ في «على الغصنِ»؛ إنّها جارٌّ ومجرورٌ = شبهُ جملة."}
+   ]})},
+ {p:'⑤ رابطُ جملةِ الحال', h:MCQ({type:"اختيار من متعدّد",goal:"أن يحدّدَ المتعلّمُ رابطَ جملةِ الحالِ بصاحبِها.",
+   stem:"ما الذي يَربطُ جملةَ الحالِ بصاحبِها في «جاءَ زيدٌ وهو يضحكُ»؟",
+   options:[
+     {t:"الواوُ (واوُ الحال) والضميرُ",ok:true,fb:"صحيح. جملةُ الحالِ تَرتبطُ بصاحبِها بالواوِ و/أو الضمير؛ وهنا اجتمعَ الرابطانِ: الواوُ و«هو»."},
+     {t:"لا رابطَ لها",ok:false,fb:"جملةُ الحالِ تحتاجُ رابطًا يَصِلُها بصاحبِها؛ تأمّلْ بدايةَ الجملةِ والضميرَ فيها."},
+     {t:"حرفُ جرٍّ",ok:false,fb:"لا حرفَ جرٍّ هنا؛ الرابطُ في جملةِ الحالِ هو الواوُ أو الضميرُ أو هما معًا."}
+   ]})},
+ {p:'⑥ صِلِ النوعَ بمثالِه', h:MATCH({type:"صِل بسهم",goal:"أن يربطَ المتعلّمُ كلَّ نوعٍ من الحالِ بمثالِه.",
+   stem:"صِلْ كلَّ نوعٍ من الحالِ بالمثالِ المناسب:",
+   h1:"النوع",h2:"المثال (الحال)",
+   left:["مفردة","جملة فعليّة","جملة اسميّة","شبه جملة"],
+   right:["على الغصنِ","منتصرًا","يبتسمُ","ووجهُهُ مُشرقٌ"],
+   pairs:{0:1,1:2,2:3,3:0}})},
+ {p:'⑦ أكمِلْ بالحالِ المناسب', h:CLOZE({type:"ملء فراغ",goal:"أن يُوظّفَ المتعلّمُ الحالَ المفردةَ منصوبةً.",
+   stem:"اختَرِ الحالَ الصحيحةَ وأكمِل:",
+   bank:["فرِحينَ","فرِحونَ"],
+   parts:["رجعَ الأطفالُ من المدرسةِ ",{b:"فرِحينَ"},"."]})}
+]);
+
+buildStepper('khulasa',[
+ {p:'تمييز ①', h:MCQ({type:"حدّدْ نوعَ الحال",goal:"أن يُصنّفَ المتعلّمُ نوعَ الحال.",
+   stem:"ما نوعُ الحالِ في «عادَ الجنديُّ منتصرًا»؟",
+   options:[
+     {t:"حالٌ مفردةٌ",ok:true,fb:"صحيح. «منتصرًا» اسمٌ مفردٌ منصوبٌ، فهو حالٌ مفردة."},
+     {t:"حالٌ جملةٌ فعليّة",ok:false,fb:"هل «منتصرًا» جملةٌ فيها فعل؟ إنّها كلمةٌ واحدةٌ منصوبة."},
+     {t:"حالٌ جملةٌ اسميّة",ok:false,fb:"لا مبتدأَ ولا خبرَ هنا؛ إنّها كلمةٌ مفردة."},
+     {t:"حالٌ شبهُ جملة",ok:false,fb:"لا جارَّ ولا ظرفَ؛ بل اسمٌ مفردٌ منصوب."}
+   ]})},
+ {p:'تمييز ②', h:MCQ({type:"حدّدْ نوعَ الحال",goal:"أن يُصنّفَ المتعلّمُ نوعَ الحال.",
+   stem:"ما نوعُ الحالِ في «أقبلَ التلميذُ يبتسمُ»؟",
+   options:[
+     {t:"حالٌ جملةٌ فعليّة",ok:true,fb:"صحيح. «يبتسمُ» جملةٌ فعليّةٌ في محلِّ نصبٍ حال، رابطُها الضمير."},
+     {t:"حالٌ مفردة",ok:false,fb:"«يبتسمُ» فعلٌ مضارعٌ وفاعلُه مستتر = جملة، لا كلمةٌ مفردة."},
+     {t:"حالٌ جملةٌ اسميّة",ok:false,fb:"الجملةُ تبدأُ بفعلٍ لا باسمٍ، فهي فعليّةٌ لا اسميّة."},
+     {t:"حالٌ شبهُ جملة",ok:false,fb:"لا جارَّ ولا ظرفَ؛ بل فعلٌ مضارعٌ = جملةٌ فعليّة."}
+   ]})},
+ {p:'تمييز ③', h:MCQ({type:"حدّدْ نوعَ الحال",goal:"أن يُصنّفَ المتعلّمُ نوعَ الحال.",
+   stem:"ما نوعُ الحالِ في «دخلَ الأبُ ووجهُهُ مُشرقٌ»؟",
+   options:[
+     {t:"حالٌ جملةٌ اسميّة",ok:true,fb:"صحيح. «وجهُهُ مُشرقٌ» مبتدأٌ وخبرٌ = جملةٌ اسميّةٌ في محلِّ نصب، رابطُها الواوُ والضمير."},
+     {t:"حالٌ جملةٌ فعليّة",ok:false,fb:"هل تبدأُ الحالُ بفعل؟ إنّها تبدأُ باسمٍ «وجهُهُ»."},
+     {t:"حالٌ مفردة",ok:false,fb:"الحالُ هنا تركيبٌ من مبتدأ وخبرٍ لا كلمةٌ واحدة."},
+     {t:"حالٌ شبهُ جملة",ok:false,fb:"لا جارَّ ولا ظرفَ؛ بل مبتدأٌ وخبرٌ = جملةٌ اسميّة."}
+   ]})},
+ {p:'تمييز ④', h:MCQ({type:"حدّدْ نوعَ الحال",goal:"أن يُصنّفَ المتعلّمُ نوعَ الحال.",
+   stem:"ما نوعُ الحالِ في «رأيتُ العصفورَ على الغصنِ»؟",
+   options:[
+     {t:"حالٌ شبهُ جملة",ok:true,fb:"صحيح. «على الغصنِ» جارٌّ ومجرورٌ (شبهُ جملة) في محلِّ نصبٍ حال."},
+     {t:"حالٌ مفردة",ok:false,fb:"الحالُ هنا حرفُ جرٍّ واسمٌ مجرورٌ لا كلمةٌ مفردةٌ منصوبة."},
+     {t:"حالٌ جملةٌ فعليّة",ok:false,fb:"لا فعلَ في «على الغصنِ»."},
+     {t:"حالٌ جملةٌ اسميّة",ok:false,fb:"لا مبتدأَ ولا خبرَ؛ بل جارٌّ ومجرورٌ = شبهُ جملة."}
+   ]})},
+ {p:'تمييز ⑤', h:MCQ({type:"حدّدْ نوعَ الحال",goal:"أن يُصنّفَ المتعلّمُ نوعَ الحال.",
+   stem:"ما نوعُ الحالِ في «خرجَ الأطفالُ مسرورينَ»؟",
+   options:[
+     {t:"حالٌ مفردة",ok:true,fb:"صحيح. «مسرورينَ» اسمٌ منصوبٌ (جمعٌ) لكنّه كلمةٌ واحدةٌ لا جملة، فهو حالٌ مفردة."},
+     {t:"حالٌ جملةٌ فعليّة",ok:false,fb:"لا فعلَ في «مسرورينَ»؛ هي اسمٌ منصوب."},
+     {t:"حالٌ جملةٌ اسميّة",ok:false,fb:"لا مبتدأَ ولا خبرَ؛ هي كلمةٌ واحدةٌ منصوبة."},
+     {t:"حالٌ شبهُ جملة",ok:false,fb:"لا جارَّ ولا ظرفَ؛ هي اسمٌ مفردٌ منصوب (وإنْ كان جمعًا، فهو كلمةٌ واحدةٌ لا جملة)."}
+   ]})}
+]);
+
+buildStepper('tawdif',[
+ {p:'تمهيد ① · أكمِلْ بحالٍ في سياق', h:CLOZE({type:"ملء فراغ",goal:"أن يُوظّفَ المتعلّمُ الحالَ المنصوبةَ في سياق.",
+   stem:"اختَرِ الحالَ المناسبةَ وأكمِلِ السياق:",
+   bank:["نشِيطينَ","نشِيطونَ"],
+   parts:["خرجَ المزارعونَ إلى الحقلِ ",{b:"نشِيطينَ"}," معَ شروقِ الشمس."]})},
+ {p:'تمهيد ② · حوّلِ الحالَ إلى جملة', h:MCQ({type:"تحويل",goal:"أن يُحوّلَ المتعلّمُ الحالَ المفردةَ إلى جملةِ حال.",
+   stem:"حوّلِ الحالَ المفردةَ في «دخلَ الطفلُ باكيًا» إلى جملةِ حال. أيُّ الصيغِ صحيحة؟",
+   options:[
+     {t:"دخلَ الطفلُ وهو يبكي",ok:true,fb:"صحيح. «وهو يبكي» جملةٌ في محلِّ نصبٍ حال، رابطُها الواوُ والضمير، وتؤدّي معنى «باكيًا»."},
+     {t:"دخلَ الطفلُ باكٍ",ok:false,fb:"«باكٍ» اسمٌ منقوصٌ مرفوعٌ، فلا هو حالٌ منصوبةٌ مفردةٌ ولا جملةُ حال. المطلوبُ تحويلٌ إلى جملة."},
+     {t:"دخلَ الطفلُ البكاءَ",ok:false,fb:"«البكاءَ» مصدرٌ معرفةٌ لا يُبيّنُ الهيئةَ على صورةِ حال؛ والمطلوبُ جملةٌ تصفُ هيئتَه."}
+   ]})},
+ {p:'تمهيد ③ · اختَرِ الضبطَ الصحيح', h:MCQ({type:"اختر الصواب",goal:"أن يميّزَ المتعلّمُ الضبطَ الصحيحَ للحال.",
+   stem:"في أيِّ جملةٍ ضُبِطتِ الحالُ ضبطًا صحيحًا؟",
+   options:[
+     {t:"رجعَ اللاعبونَ منتصرينَ.",ok:true,fb:"صحيح. الحالُ «منتصرينَ» منصوبةٌ (جمعُ مذكّرٍ سالمٌ علامةُ نصبِه الياء)، وتُبيّنُ هيئةَ اللاعبين."},
+     {t:"رجعَ اللاعبونَ منتصرونَ.",ok:false,fb:"الحالُ يجبُ أن تكونَ منصوبةً؛ فكيف يُنصَبُ جمعُ المذكّرِ السالمِ «منتصر...»؟ راجِعِ العلامة."}
+   ]})}
+]);
+
+/* الوضعيّة الإدماجيّة (سياق مجلّة القسم + الصورة سندًا + تعليمة مركّبة + معايير الإدماج) */
+document.getElementById('sit-crit').innerHTML=CRIT({type:"وضعيّة إدماجيّة · إنتاج",
+  goal:"أن يُدمِجَ المتعلّمُ مواردَه (أنواعَ الحالِ وأركانَها) في إنتاجٍ مركّبٍ ذي معنًى.",
+  imgEditable:true,fig:FIG_SCENE,
+  stem:"<b>السياق:</b> يُعِدُّ قسمُك رُكنًا في مجلّةِ المدرسةِ بعنوان «مشاهدُ من حياتِنا»، ويَطلبُ نصوصًا تَصِفُ لحظاتٍ من يومِكم.<br><br><b>التعليمة:</b> انطلاقًا من الصورة (يمكنُك تغييرُها بمشهدٍ من قسمِك)، اكتُبْ فقرةً من <b>4 إلى 6 أسطرٍ</b> تَصِفُ فيها المشهدَ لِتُنشَرَ في المجلّة، مُدمِجًا <b>أنواعَ الحالِ الثلاثةَ</b>: حالًا مفردةً، وحالًا جملةً (اسميّةً أو فعليّة)، وحالًا شبهَ جملة.",
+  criteria:[
+    "الملاءمة: أنتجتُ فقرةً تَصِفُ المشهدَ وتُناسِبُ سياقَ مجلّةِ القسم، ضمنَ الحجمِ المطلوب (4–6 أسطر).",
+    "التوظيفُ السليمُ للموارد: أدمجتُ أنواعَ الحالِ الثلاثةَ (مفردة + جملة + شبه جملة) محترِمًا أركانَها وضبطَها.",
+    "الانسجام: فقرتي مترابطةٌ ومنسجمةٌ في وصفِ المشهد.",
+    "سلامةُ اللغةِ والترقيم: لغتي سليمةٌ وعلاماتُ الترقيمِ مناسبة."
+  ]});
+</script>
+</body>
+</html>
