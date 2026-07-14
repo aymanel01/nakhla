@@ -1,0 +1,28 @@
+app = "nakhla"
+primary_region = "cdg"
+
+[build]
+
+[env]
+  NODE_ENV = "production"
+  PORT = "3000"
+  WEB_DIST = "/app/apps/web/dist"
+  DB_PATH = "/data/teaching-app.db"
+  UPLOAD_DIR = "/data/uploads"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+[[mounts]]
+  source = "nakhla_data"
+  destination = "/data"
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1

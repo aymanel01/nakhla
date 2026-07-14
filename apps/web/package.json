@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "node ../../scripts/free-port.mjs 5173 5174 && vite --port 5173",
     "build": "tsc -b && vite build",
+    "build:deploy": "vite build",
     "preview": "vite preview",
     "lint": "biome check src",
     "lint:fix": "biome check --write src",

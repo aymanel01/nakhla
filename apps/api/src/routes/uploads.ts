@@ -6,7 +6,9 @@ import path from 'node:path'
 import crypto from 'node:crypto'
 
 const uploads = new Hono()
-const uploadDir = path.resolve(process.cwd(), 'uploads')
+const uploadDir = process.env.UPLOAD_DIR
+  ? path.resolve(process.env.UPLOAD_DIR)
+  : path.resolve(process.cwd(), 'uploads')
 
 function sanitizeFileName(name: string) {
   return name.replace(/[^a-zA-Z0-9._-]/g, '_')

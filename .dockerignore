@@ -1,0 +1,15 @@
+node_modules
+.git
+.turbo
+dist
+*.db
+*.db-shm
+*.db-wal
+.env
+.env.*
+apps/api/uploads/*
+!apps/api/uploads/seed_*
+**/.gradle
+**/android/app/build
+**/android/build
+.expo

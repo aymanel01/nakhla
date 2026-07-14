@@ -41,30 +41,31 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
       },
     }),
   ],
+
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
   },
+
   server: {
     host: true,
+    port: 5173,
+    allowedHosts: true,
+
     proxy: {
       '/api': {
         target: 'http://localhost:3000',
         changeOrigin: true,
         ws: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
       },
       '/ws': {
         target: 'ws://localhost:3000',
         ws: true,
-      },
-      '/files': {
-        target: 'http://localhost:3000',
-        changeOrigin: true,
       },
     },
   },

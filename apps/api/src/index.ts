@@ -1,4 +1,5 @@
 import { serve } from '@hono/node-server'
+import { serveStatic } from '@hono/node-server/serve-static'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
@@ -20,41 +21,60 @@ import { wsManager } from './lib/websocket.js'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
+const isProduction = process.env.NODE_ENV === 'production'
+const webDist = process.env.WEB_DIST
+  ? path.resolve(process.env.WEB_DIST)
+  : path.resolve(process.cwd(), '../web/dist')
+
 const app = new Hono()
 
 app.use('*', logger())
+
 function isAllowedOrigin(origin: string) {
+  const configured = (process.env.WEB_ORIGIN || '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean)
+
+  if (configured.includes(origin)) return true
+
   return (
     /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin) ||
-    /^https?:\/\/(192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3})(:\d+)?$/.test(origin)
+    /^https?:\/\/(192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3})(:\d+)?$/.test(origin) ||
+    (isProduction && /^https:\/\/[\w-]+\.fly\.dev$/.test(origin))
   )
 }
 
 app.use(
   '*',
   cors({
-    origin: (origin) => (origin && isAllowedOrigin(origin) ? origin : 'http://localhost:5173'),
+    origin: (origin) => {
+      if (!origin) return isProduction ? '' : 'http://localhost:5173'
+      return isAllowedOrigin(origin) ? origin : isProduction ? '' : 'http://localhost:5173'
+    },
     credentials: true,
   })
 )
 
-app.get('/', (c) => {
+const api = new Hono()
+
+api.get('/', (c) => {
   return c.json({ message: 'Teaching App API', version: '1.0.0' })
 })
 
-app.route('/auth', auth)
-app.route('/admin/users', users)
-app.route('/lectures', lectures)
-app.route('/exercises', exercises)
-app.route('/quizzes', quizzes)
-app.route('/homework', homework)
-app.route('/messages', messages)
-app.route('/groups', groups)
-app.route('/resources', resources)
-app.route('/uploads', uploads)
-app.route('/progress', progress)
-app.route('/admin/content', adminContent)
-app.route('/student-creations', studentCreations)
+api.route('/auth', auth)
+api.route('/admin/users', users)
+api.route('/lectures', lectures)
+api.route('/exercises', exercises)
+api.route('/quizzes', quizzes)
+api.route('/homework', homework)
+api.route('/messages', messages)
+api.route('/groups', groups)
+api.route('/resources', resources)
+api.route('/uploads', uploads)
+api.route('/progress', progress)
+api.route('/admin/content', adminContent)
+api.route('/student-creations', studentCreations)
 
 const MIME_TYPES: Record<string, string> = {
   '.pdf': 'application/pdf',
@@ -98,7 +118,7 @@ const MIME_TYPES: Record<string, string> = {
   '.zip': 'application/zip',
 }
 
-app.get('/files/:name', authMiddleware, async (c) => {
+api.get('/files/:name', authMiddleware, async (c) => {
   const fileName = c.req.param('name')
   const filePath = path.join(uploadDir, fileName)
 
@@ -109,7 +129,6 @@ app.get('/files/:name', authMiddleware, async (c) => {
     return new Response(file, {
       headers: {
         'Content-Type': contentType,
-        // Let the browser render the file in-place (iframe/img/video) instead of forcing a download.
         'Content-Disposition': 'inline',
         'Cache-Control': 'private, max-age=3600',
       },
@@ -118,6 +137,14 @@ app.get('/files/:name', authMiddleware, async (c) => {
     return c.json({ error: 'Not Found', message: 'File not found' }, 404)
   }
 })
+
+app.route('/api', api)
+
+if (isProduction) {
+  app.use('/assets/*', serveStatic({ root: webDist }))
+  app.use('/*', serveStatic({ root: webDist }))
+  app.get('*', serveStatic({ root: webDist, path: 'index.html' }))
+}
 
 const port = Number.parseInt(process.env.PORT || '3000', 10)
 
