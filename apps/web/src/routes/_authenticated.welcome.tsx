@@ -20,10 +20,16 @@ function WelcomePage() {
     const video = videoRef.current
     if (!video) return
     video.currentTime = 0
-    video.muted = false
-    video.volume = 1
+    video.muted = true
     const playPromise = video.play()
-    if (playPromise) playPromise.catch(() => undefined)
+    if (playPromise) {
+      playPromise
+        .then(() => {
+          video.muted = false
+          video.volume = 1
+        })
+        .catch(() => undefined)
+    }
   }, [])
 
   return (
@@ -39,7 +45,9 @@ function WelcomePage() {
           src="/important-content/welcome-auto.mp4"
           className="relative z-10 aspect-video w-full max-h-[70vh] rounded-[24px] bg-black object-contain shadow-[0_18px_48px_rgba(0,0,0,0.32)]"
           autoPlay
+          muted
           playsInline
+          controls
           preload="auto"
           onEnded={startDashboard}
         />

@@ -15,8 +15,6 @@ apps/api/uploads/*
 .expo
 apps/mobile
 الموارد
-**/*.mp4
-**/*.pdf
 **/*.docx
 **/*.doc
 agent-tools

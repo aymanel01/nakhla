@@ -142,6 +142,12 @@ app.route('/api', api)
 
 if (isProduction) {
   app.use('/assets/*', serveStatic({ root: webDist }))
+  app.use('/important-content/*', serveStatic({ root: webDist }))
+  app.use('/quiz-videos/*', serveStatic({ root: webDist }))
+  app.use('/quiz-map/*', serveStatic({ root: webDist }))
+  app.use('/section-images/*', serveStatic({ root: webDist }))
+  app.use('/branding/*', serveStatic({ root: webDist }))
+  app.use('/design/*', serveStatic({ root: webDist }))
   app.use('/*', serveStatic({ root: webDist }))
   app.get('*', serveStatic({ root: webDist, path: 'index.html' }))
 }
