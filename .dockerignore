@@ -13,3 +13,11 @@ apps/api/uploads/*
 **/android/app/build
 **/android/build
 .expo
+apps/mobile
+الموارد
+**/*.mp4
+**/*.pdf
+**/*.docx
+**/*.doc
+agent-tools
+.cursor
