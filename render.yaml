@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: nakhla
+    runtime: docker
+    plan: free
+    region: frankfurt
+    healthCheckPath: /api
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATA_DIR
+        value: /app/data
+      - key: DB_PATH
+        value: /app/data/teaching-app.db
+      - key: UPLOAD_DIR
+        value: /app/data/uploads
+      - key: WEB_DIST
+        value: /app/apps/web/dist
+      - key: RESTORE_SEED_DATA
+        value: "true"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: STUDENT_PASSWORD
+        value: "12345678"

@@ -41,7 +41,8 @@ function isAllowedOrigin(origin: string) {
   return (
     /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin) ||
     /^https?:\/\/(192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3})(:\d+)?$/.test(origin) ||
-    (isProduction && /^https:\/\/[\w-]+\.fly\.dev$/.test(origin))
+    (isProduction && /^https:\/\/[\w-]+\.fly\.dev$/.test(origin)) ||
+    (isProduction && /^https:\/\/[\w-]+\.onrender\.com$/.test(origin))
   )
 }
 

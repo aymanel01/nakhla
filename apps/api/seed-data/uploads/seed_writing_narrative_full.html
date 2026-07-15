@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منصة نخلة — الإنتاج الكتابي: إنتاج نص سردي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@500;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FBF7F0; --surface:#FFFFFF; --paper:#FCF9F2; --tint:#EEF4EC;
+  --green-900:#16352A; --green-700:#2D6A4F; --green-600:#358062;
+  --green-500:#40916C; --green-300:#95D5B2; --green-100:#D8F0E2;
+  --amber:#C0813B; --amber-soft:#F4E6CF; --ink:#1E2B26; --ink-soft:#5C6B63;
+  --line:#E8E1D4; --red:#C96B6B; --red-bg:#F7E3E3; --red-ink:#7A2E2E;
+  --shadow:0 10px 30px -12px rgba(22,53,42,.22);
+  --c-per:#CDE3F5; --c-zm:#F6E3C5; --c-mk:#CDEBD8; --c-hd:#E6D8F0; --c-ws:#FAD9D9;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:"Tajawal",system-ui,sans-serif}
+body{min-height:100vh;line-height:1.6}::selection{background:var(--green-300)}
+
+.topbar{display:flex;align-items:center;gap:16px;padding:14px 26px;background:linear-gradient(120deg,var(--green-900),var(--green-600));color:#fff;box-shadow:var(--shadow);position:sticky;top:0;z-index:40}
+.mascot{width:46px;height:46px;flex:0 0 auto;background:#fff;border-radius:50%;display:grid;place-items:center;box-shadow:inset 0 0 0 3px var(--green-300)}
+.crumbs{font-family:"Cairo";font-size:.82rem;opacity:.85}
+.lesson-title{font-family:"Cairo";font-weight:800;font-size:1.18rem;line-height:1.2}
+.topbar .meta{margin-inline-start:auto;display:flex;gap:18px;font-size:.8rem;opacity:.92;font-family:"Cairo"}
+
+.wrap{max-width:1080px;margin:24px auto;padding:0 18px}
+.pane{background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
+.tabs{display:flex;background:var(--paper);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.tabs button{flex:1;border:0;background:transparent;font-family:"Cairo";font-weight:700;font-size:1rem;padding:15px 6px;cursor:pointer;color:var(--ink-soft);border-bottom:3px solid transparent;transition:.15s}
+.tabs button:hover{color:var(--green-700)}
+.tabs button.on{color:var(--green-700);border-bottom-color:var(--green-600);background:var(--surface)}
+.tab-body{padding:22px 24px 30px;min-height:60vh}
+.tab-panel{display:none;animation:fade .25s}.tab-panel.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.tab-intro{font-family:"Cairo";color:var(--ink-soft);font-size:.9rem;margin-bottom:18px;background:var(--tint);border-radius:12px;padding:12px 14px;border:1px solid var(--line)}
+
+/* doc card + text */
+.doc-card{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;background:var(--tint);border:1px solid var(--green-300);border-radius:14px;padding:12px 16px;margin-bottom:16px;font-family:"Cairo";font-size:.84rem}
+.doc-card b{color:var(--green-700)}.doc-card .src{color:var(--ink-soft)}
+.badge{margin-inline-start:auto;background:var(--amber-soft);color:#8a5a1c;border:1px solid #e6cfa6;border-radius:999px;padding:4px 12px;font-weight:700;font-size:.78rem}
+.title-ar{font-family:"Cairo";font-weight:800;font-size:1.4rem;color:var(--green-700);text-align:center;margin-bottom:4px}
+.title-rule{width:60px;height:4px;background:var(--green-500);border-radius:4px;margin:6px auto 16px;opacity:.55}
+.startext{font-family:"Amiri";font-size:1.42rem;line-height:2.5;color:var(--ink);text-align:justify;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.startext p{margin-bottom:12px}
+.hl{border-radius:5px;padding:1px 2px;transition:background .15s}
+.show-per .hl.per{background:var(--c-per)}
+.show-zm .hl.zm{background:var(--c-zm)}
+.show-mk .hl.mk{background:var(--c-mk)}
+.show-hd .hl.hd{background:var(--c-hd)}
+.show-ws .hl.ws{background:var(--c-ws)}
+
+.hl-bar{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}
+.hl-btn{font-family:"Cairo";font-weight:700;font-size:.84rem;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;cursor:pointer;display:flex;align-items:center;gap:7px;transition:.14s}
+.hl-btn .dot{width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.15)}
+.hl-btn.on{border-color:var(--green-500);box-shadow:0 0 0 2px var(--green-100)}
+.dot.per{background:var(--c-per)}.dot.zm{background:var(--c-zm)}.dot.mk{background:var(--c-mk)}.dot.hd{background:var(--c-hd)}.dot.ws{background:var(--c-ws)}
+.hl-btn.allbtn{background:var(--green-600);color:#fff;border-color:var(--green-600)}
+.hl-tip{font-family:"Cairo";font-size:.74rem;color:var(--ink-soft);margin-top:2px}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin:18px 0;box-shadow:0 4px 14px -8px rgba(22,53,42,.18)}
+.card h4{font-family:"Cairo";color:var(--green-700);font-size:1rem;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.card ul{list-style:none}
+.card li{font-family:"Tajawal";font-size:.98rem;line-height:1.8;margin-bottom:6px;padding-inline-start:16px;position:relative}
+.card li::before{content:'●';color:var(--green-500);position:absolute;inset-inline-start:0;font-size:.6rem;top:.5em}
+
+/* engines */
+.q{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:16px;box-shadow:0 4px 14px -8px rgba(22,53,42,.18)}
+.q-head{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px}
+.lvl{font-family:"Cairo";font-size:.7rem;font-weight:700;border-radius:999px;padding:3px 10px}
+.lvl.l1{background:#E3F1EA;color:#2D6A4F}.lvl.l2{background:#E5EEF7;color:#2E5C8A}.lvl.l3{background:#F4ECDB;color:#8a5a1c}.lvl.l4{background:#F0E6F3;color:#6b3b7b}
+.qtype{font-family:"Cairo";font-size:.7rem;font-weight:700;color:var(--ink-soft);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.goal{font-family:"Tajawal";font-size:.78rem;color:var(--ink-soft);margin:2px 0 12px;padding-inline-start:10px;border-inline-start:3px solid var(--green-300)}
+.goal b{color:var(--green-700)}
+.q-stem{font-family:"Cairo";font-weight:600;font-size:1rem;margin-bottom:12px;color:var(--green-900);line-height:1.7}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:11px 14px;cursor:pointer;background:var(--paper);font-size:.98rem;transition:.14s;text-align:right}
+.opt:hover{border-color:var(--green-300);background:var(--green-100)}
+.opt.correct{background:var(--green-100);border-color:var(--green-500);color:var(--green-900);font-weight:700;cursor:default}
+.opt.wrong{background:var(--red-bg);border-color:var(--red);color:var(--red-ink)}
+.opt.locked{pointer-events:none;opacity:.65}
+.opt .mk{width:22px;height:22px;flex:0 0 auto;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:.8rem}
+.opt.correct .mk{background:var(--green-500);border-color:var(--green-500);color:#fff}
+.opt.wrong .mk{background:var(--red);border-color:var(--red);color:#fff}
+.fb{margin-top:10px;font-size:.9rem;border-radius:10px;padding:10px 12px;display:none;font-family:"Tajawal";line-height:1.55}
+.fb.show{display:block}.fb.ok{background:var(--green-100);color:var(--green-900);border:1px solid var(--green-300)}.fb.no{background:var(--red-bg);color:var(--red-ink);border:1px solid #e7b4b4}
+.match{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.match .col{display:flex;flex-direction:column;gap:8px}.match .col h5{font-family:"Cairo";font-size:.78rem;color:var(--ink-soft);text-align:center;margin-bottom:2px}
+.chip{border:1px solid var(--line);border-radius:11px;padding:10px 12px;background:var(--paper);cursor:pointer;font-size:.95rem;text-align:center;transition:.14s}
+.chip:hover{border-color:var(--green-300)}.chip.sel{background:var(--amber-soft);border-color:var(--amber)}
+.chip.done{font-weight:700;cursor:default;pointer-events:none}.chip.shake{animation:shk .3s}
+@keyframes shk{0%,100%{transform:none}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+/* situation */
+.situation{background:linear-gradient(165deg,#F0F6EE,#E4EFDE);border:1px solid var(--green-300);border-radius:16px;padding:18px 20px;margin-bottom:18px}
+.situation .lab{font-family:"Cairo";font-weight:800;color:var(--green-700);font-size:.85rem;letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.situation .ctx{font-family:"Tajawal";font-size:1.05rem;line-height:1.9;color:var(--ink)}
+.situation .task{margin-top:12px;background:#fff;border:1px dashed var(--green-500);border-radius:12px;padding:12px 14px;font-family:"Tajawal";font-size:1.02rem;line-height:1.9}
+.situation .task b{color:var(--green-700);font-family:"Cairo"}
+
+/* resources */
+.res-group{margin-bottom:12px}
+.res-title{font-family:"Cairo";font-weight:700;font-size:.86rem;color:var(--green-700);margin-bottom:7px;display:flex;align-items:center;gap:7px}
+.res-title .dot{width:12px;height:12px;border-radius:50%}
+.res-chips{display:flex;flex-wrap:wrap;gap:7px}
+.res{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 13px;font-family:"Tajawal";font-size:.92rem;cursor:pointer;transition:.14s}
+.res:hover{border-color:var(--green-500);background:var(--green-100)}
+.res:active{transform:scale(.96)}
+.res-hint{font-family:"Cairo";font-size:.74rem;color:var(--ink-soft);margin-bottom:10px}
+
+/* production */
+.prod-wrap{margin-top:6px}
+.prod-wrap textarea{width:100%;min-height:200px;border:1px solid var(--line);border-radius:14px;padding:14px 16px;font-family:"Amiri";font-size:1.2rem;line-height:2;resize:vertical;background:var(--paper)}
+.prod-wrap textarea:focus{outline:2px solid var(--green-300);border-color:var(--green-500)}
+.counter{font-family:"Cairo";font-size:.76rem;color:var(--ink-soft);margin-top:6px;text-align:left}
+
+/* criteria grid */
+.cg{border:1px solid var(--green-300);border-radius:16px;overflow:hidden;margin:18px 0}
+.cg-head{background:var(--green-900);color:#fff;font-family:"Cairo";font-weight:700;padding:12px 16px;font-size:.95rem;display:flex;align-items:center;gap:8px}
+.cg-head .pts{margin-inline-start:auto;background:rgba(255,255,255,.16);border-radius:999px;padding:3px 12px;font-size:.82rem}
+.cg-body{padding:6px 14px 14px}
+.cg-crit{padding:12px 0;border-bottom:1px solid var(--line)}
+.cg-crit:last-child{border-bottom:0}
+.cg-crit > .t{font-family:"Cairo";font-weight:700;color:var(--green-700);font-size:.95rem;display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.cg-crit > .t .p{margin-inline-start:auto;background:var(--green-100);color:var(--green-700);border-radius:999px;padding:2px 10px;font-size:.78rem}
+.cg-item{display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:6px 0 6px 4px;font-family:"Tajawal";font-size:.95rem;line-height:1.5}
+.cg-box{width:21px;height:21px;flex:0 0 auto;border:2px solid var(--green-500);border-radius:6px;display:grid;place-items:center;font-size:.8rem;color:#fff;margin-top:1px;transition:.14s}
+.cg-item.on .cg-box{background:var(--green-500)}.cg-item.on .cg-box::after{content:'✓'}
+.cg-done{display:none;margin:8px 14px 14px;background:var(--green-100);border:1px solid var(--green-300);border-radius:10px;padding:10px 12px;font-family:"Cairo";font-weight:700;color:var(--green-700);font-size:.9rem}
+.cg-done.show{display:block}
+
+/* buttons + teacher */
+.btn{font-family:"Cairo";font-weight:700;border:0;border-radius:11px;padding:10px 20px;cursor:pointer;font-size:.9rem;transition:.14s}
+.btn.primary{background:var(--green-600);color:#fff}.btn.primary:hover{background:var(--green-700)}
+.btn.ghost{background:var(--paper);color:var(--green-700);border:1px solid var(--green-300)}.btn.ghost:hover{background:var(--green-100)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.teacher{margin-top:18px;border:1px dashed var(--green-500);border-radius:14px;overflow:hidden}
+.teacher-head{background:var(--green-900);color:#fff;font-family:"Cairo";font-weight:700;padding:11px 16px;font-size:.92rem;display:flex;align-items:center;gap:8px;cursor:pointer}
+.teacher-body{padding:14px 16px;display:none;background:var(--surface)}.teacher-body.show{display:block}
+.sub{background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:12px;margin-bottom:10px}
+.sub .student-txt{font-family:"Amiri";font-size:1.1rem;line-height:1.9;color:var(--ink);margin-bottom:8px;white-space:pre-wrap}
+.sub textarea{width:100%;min-height:60px;border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-family:"Tajawal";font-size:.92rem}
+.note-back{margin-top:10px;background:var(--green-100);border:1px solid var(--green-300);border-radius:10px;padding:10px 12px;font-family:"Tajawal";display:none;white-space:pre-wrap}.note-back.show{display:block}
+.note-back b{color:var(--green-700);font-family:"Cairo"}
+.empty{color:var(--ink-soft);font-family:"Cairo";font-size:.88rem;text-align:center;padding:14px}
+.tag{font-family:"Cairo";font-size:.74rem;color:var(--ink-soft)}
+/* interactive mind map */
+.mindmap{margin-top:18px}
+.mm-wrap{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:10px 6px}
+.mm-wrap svg{display:block;width:100%;height:auto}
+.mm-node{cursor:pointer}
+.mm-node rect{transition:.15s}
+.mm-node:hover rect{stroke-width:3}
+.mm-node.active rect{stroke-width:4}
+.mm-node text{font-family:"Cairo";font-weight:700;pointer-events:none}
+.mm-detail{margin-top:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;min-height:78px}
+.mm-detail h5{font-family:"Cairo";font-size:1.02rem;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.mm-detail h5 .sw{width:14px;height:14px;border-radius:4px;flex:0 0 auto}
+.mm-detail .d{font-family:"Tajawal";font-size:.96rem;line-height:1.7;margin-bottom:8px;color:var(--ink)}
+.mm-detail .ex{font-family:"Amiri";font-size:1.08rem;line-height:1.9;background:var(--tint);border-radius:8px;padding:9px 12px;border-inline-start:3px solid var(--green-500);color:var(--green-900)}
+.mm-empty{font-family:"Cairo";color:var(--ink-soft);font-size:.92rem;text-align:center;padding:14px}
+/* mind map lock / gating */
+.mm-lock{display:flex;gap:14px;align-items:center;background:var(--tint);border:1px dashed var(--green-500);border-radius:16px;padding:16px 18px;margin-top:18px}
+.mm-lock-ic{font-size:1.9rem;flex:0 0 auto}
+.mm-lock-t{font-family:"Cairo";font-weight:800;color:var(--green-700);margin-bottom:3px}
+.mm-lock-d{font-family:"Tajawal";font-size:.9rem;color:var(--ink-soft);line-height:1.6;margin-bottom:10px}
+.mm-prog-wrap{display:flex;align-items:center;gap:10px}
+.mm-prog-bar{flex:1;max-width:260px;height:9px;background:#fff;border:1px solid var(--green-300);border-radius:999px;overflow:hidden}
+.mm-prog-bar > i{display:block;height:100%;width:0;background:var(--green-500);transition:width .35s}
+#mm-prog{font-family:"Cairo";color:var(--green-700);font-size:.85rem;white-space:nowrap}
+/* two-pane acquisition + sequential stepper */
+.ikt-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+.ikt-text{position:sticky;top:88px;max-height:calc(100vh - 110px);overflow:auto;padding-inline-end:4px}
+.ikt-q{min-width:0}
+.phase{font-family:"Cairo";font-weight:800;font-size:.85rem;color:var(--green-700);margin:0 0 10px;padding:6px 12px;background:var(--green-100);border-inline-start:4px solid var(--green-500);border-radius:9px}
+.step{display:none}
+.step.on{display:block;animation:fade .25s}
+.step-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.step-count{font-family:"Cairo";font-weight:800;color:var(--green-700);font-size:.9rem;white-space:nowrap}
+.progress{flex:1;height:8px;background:var(--green-100);border-radius:999px;overflow:hidden}
+.progress > i{display:block;height:100%;width:0;background:var(--green-500);transition:width .3s}
+.step-nav{display:flex;justify-content:space-between;gap:10px;margin-top:4px;margin-bottom:14px}
+@media(max-width:860px){
+  .ikt-grid{grid-template-columns:1fr}
+  .ikt-text{position:sticky;top:54px;max-height:42vh;overflow:auto;z-index:3;background:var(--surface);border:1px solid var(--green-300);border-radius:14px;padding:12px;box-shadow:0 8px 16px -10px rgba(22,53,42,.3)}
+  .ikt-text .startext{font-size:1.2rem;line-height:2.1}
+}
+/* story planner (SAVI) */
+.plan-hint{font-family:"Cairo";font-size:.78rem;color:var(--ink-soft);margin-bottom:10px}
+.plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.plan-step{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--paper)}
+.plan-step .ps-h{font-family:"Cairo";font-weight:700;font-size:.84rem;margin-bottom:8px;color:var(--green-900)}
+.plan-step input{width:100%;border:1px solid var(--line);border-radius:8px;padding:7px 9px;font-family:"Tajawal";font-size:.9rem;margin-bottom:6px;background:#fff}
+.plan-step input:last-child{margin-bottom:0}
+.plan-step input:focus{outline:1px solid var(--green-300);border-color:var(--green-500)}
+.s-start{border-inline-start:4px solid #2E6FA8}
+.s-knot{border-inline-start:4px solid #7B4B9B}
+.s-end{border-inline-start:4px solid #40916C}
+.s-desc{border-inline-start:4px solid #C96B6B}
+.savi-tag{display:inline-flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.savi-tag span{font-family:"Cairo";font-size:.66rem;background:var(--tint);border:1px solid var(--line);border-radius:999px;padding:2px 8px;color:var(--ink-soft)}
+@media(max-width:560px){.topbar .meta{display:none}.tab-body{padding:18px 14px 24px}.match{grid-template-columns:1fr}.plan-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="mascot"><svg width="30" height="30" viewBox="0 0 30 30"><path d="M15 3c1 4 0 7-2 9 3-1 6 0 8 3-3 0-5 1-6 4 0-3-1-5-3-6 1 4 0 8-3 11 0-5-2-8-5-9 3-1 5-3 6-6 1 3 3 4 5 4-2-3-2-7-1-10 1 2 3 3 4 3-2-2-3-4-3-7z" fill="#2D6A4F"/></svg></div>
+  <div>
+    <div class="crumbs">منصّة نخلة · السنة الأولى إعدادي · مكوّن التعبير والإنشاء</div>
+    <div class="lesson-title">الإنتاج الكتابيّ: إنتاجُ نصٍّ سرديّ</div>
+  </div>
+  <div class="meta"><span>✍️ مهارةُ السرد</span><span>● تقويم تكوينيّ</span></div>
+</div>
+
+<div class="wrap">
+  <section class="pane">
+    <div class="tabs">
+      <button class="on" onclick="setTab('iktisab',this)">الاكتساب</button>
+      <button onclick="setTab('tatbiq',this)">التطبيق</button>
+    </div>
+    <div class="tab-body">
+
+      <!-- ===== الاكتساب ===== -->
+      <div id="iktisab" class="tab-panel on">
+        <div class="tab-intro">النصُّ مُثبَّتٌ إلى جانبِك يبقى ظاهرًا دائمًا، والأسئلةُ تظهرُ واحدًا تِلوَ الآخرِ — فلا حاجةَ للصعودِ والنزولِ بين النصِّ والسؤال. اقرأِ النصَّ مع أزرارِ الإبراز، ثمّ أجِبْ بالتتابع.</div>
+        <div class="ikt-grid">
+          <!-- TEXT PANE (sticky) -->
+          <div class="ikt-text">
+            <div class="doc-card">
+              <span><b>الكاتب:</b> المصطفى سليمي</span>
+              <span class="src"><b>المصدر:</b> مجلّة الوعي الإسلاميّ، العدد 495، ذو القعدة 1427هـ (بتصرّف)</span>
+              <span class="badge">نصُّ الانطلاق · سرديّ</span>
+            </div>
+            <h2 class="title-ar">عائشةُ… وفاءٌ حتّى الرَّمَق الأخير</h2>
+            <div class="title-rule"></div>
+            <div class="hl-bar">
+              <button class="hl-btn" onclick="toggleHL('per',this)"><span class="dot per"></span>الشخصيات</button>
+              <button class="hl-btn" onclick="toggleHL('zm',this)"><span class="dot zm"></span>الزمان</button>
+              <button class="hl-btn" onclick="toggleHL('mk',this)"><span class="dot mk"></span>المكان</button>
+              <button class="hl-btn" onclick="toggleHL('hd',this)"><span class="dot hd"></span>الأحداث</button>
+              <button class="hl-btn" onclick="toggleHL('ws',this)"><span class="dot ws"></span>الوصف</button>
+              <button class="hl-btn allbtn" onclick="showAllHL()">إظهار الكلّ</button>
+              <button class="hl-btn" onclick="clearHL()">إخفاء</button>
+            </div>
+            <div class="hl-tip">انقُرْ زرًّا لِتُبرِزَ عنصرَه في النصّ؛ ويمكنُك إبرازُ أكثرَ من عنصرٍ معًا.</div>
+            <div class="row" style="margin-top:10px">
+              <button class="btn ghost" onclick="speakModel()">🔊 استمِعْ إلى النموذج</button>
+              <button class="btn ghost" onclick="stopSpeak()">⏹ إيقاف</button>
+            </div>
+            <div class="startext" id="startext">
+              <p><span class="hl hd">جَاءَ الطَّبِيبُ</span> <span class="hl per">إِبْرَاهِيمُ</span> <span class="hl hd">لِعِيَادَةِ</span> <span class="hl per">أُمِّهَا المَرِيضَةِ</span>، إِنَّهَا <span class="hl hd">تَذْكُرُ كَلِمَاتِهِ</span>، كَمَا لَوْ كَانَتْ <span class="hl zm">بِالأَمْسِ القَرِيبِ</span>، وَهُوَ <span class="hl hd">يُحَذِّرُهَا</span> مِنْ مُغَادَرَةِ <span class="hl mk">فِرَاشِهَا</span> وَعَدَمِ إِجْهَادِ نَفْسِهَا بِالعَمَلِ المُتَوَاصِلِ... لَقَدْ <span class="hl hd">أُصِيبَتِ</span> <span class="hl per">المِسْكِينَةُ عَائِشَةُ</span> بِدَاءِ السُّلِّ نَتِيجَةَ الجُهْدِ المُتَّصِلِ الَّذِي كَانَتْ تَبْذُلُهُ، وَهِيَ <span class="hl ws">جَالِسَةٌ</span> عَلَى <span class="hl mk">مَاكِينَةِ الخِيَاطَةِ</span> <span class="hl hd">تُعِدُّ مَلَابِسَ</span> نُزُولًا عِنْدَ طَلَبِ <span class="hl per">زَبُونَاتِهَا</span>.</p>
+              <p>كَمْ <span class="hl hd">عَانَتِ</span> <span class="hl per">الأُمُّ المِسْكِينَةُ</span> مِنَ <span class="hl ws">العِبْءِ الكَبِيرِ</span> الَّذِي كَانَتْ تَحْمِلُهُ وَحْدَهَا بَعْدَ <span class="hl hd">رَحِيلِ زَوْجِهَا</span>، وَكَمْ <span class="hl hd">سَهِرَتِ</span> <span class="hl zm">اللَّيَالِيَ</span> فِي <span class="hl mk">غُرْفَتِهَا</span> <span class="hl ws">الصَّغِيرَةِ</span> بَعْدَ نَوْمِ <span class="hl per">أَبْنَائِهَا</span>، لِكَيْ <span class="hl hd">تَتَمَكَّنَ مِنْ إِنْجَازِ عَمَلِهَا وَتُسَلِّمَ المَلَابِسَ</span> لِزَبَنَائِهَا فِي <span class="hl zm">مَوَاعِيدَ مُحَدَّدَةٍ</span>. وَ<span class="hl zm">عِنْدَمَا</span> <span class="hl hd">فَتَحُوا بَابَ غُرْفَتِهَا</span> <span class="hl zm">ذَاتَ صَبَاحٍ</span> <span class="hl hd">وَجَدُوهَا</span> <span class="hl ws">جَالِسَةً عَلَى مَقْعَدِهَا الَّذِي أَلِفَتِ الجُلُوسَ عَلَيْهِ</span>، وَقَدِ <span class="hl hd">انْكَفَأَتْ</span> <span class="hl ws">بِرَأْسِهَا الَّذِي كَسَاهُ شَعْرٌ أَبْيَضُ</span>. رَحِمَ اللهُ المِسْكِينَةَ، فَقَدْ كَانَتْ <span class="hl ws">أَفْضَلَ نِسَاءِ حَيِّهَا وَأَكْثَرَهُنَّ تَحَمُّلًا لِنَوَائِبِ الدَّهْرِ</span>.</p>
+            </div>
+          </div>
+
+          <!-- QUESTION PANE (sequential stepper) -->
+          <div class="ikt-q">
+            <div class="step-head"><span class="step-count" id="ikt-count"></span><span class="progress"><i id="ikt-prog"></i></span></div>
+            <div id="ikt-steps"></div>
+            <div class="step-nav">
+              <button class="btn ghost" id="ikt-prev" onclick="iktGo(-1)">السابق</button>
+              <button class="btn primary" id="ikt-next" onclick="iktGo(1)">التالي</button>
+            </div>
+
+            <div class="mm-lock" id="mm-lock">
+              <div class="mm-lock-ic">🔒</div>
+              <div>
+                <div class="mm-lock-t">الخطاطةُ الذهنيّةُ المُلخِّصة مُقفَلة</div>
+                <div class="mm-lock-d">أجِبْ عن جميعِ الأسئلةِ الثمانيةِ إجابةً صحيحةً لِتُفتَحَ خطاطةُ تلخيصِ خصائصِ النصِّ السرديّ.</div>
+                <div class="mm-prog-wrap"><span class="mm-prog-bar"><i id="mm-prog-fill"></i></span><b id="mm-prog">0/0</b></div>
+              </div>
+            </div>
+
+            <div id="ikt-reveal" style="display:none">
+              <div class="card">
+                <h4>📘 خصائصُ النصِّ السرديّ</h4>
+                <ul>
+                  <li><b>الأحداث:</b> وقائعُ متسلسلةٌ تُروى بأفعالٍ (جاء، أُصيبت، سهِرت، فتحوا، وجدوها...).</li>
+                  <li><b>الشخصيات:</b> رئيسةٌ (عائشةُ الأمّ) وثانويّةٌ (الطبيبُ إبراهيم، الأبناء، الزبونات).</li>
+                  <li><b>الزمانُ والمكان:</b> الإطارُ الزمكانيّ (اللياليَ، ذاتَ صباحٍ / الغرفةِ الصغيرةِ، ماكينةِ الخياطة).</li>
+                  <li><b>السارِدُ والرؤية:</b> راوٍ يَسردُ بضميرِ الغائبِ من موقعِ العارفِ بأحوالِ الشخصية.</li>
+                  <li><b>البِنيةُ السرديّة:</b> بدايةٌ (وضعيّةٌ أولى) ← حدثٌ/عقدةٌ (المرضُ والمعاناة) ← نهايةٌ (الوفاة).</li>
+                  <li><b>الوصف:</b> يُرافِقُ السردَ فيَرسمُ الشخصيّةَ والمكانَ ويُعمّقُ التأثير.</li>
+                </ul>
+              </div>
+              <div class="mindmap"><div id="mm-content"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== التطبيق ===== -->
+      <div id="tatbiq" class="tab-panel">
+        <div class="tab-intro">آنَ أوانُ التطبيق: أمامَك الوضعيّةُ الواقعيّةُ نفسُها التي انطلقتَ منها. وظّفْ ما اكتسبتَه من طرقِ السردِ والوصفِ لإنجازِها، مستعينًا بالمواردِ الداعمةِ، ومُراقِبًا عملَك بشبكةِ المعايير.</div>
+
+        <div class="situation">
+          <div class="lab">⚑ الوضعيّةُ الواقعيّة</div>
+          <div class="ctx">تَستعدُّ جمعيّةُ حيِّك — أو ناديُ مؤسستِك — لإصدارِ كُتيّبٍ بعنوان «وفاءٌ وعِرفان» يُكرّمُ أشخاصًا ضحّوا في صمتٍ من أجلِ أسرِهم أو حيِّهم، ودُعِيَ التلاميذُ إلى المشاركةِ بقصصٍ واقعيّةٍ مؤثّرة.</div>
+          <div class="task"><b>المطلوب:</b> مُوظّفًا ما اكتسبتَه في القراءةِ والنصِّ السماعيِّ من طرقِ السرد، اكتُبْ نصًّا سرديًّا (من 12 إلى 15 سطرًا) تَحكي فيه قصّةَ شخصٍ من محيطِك (أمٌّ، أبٌ، جارٌ، معلّمٌ...) ضحّى بجهدِه أو صحّتِه من أجلِ غيرِه؛ مُحترِمًا بنيةَ السردِ (بدايةٌ ← عقدةٌ ← نهايةٌ)، مُوظّفًا عناصرَه، ومُدرِجًا الوصفَ في موضعِه. سيُنشَرُ أجملُ النصوصِ في الكُتيّب.</div>
+        </div>
+
+        <div class="card">
+          <h4>🧰 مواردُ داعمةٌ للإنتاج</h4>
+          <div class="res-hint">انقُرْ أيَّ تعبيرٍ لِيُدرَجَ في مساحةِ كتابتِك، ثمّ عدّلْه وادمِجْه في نصِّك.</div>
+
+          <div class="res-group"><div class="res-title"><span class="dot zm" style="background:var(--c-zm)"></span>دالّة على الزمان</div><div class="res-chips">
+            <span class="res" data-t="ذاتَ يومٍ" onclick="insertRes(this)">ذاتَ يومٍ</span>
+            <span class="res" data-t="في صباحٍ باكرٍ" onclick="insertRes(this)">في صباحٍ باكرٍ</span>
+            <span class="res" data-t="بعدَ مرورِ سنواتٍ" onclick="insertRes(this)">بعدَ مرورِ سنواتٍ</span>
+            <span class="res" data-t="منذُ ذلك الحينِ" onclick="insertRes(this)">منذُ ذلك الحينِ</span>
+            <span class="res" data-t="طَوالَ الليلِ" onclick="insertRes(this)">طَوالَ الليلِ</span>
+            <span class="res" data-t="وفي نهايةِ المطافِ" onclick="insertRes(this)">وفي نهايةِ المطافِ</span>
+          </div></div>
+
+          <div class="res-group"><div class="res-title"><span class="dot mk" style="background:var(--c-mk)"></span>دالّة على المكان</div><div class="res-chips">
+            <span class="res" data-t="في حيٍّ شعبيٍّ قديمٍ" onclick="insertRes(this)">في حيٍّ شعبيٍّ قديمٍ</span>
+            <span class="res" data-t="داخلَ غرفةٍ متواضعةٍ" onclick="insertRes(this)">داخلَ غرفةٍ متواضعةٍ</span>
+            <span class="res" data-t="على عتبةِ البيتِ" onclick="insertRes(this)">على عتبةِ البيتِ</span>
+            <span class="res" data-t="في زاويةٍ من الورشةِ" onclick="insertRes(this)">في زاويةٍ من الورشةِ</span>
+            <span class="res" data-t="وسطَ زِحامِ المدينةِ" onclick="insertRes(this)">وسطَ زِحامِ المدينةِ</span>
+          </div></div>
+
+          <div class="res-group"><div class="res-title"><span class="dot per" style="background:var(--c-per)"></span>دالّة على الشخصيات</div><div class="res-chips">
+            <span class="res" data-t="كان هناك رجلٌ كادحٌ" onclick="insertRes(this)">كان هناك رجلٌ كادحٌ</span>
+            <span class="res" data-t="امرأةٌ صبورةٌ لا تَعرفُ الكللَ" onclick="insertRes(this)">امرأةٌ صبورةٌ لا تَعرفُ الكللَ</span>
+            <span class="res" data-t="جارٌ طيّبُ القلبِ" onclick="insertRes(this)">جارٌ طيّبُ القلبِ</span>
+            <span class="res" data-t="معلّمٌ مخلصٌ في عملِه" onclick="insertRes(this)">معلّمٌ مخلصٌ في عملِه</span>
+          </div></div>
+
+          <div class="res-group"><div class="res-title"><span class="dot hd" style="background:var(--c-hd)"></span>دالّة على الأحداث</div><div class="res-chips">
+            <span class="res" data-t="بدأَ يكافحُ من أجلِ" onclick="insertRes(this)">بدأَ يكافحُ من أجلِ</span>
+            <span class="res" data-t="ثمّ حدثَ أن" onclick="insertRes(this)">ثمّ حدثَ أن</span>
+            <span class="res" data-t="وفجأةً" onclick="insertRes(this)">وفجأةً</span>
+            <span class="res" data-t="وما إنْ … حتّى" onclick="insertRes(this)">وما إنْ … حتّى</span>
+            <span class="res" data-t="وأخيرًا" onclick="insertRes(this)">وأخيرًا</span>
+          </div></div>
+
+          <div class="res-group"><div class="res-title"><span class="dot ws" style="background:var(--c-ws)"></span>دالّة على الوصف</div><div class="res-chips">
+            <span class="res" data-t="كان وجهُه يحملُ آثارَ التعبِ" onclick="insertRes(this)">كان وجهُه يحملُ آثارَ التعبِ</span>
+            <span class="res" data-t="يداه خشِنتانِ من كثرةِ العملِ" onclick="insertRes(this)">يداه خشِنتانِ من كثرةِ العملِ</span>
+            <span class="res" data-t="عيناه تَفيضانِ حنانًا" onclick="insertRes(this)">عيناه تَفيضانِ حنانًا</span>
+            <span class="res" data-t="بيتٌ صغيرٌ تفوحُ منه رائحةُ القناعةِ" onclick="insertRes(this)">بيتٌ صغيرٌ تفوحُ منه رائحةُ القناعةِ</span>
+          </div></div>
+        </div>
+
+        <div class="card planner">
+          <h4>🧩 خطاطةُ تخطيطِ القصّة — خطّطْ قبلَ أن تكتُب</h4>
+          <div class="plan-hint">املأِ الخاناتِ لِتَرسُمَ هيكلَ قصّتِك، ثمّ اضغطْ «أدرِجْ مخطّطي» فيَنتقلَ إلى مساحةِ الكتابةِ هيكلًا تُوسّعُه وتُحوّلُه إلى سردٍ متماسك.</div>
+          <div class="plan-grid">
+            <div class="plan-step s-start">
+              <div class="ps-h">١) البداية — الوضعيّةُ الأولى</div>
+              <input data-k="من" placeholder="مَن الشخصيّةُ؟ (اسمٌ أو صفة)">
+              <input data-k="مكان" placeholder="أين؟ (المكان)">
+              <input data-k="زمان" placeholder="متى؟ (الزمان)">
+            </div>
+            <div class="plan-step s-knot">
+              <div class="ps-h">٢) العقدة — الحدثُ / التضحية</div>
+              <input data-k="عقدة" placeholder="ما التضحيةُ أو المشكلةُ التي واجهَها؟">
+              <input data-k="تطور" placeholder="كيف تطوّرت الأحداث؟">
+            </div>
+            <div class="plan-step s-end">
+              <div class="ps-h">٣) النهاية — الوضعيّةُ النهائيّة</div>
+              <input data-k="نهاية" placeholder="كيف انتهت القصّة؟ وما أثرُها؟">
+            </div>
+            <div class="plan-step s-desc">
+              <div class="ps-h">✦ لمسةُ وصف</div>
+              <input data-k="وصف" placeholder="صفْ شخصيّةً أو مكانًا (جملةٌ واصفة)">
+            </div>
+          </div>
+          <div class="row"><button class="btn ghost" onclick="buildPlan()">📝 أدرِجْ مخطّطي في مساحةِ الكتابة</button></div>
+          <div class="savi-tag"><span>حركيّ: تَملأُ وتُرتّب</span><span>بصريّ: مخطّطٌ للبنية</span><span>عقليّ: تخطيطُ الحبكة</span></div>
+        </div>
+
+        <div class="prod-wrap">
+          <h4 style="font-family:Cairo;color:var(--green-700);margin-bottom:8px">✍️ مساحةُ الإنتاج</h4>
+          <textarea id="prod" placeholder="اكتُبْ نصَّك السرديَّ هنا، مُحترِمًا بنيةَ السرد وموظّفًا الوصف..." oninput="updCount()"></textarea>
+          <div class="counter" id="counter">عددُ الكلمات: 0 — عددُ الأسطرِ التقريبيّ: 0</div>
+          <div class="row">
+            <button class="btn ghost" onclick="speakProd()">🔊 استمِعْ إلى نصِّك</button>
+            <button class="btn ghost" onclick="stopSpeak()">⏹ إيقاف</button>
+            <span class="tag">قناةٌ سمعيّة: أصغِ إلى نصِّك مقروءًا لِتَكتشفَ الأخطاءَ ومواضعَ الركاكةِ بأُذنِك.</span>
+          </div>
+        </div>
+
+        <div class="cg">
+          <div class="cg-head">🧾 شبكةُ معاييرِ الإنجاز (تقويمٌ ذاتيّ) <span class="pts">المجموع: 6 نقاط</span></div>
+          <div class="cg-body">
+            <div class="cg-crit">
+              <div class="t">١) فهمُ المعطى والالتزامُ بالمطلوب <span class="p">1 ن</span></div>
+              <label class="cg-item" onclick="critTick(this)"><span class="cg-box"></span><span>فهمتُ المطلوبَ والتزمتُ به: نصٌّ سرديٌّ في موضوعِ التضحيةِ، ضمنَ الحجمِ المطلوب (12–15 سطرًا).</span></label>
+            </div>
+            <div class="cg-crit">
+              <div class="t">٢) توظيفُ تقنياتِ المهارة: احترامُ خطواتِ النصِّ السرديّ <span class="p">3 ن</span></div>
+              <label class="cg-item" onclick="critTick(this)"><span class="cg-box"></span><span>احترمتُ بنيةَ السرد: بدايةٌ (وضعيّةٌ أولى) ← حدثٌ/عقدةٌ ← نهايةٌ (وضعيّةٌ نهائيّة).</span></label>
+              <label class="cg-item" onclick="critTick(this)"><span class="cg-box"></span><span>وظّفتُ عناصرَ السرد: الشخصياتِ، والزمانَ والمكانَ، والأحداثَ المتسلسلة، والسارد.</span></label>
+              <label class="cg-item" onclick="critTick(this)"><span class="cg-box"></span><span>أدرجتُ الوصفَ في موضعِه (وصفُ شخصيةٍ أو مكانٍ أو حالٍ) في خدمةِ السرد.</span></label>
+              <label class="cg-item" onclick="critTick(this)"><span class="cg-box"></span><span>استعملتُ روابطَ التسلسلِ الزمنيّ (ثمّ، بعد ذلك، عندئذٍ، في الأخير...).</span></label>
+            </div>
+            <div class="cg-crit">
+              <div class="t">٣) سلامةُ اللغةِ والتراكيبِ وعلاماتُ الترقيم <span class="p">2 ن</span></div>
+              <label class="cg-item" onclick="critTick(this)"><span class="cg-box"></span><span>لغتي سليمةٌ من الأخطاءِ الإملائيّةِ والتعبيريّةِ والتركيبيّة.</span></label>
+              <label class="cg-item" onclick="critTick(this)"><span class="cg-box"></span><span>استعملتُ علاماتِ الترقيمِ استعمالًا مناسبًا (. ، ؛ : ؟ !).</span></label>
+            </div>
+          </div>
+          <div class="cg-done" id="cg-done">أحسنت — استوفى إنتاجُك جميعَ معاييرِ الإنجازِ الثلاثة. راجِعْه مرّةً أخيرةً ثمّ أرسِلْه إلى أستاذِك.</div>
+        </div>
+
+        <div class="row">
+          <input id="prod-name" placeholder="اسمُك (اختياريّ)" style="border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-family:Tajawal;font-size:.92rem">
+          <button class="btn primary" onclick="sendToTeacher()">إرسالٌ إلى الأستاذ</button>
+          <span id="prod-msg" class="tag"></span>
+        </div>
+        <div class="note-back" id="prod-feedback"></div>
+
+        <div class="teacher">
+          <div class="teacher-head" onclick="document.getElementById('teacher-body').classList.toggle('show')">
+            <span>🧑‍🏫 لوحةُ المعلّم — مراجعةُ الإنتاجِ وإعادتُه</span>
+            <span style="margin-inline-start:auto;font-size:.78rem;opacity:.8">انقُرْ للفتح/الإغلاق</span>
+          </div>
+          <div class="teacher-body" id="teacher-body"><div id="teacher-list"></div></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</div>
+
+<script>
+/* storage */
+const Store={mem:{},get(k){try{return localStorage.getItem(k)}catch(e){return this.mem[k]||null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){this.mem[k]=v}}};
+/* tabs */
+function setTab(id,btn){document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('on'));document.getElementById(id).classList.add('on');btn.classList.add('on');}
+/* highlight */
+function toggleHL(cat,btn){document.getElementById('startext').classList.toggle('show-'+cat);btn.classList.toggle('on');}
+function showAllHL(){const b=document.getElementById('startext');['per','zm','mk','hd','ws'].forEach(c=>b.classList.add('show-'+c));document.querySelectorAll('.hl-btn').forEach(x=>{if(!x.classList.contains('allbtn'))x.classList.add('on')});}
+function clearHL(){const b=document.getElementById('startext');['per','zm','mk','hd','ws'].forEach(c=>b.classList.remove('show-'+c));document.querySelectorAll('.hl-btn').forEach(x=>x.classList.remove('on'));}
+/* resources */
+function insertRes(el){const ta=document.getElementById('prod');const t=el.getAttribute('data-t');ta.value+=(ta.value&&!/\s$/.test(ta.value)?' ':'')+t+' ';ta.focus();updCount();}
+function updCount(){const v=document.getElementById('prod').value.trim();const w=v?v.split(/\s+/).length:0;const l=v?v.split(/\n/).filter(x=>x.trim()).length:0;document.getElementById('counter').textContent=`عددُ الكلمات: ${w} — عددُ الأسطرِ التقريبيّ: ${l}`;}
+/* criteria */
+function critTick(el){el.classList.toggle('on');const all=[...document.querySelectorAll('.cg-item')].every(x=>x.classList.contains('on'));document.getElementById('cg-done').classList.toggle('show',all);}
+
+/* SAVI · story planner (somatic+visual+intellectual) */
+function buildPlan(){
+  const g=k=>{const e=document.querySelector(`.planner input[data-k="${k}"]`);return e?e.value.trim():'';};
+  const mn=g('من'),mk=g('مكان'),zm=g('زمان'),uq=g('عقدة'),tt=g('تطور'),nh=g('نهاية'),ws=g('وصف');
+  let s='(البداية) ';
+  if(zm) s+=zm+'، ';
+  if(mk) s+=mk+'، ';
+  s+= mn?('كان هناك '+mn+'. '):'... ';
+  if(ws) s+=ws+'. ';
+  s+='\n(العقدة) ';
+  s+= uq?(uq+'. '):'... ';
+  if(tt) s+=tt+'. ';
+  s+='\n(النهاية) ';
+  s+= nh?(nh+'.'):'...';
+  const ta=document.getElementById('prod');
+  ta.value=s+(ta.value?('\n\n'+ta.value):'');
+  updCount();ta.focus();
+}
+
+/* SAVI · auditory (Web Speech API, works offline; Arabic voice quality varies by device) */
+function speak(text){
+  if(!('speechSynthesis' in window)){alert('متصفّحُك لا يدعمُ القراءةَ الصوتيّة.');return;}
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='ar-SA';u.rate=0.9;u.pitch=1;
+  const pick=()=>{const vs=window.speechSynthesis.getVoices();const ar=vs.find(v=>/ar/i.test(v.lang));if(ar)u.voice=ar;window.speechSynthesis.speak(u);};
+  if(window.speechSynthesis.getVoices().length)pick();else window.speechSynthesis.onvoiceschanged=pick;
+}
+function speakModel(){speak(document.getElementById('startext').innerText);}
+function speakProd(){const t=document.getElementById('prod').value.trim();if(!t){alert('اكتُبْ نصَّك أوّلًا لِتَستمعَ إليه.');return;}speak(t);}
+function stopSpeak(){if('speechSynthesis' in window)window.speechSynthesis.cancel();}
+
+/* engines */
+const LVL={1:["l1","مستوى مباشر"],2:["l2","مستوى استنتاجيّ"],3:["l3","مستوى ضمنيّ"],4:["l4","مستوى إبداعيّ"]};
+function qHead(lvl,type){const [c,l]=LVL[lvl];return `<div class="q-head"><span class="lvl ${c}">${l}</span><span class="qtype">${type}</span></div>`;}
+function goal(t){return `<div class="goal"><b>الهدف:</b> ${t}</div>`;}
+function MCQ(o){const id='m'+Math.random().toString(36).slice(2,8);let h=`<div class="q">${qHead(o.lvl,o.type)}${goal(o.goal)}<div class="q-stem">${o.stem}</div><div class="opts" id="${id}">`;o.options.forEach((op,i)=>h+=`<div class="opt" data-i="${i}"><span class="mk"></span><span>${op.t}</span></div>`);h+=`</div><div class="fb" id="${id}-fb"></div></div>`;setTimeout(()=>bindMCQ(id,o),0);return h;}
+function bindMCQ(id,o){const box=document.getElementById(id),fb=document.getElementById(id+'-fb');box.querySelectorAll('.opt').forEach(opt=>opt.addEventListener('click',()=>{const op=o.options[+opt.dataset.i];fb.className='fb show '+(op.ok?'ok':'no');fb.innerHTML=op.fb;if(op.ok){opt.classList.add('correct');opt.querySelector('.mk').textContent='✓';box.querySelectorAll('.opt').forEach(x=>x.classList.add('locked'));opt.classList.remove('locked');if(o.done)o.done();}else{opt.classList.add('wrong');opt.querySelector('.mk').textContent='✕';setTimeout(()=>{opt.classList.remove('wrong');opt.querySelector('.mk').textContent='';},1400);}}));}
+function MATCH(o){const id='g'+Math.random().toString(36).slice(2,8);let h=`<div class="q">${qHead(o.lvl,o.type)}${goal(o.goal)}<div class="q-stem">${o.stem}</div><div class="match"><div class="col"><h5>${o.h1||''}</h5>`;o.left.forEach((t,i)=>h+=`<div class="chip" data-side="L" data-i="${i}" data-g="${id}">${t}</div>`);h+=`</div><div class="col"><h5>${o.h2||''}</h5>`;o.right.forEach((t,i)=>h+=`<div class="chip" data-side="R" data-i="${i}" data-g="${id}">${t}</div>`);h+=`</div></div></div>`;setTimeout(()=>bindMatch(id,o),0);return h;}
+let matchSel={},matchIdx={};const PAIR_COLORS=[{bg:'#D8F0E2',bd:'#40916C',tx:'#16352A'},{bg:'#F4E6CF',bd:'#C0813B',tx:'#7a4e14'},{bg:'#DCEAF7',bd:'#2E6FA8',tx:'#173e63'},{bg:'#ECE0F2',bd:'#7B4B9B',tx:'#4a2c5e'}];
+function paintPair(a,b,i){const c=PAIR_COLORS[i%PAIR_COLORS.length];[a,b].forEach(e=>{e.style.background=c.bg;e.style.borderColor=c.bd;e.style.color=c.tx;});}
+function bindMatch(id,o){matchSel[id]=null;matchIdx[id]=0;document.querySelectorAll(`.chip[data-g="${id}"]`).forEach(chip=>chip.addEventListener('click',()=>{if(chip.classList.contains('done'))return;const side=chip.dataset.side,i=+chip.dataset.i;if(!matchSel[id]){matchSel[id]={side,i,el:chip};chip.classList.add('sel');return;}const s=matchSel[id];if(s.side===side){s.el.classList.remove('sel');matchSel[id]={side,i,el:chip};chip.classList.add('sel');return;}const L=side==='L'?i:s.i,R=side==='R'?i:s.i;s.el.classList.remove('sel');if(o.pairs[L]===R){chip.classList.add('done');s.el.classList.add('done');paintPair(chip,s.el,matchIdx[id]);matchIdx[id]++;if(matchIdx[id]===Object.keys(o.pairs).length&&o.done)o.done();}else{chip.classList.add('shake');s.el.classList.add('shake');setTimeout(()=>{chip.classList.remove('shake');s.el.classList.remove('shake');},300);}matchSel[id]=null;}));}
+
+/* ===== completion tracker (mind map unlocks after all questions) ===== */
+const IKT={done:new Set(),need:8};
+function iktDone(id){
+  IKT.done.add(id);
+  const n=IKT.done.size;
+  const p=document.getElementById('mm-prog');if(p)p.textContent=n+'/'+IKT.need;
+  const f=document.getElementById('mm-prog-fill');if(f)f.style.width=Math.round(n/IKT.need*100)+'%';
+  if(n>=IKT.need){
+    const lock=document.getElementById('mm-lock');if(lock)lock.style.display='none';
+    const r=document.getElementById('ikt-reveal');if(r){r.style.display='block';r.scrollIntoView({behavior:'smooth',block:'nearest'});}
+  }
+}
+
+/* ===== الاكتساب: أسئلةٌ متسلسلةٌ (واحدةٌ تِلوَ الأخرى، والنصُّ مُثبَّتٌ جانبًا) ===== */
+const STEPS=[
+ {p:'📖 الفهم · مستوى مباشر', h:MCQ({lvl:1,type:"فهم مباشر · اختيار من متعدّد",goal:"أن يلتقطَ المتعلّمُ معلومةً صريحةً من النص.",done:()=>iktDone('f1'),
+   stem:"مَن جاء لعيادةِ الأمِّ المريضة؟",
+   options:[
+     {t:"الطبيبُ إبراهيم",ok:true,fb:"صحيح. مطلعُ النصّ: «جاءَ الطبيبُ إبراهيمُ لعيادةِ أمِّها المريضة»."},
+     {t:"أحدُ أبنائِها",ok:false,fb:"عُدْ إلى الجملةِ الأولى من النصّ: مَنِ الذي وُصِفَ بأنّه «طبيب»؟"},
+     {t:"جارٌ من الحيّ",ok:false,fb:"هل ذُكِرَ جارٌ في زيارةِ العيادة؟ تأمّلْ صفةَ الزائرِ في أوّلِ النصّ."}
+   ]})},
+ {p:'📖 الفهم · مستوى مباشر', h:MCQ({lvl:1,type:"فهم مباشر · اختيار من متعدّد",goal:"أن يحدّدَ المتعلّمُ معطًى صريحًا (المرض).",done:()=>iktDone('f2'),
+   stem:"بأيِّ داءٍ أُصيبت عائشة؟",
+   options:[
+     {t:"داءِ السلِّ",ok:true,fb:"صحيح. «أُصيبت المسكينةُ عائشةُ بداءِ السلِّ»."},
+     {t:"داءِ القلبِ",ok:false,fb:"راجِعْ موضعَ ذكرِ المرضِ في الفقرةِ الأولى؛ ما الداءُ المُسمَّى تحديدًا؟"},
+     {t:"لم تُصَبْ بأيِّ مرض",ok:false,fb:"النصُّ يَذكُرُ مرضًا بعينِه أصابَها بسببِ الجهد؛ أعِدِ القراءة."}
+   ]})},
+ {p:'📖 الفهم · مستوى استنتاجيّ', h:MCQ({lvl:2,type:"فهم استنتاجيّ · اختيار من متعدّد",goal:"أن يستنتجَ المتعلّمُ سببَ المرضِ من قرائنِ النص.",done:()=>iktDone('f3'),
+   stem:"ما السببُ الذي أدّى إلى مرضِ عائشة؟",
+   options:[
+     {t:"الجُهدُ المتواصلُ في الخياطةِ وسهرُ الليالي",ok:true,fb:"صحيح. «نتيجةَ الجهدِ المتّصلِ الذي كانت تبذلُه... وكم سهِرت الليالي»."},
+     {t:"العدوى من زبوناتِها",ok:false,fb:"هل يَربطُ النصُّ مرضَها بعدوى، أم بشيءٍ يتّصلُ بطبيعةِ عملِها؟ أعِدِ النظرَ في القرينة."},
+     {t:"تقدُّمُها في السنِّ فحسب",ok:false,fb:"ركّزْ على ما يُكرّرُه النصُّ عن «الجهدِ المتّصل» و«سهرِ الليالي»: ما علاقتُه بالمرض؟"}
+   ]})},
+ {p:'📖 الفهم · مستوى ضمنيّ', h:MCQ({lvl:3,type:"فهم ضمنيّ · اختيار من متعدّد",goal:"أن يؤوّلَ المتعلّمُ دلالةَ خاتمةِ النص.",done:()=>iktDone('f4'),
+   stem:"ماذا نَستنتجُ من قولِه: «كانت أفضلَ نساءِ حيِّها وأكثرَهنَّ تحمُّلًا لنوائبِ الدهر»؟",
+   options:[
+     {t:"عُمقَ تضحيتِها وصبرِها، ومكانتَها وتقديرَ الناسِ لها",ok:true,fb:"صحيح. العبارةُ ثناءٌ يُجسّدُ صبرَها وتضحيتَها ومنزلتَها في قلوبِ أهلِ حيِّها."},
+     {t:"أنّها كانت أغنى نساءِ الحيّ",ok:false,fb:"هل تتحدّثُ العبارةُ عن المالِ أم عن الصبرِ والتحمُّل؟ تأمّلْ كلمةَ «تحمُّلًا»."},
+     {t:"أنّها كانت تكرهُ عملَها",ok:false,fb:"الثناءُ على تحمُّلِها يُناقِضُ الكراهية؛ ما القيمةُ التي تُبرِزُها العبارةُ فيها؟"}
+   ]})},
+ {p:'🧩 التثبيت · صِل بسهم', h:MATCH({lvl:1,type:"صِل بسهم",goal:"أن يربطَ المتعلّمُ كلَّ عنصرٍ سرديٍّ بمثالِه من النص.",done:()=>iktDone('a1'),
+   stem:"صِلْ كلَّ عنصرٍ سرديٍّ بما يُمثّلُه في نصِّ الانطلاق:",
+   h1:"العنصر",h2:"مثالُه من النصّ",
+   left:["الشخصيّة المحوريّة","الزمان","المكان","حدثٌ من الأحداث"],
+   right:["غرفتُها الصغيرة","عائشةُ (الأمّ)","أُصيبت بداءِ السلّ","ذاتَ صباحٍ"],
+   pairs:{0:1,1:3,2:0,3:2}})},
+ {p:'🧩 التثبيت · السارد والرؤية', h:MCQ({lvl:2,type:"السارد والرؤية · اختيار من متعدّد",goal:"أن يحدّدَ المتعلّمُ ضميرَ السردِ في النص.",done:()=>iktDone('a2'),
+   stem:"بأيِّ ضميرٍ سُرِدت أحداثُ النصّ؟",
+   options:[
+     {t:"ضميرُ الغائبِ (سَهِرت، وجدوها، كانت...)",ok:true,fb:"صحيح. السارِدُ يَحكي عن الشخصيّةِ بضميرِ الغائبِ من موقعِ العارفِ بأحوالِها."},
+     {t:"ضميرُ المتكلّمِ (أنا)",ok:false,fb:"تأمّلِ الأفعالَ: هل يَحكي السارِدُ عن نفسِه أم عن شخصيّةٍ أخرى؟ أعِدِ النظرَ في الضمائر."},
+     {t:"ضميرُ المخاطَبِ (أنتَ)",ok:false,fb:"هل يُخاطِبُ النصُّ قارئًا بـ«أنتَ»؟ راجِعْ صيغةَ الأفعالِ ومَن تَعودُ إليه."}
+   ]})},
+ {p:'🧩 التثبيت · وظيفة الوصف', h:MCQ({lvl:3,type:"وظيفة الوصف · اختيار من متعدّد",goal:"أن يُدركَ المتعلّمُ وظيفةَ الوصفِ داخلَ السرد.",done:()=>iktDone('a3'),
+   stem:"ما وظيفةُ الوصفِ في عباراتٍ مثل: «غرفتِها الصغيرة»، «رأسِها الذي كساه شعرٌ أبيض»؟",
+   options:[
+     {t:"يَرسمُ صورةَ الشخصيّةِ والمكانِ ويُعمّقُ التأثيرَ ويُبرِزُ معاناتَها",ok:true,fb:"صحيح. الوصفُ يُخدِمُ السردَ: يُجسّدُ المكانَ والشخصيّةَ ويُثيرُ تعاطفَ القارئ."},
+     {t:"حَشوٌ لا فائدةَ منه يُمكنُ حذفُه",ok:false,fb:"جرّبْ حذفَ هذه الصورِ: هل يَفقِدُ النصُّ شيئًا من تأثيرِه ووضوحِه؟ تأمّلْ ما تُضيفُه."},
+     {t:"يَسردُ الأحداثَ المتتابعةَ ويُحرّكُها",ok:false,fb:"تحريكُ الأحداثِ وظيفةُ الأفعالِ السرديّة؛ فما الذي تَفعلُه هذه العباراتُ الواصفةُ تحديدًا؟"}
+   ]})},
+ {p:'🧩 التثبيت · بنية النص', h:MCQ({lvl:2,type:"بنية النصّ السرديّ · اختيار من متعدّد",goal:"أن يُحدّدَ المتعلّمُ موقعَ مقطعٍ في بنيةِ النص.",done:()=>iktDone('a4'),
+   stem:"«وعندما فتحوا بابَ غرفتِها ذاتَ صباحٍ وجدوها... وقد انكفأت...» يمثّلُ في بنيةِ النصّ:",
+   options:[
+     {t:"النهايةَ (الوضعيّةَ النهائيّة)",ok:true,fb:"صحيح. هذا المقطعُ يُغلِقُ النصَّ بمصيرِ الشخصيّة، فهو الوضعيّةُ النهائيّة."},
+     {t:"البدايةَ (الوضعيّةَ الأولى)",ok:false,fb:"البدايةُ تُقدّمُ الشخصيّةَ وإطارَها قبلَ المشكلة؛ فهل هذا المقطعُ في المطلعِ أم في الختام؟"},
+     {t:"العقدةَ (تأزُّمَ الأحداث)",ok:false,fb:"العقدةُ هي لحظةُ التأزُّمِ (المرضُ والمعاناة)؛ فهل هذا المقطعُ يَفتحُ الأزمةَ أم يُنهي القصّة؟"}
+   ]})}
+];
+document.getElementById('ikt-steps').innerHTML=STEPS.map((s,i)=>`<div class="step${i===0?' on':''}" data-i="${i}"><div class="phase">${s.p}</div>${s.h}</div>`).join('');
+let iktCur=0;const iktTotal=STEPS.length;
+function iktShow(i){
+  iktCur=Math.max(0,Math.min(iktTotal-1,i));
+  document.querySelectorAll('#ikt-steps .step').forEach(st=>st.classList.toggle('on',+st.dataset.i===iktCur));
+  document.getElementById('ikt-count').textContent='السؤال '+(iktCur+1)+' من '+iktTotal;
+  document.getElementById('ikt-prog').style.width=((iktCur+1)/iktTotal*100)+'%';
+  document.getElementById('ikt-prev').disabled=(iktCur===0);
+  const nx=document.getElementById('ikt-next');
+  if(iktCur===iktTotal-1){nx.textContent='آخرُ سؤال';nx.disabled=true;}else{nx.textContent='التالي';nx.disabled=false;}
+}
+function iktGo(d){iktShow(iktCur+d);}
+iktShow(0);
+(function(){const p=document.getElementById('mm-prog');if(p)p.textContent='0/'+IKT.need;})();
+
+/* ===== interactive mind map (summary; unlocks after completion) ===== */
+const MM={
+  order:['shakhsiyat','ahdath','zaman','sarid','binya','wasf'],
+  nodes:{
+    shakhsiyat:{t:'الشخصيات',ic:'👥',c:'#2E6FA8',bg:'#DCEAF7',d:'مَن تدورُ حولَهم الأحداثُ؛ منها الرئيسةُ والثانويّة.',ex:'الرئيسة: عائشةُ (الأمّ). الثانويّة: الطبيبُ إبراهيم، الأبناء، الزبونات.'},
+    ahdath:{t:'الأحداث',ic:'📜',c:'#7B4B9B',bg:'#ECE0F2',d:'وقائعُ متسلسلةٌ تُروى بأفعالٍ (ماضيةٍ غالبًا) تُكوّنُ الحبكة.',ex:'«جاءَ الطبيبُ… أُصيبت… سهِرت… فتحوا بابَ غرفتِها… وجدوها».'},
+    zaman:{t:'الزمان والمكان',ic:'🗺️',c:'#358062',bg:'#D8F0E2',d:'الإطارُ الزمكانيُّ الذي تجري فيه الأحداث.',ex:'الزمان: اللياليَ، ذاتَ صباحٍ، مواعيدُ محدّدة. المكان: الغرفةُ الصغيرة، ماكينةُ الخياطة.'},
+    sarid:{t:'السارد والرؤية',ic:'👁️',c:'#5C6B63',bg:'#E7EAE6',d:'مَن يَروي القصّةَ، وزاويةُ النظرِ التي يَحكي منها.',ex:'راوٍ يَسردُ بضميرِ الغائبِ (سهِرت، وجدوها) من موقعِ العارفِ بأحوالِ الشخصية.'},
+    binya:{t:'بنيةُ السرد',ic:'🧱',c:'#2D6A4F',bg:'#CDE9D7',d:'هيكلُ القصّةِ في ثلاثِ مراحل: بدايةٌ ← عقدةٌ ← نهاية.',ex:'البداية: عائشةُ تعملُ في خياطةِ الملابس. العقدة: المرضُ والمعاناةُ بعد رحيلِ الزوج. النهاية: وفاتُها على مقعدِها.'},
+    wasf:{t:'الوصف',ic:'🎨',c:'#C96B6B',bg:'#FAD9D9',d:'يُرافِقُ السردَ فيَرسمُ الشخصيّةَ والمكانَ ويُعمّقُ التأثيرَ في القارئ.',ex:'«غرفتُها الصغيرة»، «رأسُها الذي كساه شعرٌ أبيض»، «أفضلُ نساءِ حيِّها وأكثرُهنَّ تحمّلًا».'}
+  }
+};
+function renderMindMap(){
+  const cx=380,cy=250,nw=170,nh=50;
+  const pos={shakhsiyat:[380,84],zaman:[620,172],wasf:[620,330],binya:[380,418],sarid:[140,330],ahdath:[140,172]};
+  const curve=(x,y)=>{const mx=(cx+x)/2,my=(cy+y)/2,dx=x-cx,dy=y-cy,L=Math.hypot(dx,dy)||1,off=28;return `M ${cx} ${cy} Q ${mx-dy/L*off} ${my+dx/L*off} ${x} ${y}`;};
+  let conns='',nodes='';
+  MM.order.forEach(k=>{const [x,y]=pos[k],n=MM.nodes[k];
+    conns+=`<path d="${curve(x,y)}" fill="none" stroke="${n.c}" stroke-width="3.5" opacity=".45" stroke-linecap="round"/>`;
+    nodes+=`<g class="mm-node" id="mmn-${k}" onclick="showMM('${k}')">
+      <rect x="${x-nw/2}" y="${y-nh/2}" width="${nw}" height="${nh}" rx="${nh/2}" fill="${n.bg}" stroke="${n.c}" stroke-width="2.2" filter="url(#mmsh)"/>
+      <text x="${x}" y="${y+6}" text-anchor="middle" font-size="16" fill="${n.c}">${n.ic} ${n.t}</text></g>`;});
+  const svg=`<svg viewBox="0 0 760 500" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="mmc" cx="38%" cy="32%" r="78%"><stop offset="0" stop-color="#3a8a68"/><stop offset="1" stop-color="#16352A"/></radialGradient>
+      <filter id="mmsh" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="3" stdDeviation="3.2" flood-color="#16352a" flood-opacity="0.20"/></filter>
+    </defs>
+    ${conns}
+    <circle cx="${cx}" cy="${cy}" r="64" fill="url(#mmc)" filter="url(#mmsh)"/>
+    <text x="${cx}" y="${cy-7}" text-anchor="middle" font-size="20" font-weight="800" fill="#fff" font-family="Cairo">النصُّ</text>
+    <text x="${cx}" y="${cy+19}" text-anchor="middle" font-size="20" font-weight="800" fill="#fff" font-family="Cairo">السرديّ</text>
+    ${nodes}
+  </svg>`;
+  document.getElementById('mm-content').innerHTML=
+    `<div class="tab-intro" style="background:var(--green-100);border-color:var(--green-300)">🧠 أحسنت، اكتملت الأنشطة! هذه خطاطةٌ ذهنيّةٌ تفاعليّةٌ تُلخّصُ خصائصَ النصِّ السرديّ وبنيتَه — انقُرْ أيَّ غصنٍ لِتَكشِفَ تعريفَه ومثالَه من النصّ.</div>
+     <div class="mm-wrap">${svg}</div>
+     <div class="mm-detail" id="mm-detail"><div class="mm-empty">انقُرْ عنصرًا في الخطاطةِ لِيَظهرَ تعريفُه ومثالُه من نصِّ الانطلاق.</div></div>`;
+}
+function showMM(k){
+  const n=MM.nodes[k];
+  document.querySelectorAll('.mm-node').forEach(g=>g.classList.remove('active'));
+  const g=document.getElementById('mmn-'+k);if(g)g.classList.add('active');
+  document.getElementById('mm-detail').innerHTML=
+    `<h5><span class="sw" style="background:${n.bg};border:1px solid ${n.c}"></span>${n.ic} ${n.t}</h5>
+     <div class="d">${n.d}</div>
+     <div class="ex"><b>من النصّ:</b> ${n.ex}</div>`;
+}
+renderMindMap();
+
+/* teacher panel */
+const SUB_KEY='nakhla_intaj_sardi_submission';
+function sendToTeacher(){const txt=document.getElementById('prod').value.trim();const name=document.getElementById('prod-name').value.trim()||'متعلّم';const msg=document.getElementById('prod-msg');if(txt.split(/\s+/).filter(Boolean).length<20){msg.textContent='اكتُبْ نصًّا أطولَ قبلَ الإرسال.';msg.style.color='var(--red-ink)';return;}const s={name,txt,note:'',status:'مُرسَل',t:Date.now()};Store.set(SUB_KEY,JSON.stringify(s));msg.textContent='تمّ الإرسالُ إلى الأستاذ ✓';msg.style.color='var(--green-700)';renderTeacher();renderFeedback();}
+function renderTeacher(){const list=document.getElementById('teacher-list');const raw=Store.get(SUB_KEY);if(!raw){list.innerHTML='<div class="empty">لا توجدُ إنتاجاتٌ مُرسَلةٌ بعدُ.</div>';return;}const s=JSON.parse(raw);list.innerHTML=`<div class="sub"><div style="font-family:Cairo;font-size:.8rem;color:var(--ink-soft);margin-bottom:6px">من: <b>${s.name}</b> · الحالة: ${s.status}</div><div class="student-txt">${s.txt.replace(/</g,'&lt;')}</div><label style="font-family:Cairo;font-size:.82rem;color:var(--green-700)">ملاحظةُ المعلّم (مع الإحالةِ على المعايير):</label><textarea id="teacher-note">${s.note||''}</textarea><div class="row"><button class="btn primary" onclick="returnToStudent()">تصحيحٌ وإعادةٌ إلى المتعلّم</button></div></div>`;}
+function returnToStudent(){const raw=Store.get(SUB_KEY);if(!raw)return;const s=JSON.parse(raw);s.note=document.getElementById('teacher-note').value.trim();s.status='مُصحَّحٌ ومُعادٌ';Store.set(SUB_KEY,JSON.stringify(s));renderTeacher();renderFeedback();}
+function renderFeedback(){const raw=Store.get(SUB_KEY);const box=document.getElementById('prod-feedback');if(!raw){box.classList.remove('show');return;}const s=JSON.parse(raw);if(s.note&&s.status==='مُصحَّحٌ ومُعادٌ'){box.classList.add('show');box.innerHTML='<b>ملاحظةُ أستاذِك:</b>\n'+s.note.replace(/</g,'&lt;');}else box.classList.remove('show');}
+renderTeacher();renderFeedback();
+</script>
+</body>
+</html>

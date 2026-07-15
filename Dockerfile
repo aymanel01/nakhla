@@ -23,8 +23,10 @@ RUN pnpm --filter @teaching-app/shared build \
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV WEB_DIST=/app/apps/web/dist
-ENV DB_PATH=/data/teaching-app.db
-ENV UPLOAD_DIR=/data/uploads
+ENV DATA_DIR=/app/data
+ENV DB_PATH=/app/data/teaching-app.db
+ENV UPLOAD_DIR=/app/data/uploads
+ENV RESTORE_SEED_DATA=true
 
 EXPOSE 3000
 

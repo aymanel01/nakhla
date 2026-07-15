@@ -18,6 +18,7 @@ dist
 *.sqlite
 *.db-shm
 *.db-wal
+!apps/api/seed-data/teaching-app.db
 
 # API uploads (runtime user/admin files)
 apps/api/uploads/*
