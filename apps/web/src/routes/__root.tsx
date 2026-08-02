@@ -1,7 +1,8 @@
 import { createRootRoute, Link, Outlet, useNavigate, useLocation } from '@tanstack/react-router'
 import { useState, useEffect, createContext, useContext, useRef, useMemo } from 'react'
-import type { User, RegisterResponse } from '@teaching-app/shared'
+import type { User, RegisterResponse, SearchIndexItem } from '@teaching-app/shared'
 import { api, ApiError, getWebSocketUrl } from '@/lib/api'
+import { fetchSearchIndex, storeSearchOpenPayload } from '@/lib/platform-search'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -15,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { User as UserIcon, LogOut, Camera, Save, Search, Radio, Home, Sparkles, Users, MessageCircle, FileText, Palette, HelpCircle, Mail, Phone, Bell, X } from 'lucide-react'
+import { fuzzyMatchScore, rankFuzzySearch } from '@/lib/fuzzy-search'
 interface AuthContextType {
   user: User | null
   isLoading: boolean
@@ -45,16 +47,22 @@ type QuickLink = {
   icon: typeof Home
 }
 
-function scoreQuickLink(item: QuickLink, query: string): number {
-  const terms = [item.label, ...item.keywords].map((term) => term.trim().toLowerCase()).filter(Boolean)
-  let best = 0
-  for (const term of terms) {
-    if (term === query) best = Math.max(best, 100)
-    else if (term.startsWith(query)) best = Math.max(best, 80)
-    else if (term.includes(query)) best = Math.max(best, 60)
-    else if (query.includes(term) && term.length >= 3) best = Math.max(best, 40)
-  }
-  return best
+type PlatformSearchEntry = {
+  id: string
+  label: string
+  subtitle?: string
+  keywords: string[]
+  to: string
+  hash?: string
+  search?: Record<string, string | number>
+  openPayload?: SearchIndexItem['openPayload']
+  icon?: typeof Home
+  kind: 'page' | 'content'
+}
+
+function scoreSearchEntry(entry: PlatformSearchEntry, query: string): number {
+  const terms = [entry.label, entry.subtitle || '', ...entry.keywords]
+  return Math.max(...terms.map((term) => fuzzyMatchScore(query, term)), 0)
 }
 
 type RealtimeNotification = {
@@ -190,6 +198,8 @@ function RootComponent() {
   const [profileError, setProfileError] = useState('')
   const [searchValue, setSearchValue] = useState('')
   const [searchFeedback, setSearchFeedback] = useState('')
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [contentIndex, setContentIndex] = useState<SearchIndexItem[]>([])
   const profileFileRef = useRef<HTMLInputElement | null>(null)
   const headerRef = useRef<HTMLElement | null>(null)
   const navigate = useNavigate()
@@ -346,12 +356,12 @@ function RootComponent() {
         hash: 'social-economic--writing',
         icon: Sparkles,
       },
-      { label: 'المجموعات', keywords: ['المجموعات', 'مجموعة', 'groups', 'مشروع'], to: '/groups', icon: Users },
-      { label: 'تقويم الوحدة', keywords: ['تقويم الوحدة', 'تقويم', 'exercises', 'تمرين', 'وحدة'], to: '/exercises', icon: FileText },
-      { label: 'إبداعات التلاميذ', keywords: ['إبداعات التلاميذ', 'إبداعات', 'resources', 'إبداع'], to: '/resources', icon: Palette },
-      { label: 'المكتبة الرقمية', keywords: ['المكتبة الرقمية', 'مكتبة', 'lectures', 'محاضرات', 'درس'], to: '/lectures', icon: FileText },
-      { label: 'المحادثة', keywords: ['المحادثة', 'محادثة', 'chat', 'رسائل'], to: '/chat', icon: MessageCircle },
-      { label: 'أبواب القصر', keywords: ['أبواب القصر', 'أبواب', 'قصر', 'quizzes', 'quiz', 'لعبة', 'الدهليز'], to: '/quizzes', icon: HelpCircle },
+      { label: 'المجموعات', keywords: ['المجموعات', 'مجموعة', 'مجموعات', 'groups', 'mojmo3at', 'مشروع'], to: '/groups', icon: Users },
+      { label: 'تقويم الوحدة', keywords: ['تقويم الوحدة', 'تقويم', 'exercises', 'takwim', 'تمرين', 'وحدة'], to: '/exercises', icon: FileText },
+      { label: 'إبداعات التلاميذ', keywords: ['إبداعات التلاميذ', 'إبداعات', 'resources', 'ibda3at', 'إبداع'], to: '/resources', icon: Palette },
+      { label: 'المكتبة الرقمية', keywords: ['المكتبة الرقمية', 'مكتبة', 'lectures', 'maktaba', 'محاضرات', 'درس'], to: '/lectures', icon: FileText },
+      { label: 'المحادثة', keywords: ['المحادثة', 'محادثة', 'chat', 'mohadatha', 'رسائل'], to: '/chat', icon: MessageCircle },
+      { label: 'أبواب القصر', keywords: ['أبواب القصر', 'أبواب', 'ابواب', 'ابوب', 'قصر', 'quizzes', 'quiz', 'l3ba', 'لعبة', 'الدهليز'], to: '/quizzes', icon: HelpCircle },
       { label: 'تواصل', keywords: ['تواصل', 'tawasol', 'contact'], to: '/chat', icon: MessageCircle },
     ]
     if (user?.role === 'admin') {
@@ -360,6 +370,84 @@ function RootComponent() {
     return items
   }, [user?.role])
 
+  const searchCatalog = useMemo<PlatformSearchEntry[]>(() => {
+    const pages: PlatformSearchEntry[] = quickLinks.map((item, index) => ({
+      id: `page-${item.to}-${item.hash || index}`,
+      label: item.label,
+      keywords: item.keywords,
+      to: item.to,
+      hash: item.hash,
+      icon: item.icon,
+      kind: 'page',
+    }))
+
+    const content: PlatformSearchEntry[] = contentIndex.map((item) => ({
+      id: item.id,
+      label: item.label,
+      subtitle: item.subtitle,
+      keywords: item.keywords,
+      to: item.to,
+      hash: item.hash,
+      search: item.search,
+      openPayload: item.openPayload,
+      kind: 'content',
+    }))
+
+    return [...pages, ...content]
+  }, [quickLinks, contentIndex])
+
+  useEffect(() => {
+    if (!user) {
+      setContentIndex([])
+      return
+    }
+
+    let alive = true
+    const loadIndex = () => {
+      fetchSearchIndex()
+        .then((items) => {
+          if (alive) setContentIndex(items)
+        })
+        .catch(() => {
+          if (alive) setContentIndex([])
+        })
+    }
+
+    loadIndex()
+    const refreshTimer = window.setInterval(loadIndex, 5 * 60 * 1000)
+    const onFocus = () => loadIndex()
+    window.addEventListener('focus', onFocus)
+
+    return () => {
+      alive = false
+      window.clearInterval(refreshTimer)
+      window.removeEventListener('focus', onFocus)
+    }
+  }, [user])
+
+  const searchSuggestions = useMemo(() => {
+    const query = searchValue.trim()
+    if (!query) return []
+    return rankFuzzySearch(
+      query,
+      searchCatalog,
+      (item) => [item.label, item.subtitle || '', ...item.keywords],
+      40,
+    ).slice(0, 8)
+  }, [searchCatalog, searchValue])
+
+  const navigateToSearchEntry = (entry: PlatformSearchEntry) => {
+    if (entry.openPayload) storeSearchOpenPayload(entry.openPayload)
+    navigate({
+      to: entry.to as '/home',
+      hash: entry.hash,
+      search: entry.search as Record<string, unknown> | undefined,
+    })
+    setSearchValue('')
+    setSearchFeedback('')
+    setSearchOpen(false)
+  }
+
   useEffect(() => {
     if (!searchFeedback) return
     const timer = window.setTimeout(() => setSearchFeedback(''), 3200)
@@ -367,23 +455,22 @@ function RootComponent() {
   }, [searchFeedback])
 
   const handleSearch = () => {
-    const normalized = searchValue.trim().toLowerCase()
+    const normalized = searchValue.trim()
     if (!normalized) return
 
-    const ranked = quickLinks
-      .map((item) => ({ item, score: scoreQuickLink(item, normalized) }))
-      .filter((entry) => entry.score > 0)
+    const ranked = searchCatalog
+      .map((item) => ({ item, score: scoreSearchEntry(item, normalized) }))
+      .filter((entry) => entry.score >= 42)
       .sort((a, b) => b.score - a.score)
 
     const match = ranked[0]?.item
     if (match) {
-      navigate({ to: match.to, hash: match.hash })
-      setSearchValue('')
-      setSearchFeedback('')
+      navigateToSearchEntry(match)
       return
     }
 
-    setSearchFeedback('لم نجد صفحة مطابقة. جرّب: أبواب القصر، فهم المقروء، الإنتاج الكتابي، المجموعات...')
+    setSearchFeedback('لم نجد نتيجة مطابقة. جرّب: المرأة البئيسة، عائشة، قصة، تمرين، مجموعة...')
+    setSearchOpen(false)
   }
 
   return (
@@ -445,7 +532,12 @@ function RootComponent() {
                           value={searchValue}
                           onChange={(e) => {
                             setSearchValue(e.target.value)
+                            setSearchOpen(true)
                             if (searchFeedback) setSearchFeedback('')
+                          }}
+                          onFocus={() => setSearchOpen(true)}
+                          onBlur={() => {
+                            window.setTimeout(() => setSearchOpen(false), 150)
                           }}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter') {
@@ -456,7 +548,36 @@ function RootComponent() {
                           className="h-9 rounded-lg border-emerald-200 bg-white/95 pr-9 text-right text-sm shadow-inner focus-visible:ring-emerald-300 sm:h-7 sm:pr-8 sm:text-xs"
                           placeholder="بحث..."
                           aria-describedby={searchFeedback ? 'search-feedback' : undefined}
+                          aria-expanded={searchOpen && searchSuggestions.length > 0}
+                          aria-autocomplete="list"
                         />
+                        {searchOpen && searchSuggestions.length > 0 ? (
+                          <div className="absolute left-0 right-0 top-full z-[80] mt-1 overflow-hidden rounded-lg border border-emerald-200 bg-white py-1 shadow-lg">
+                            {searchSuggestions.map(({ item, score }) => {
+                              const Icon = item.icon || Sparkles
+                              return (
+                                <button
+                                  key={item.id}
+                                  type="button"
+                                  onMouseDown={(event) => event.preventDefault()}
+                                  onClick={() => navigateToSearchEntry(item)}
+                                  className="flex w-full items-center justify-between gap-2 px-3 py-2 text-right text-xs font-bold text-emerald-950 transition hover:bg-emerald-50"
+                                >
+                                  <span className="min-w-0 truncate">
+                                    <span className="block truncate">{item.label}</span>
+                                    {item.subtitle ? (
+                                      <span className="block truncate text-[10px] font-semibold text-emerald-700/80">{item.subtitle}</span>
+                                    ) : null}
+                                  </span>
+                                  <span className="inline-flex shrink-0 items-center gap-1 text-[10px] text-emerald-700">
+                                    <Icon className="h-3.5 w-3.5" />
+                                    {item.kind === 'content' ? 'محتوى' : score >= 90 ? 'قسم' : 'تقريبي'}
+                                  </span>
+                                </button>
+                              )
+                            })}
+                          </div>
+                        ) : null}
                         {searchFeedback ? (
                           <p
                             id="search-feedback"

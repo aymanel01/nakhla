@@ -10,7 +10,14 @@ import { Label } from '@/components/ui/label'
 import { CheckCircle2, FileCheck2, FileText, Loader2, Paperclip, Send } from 'lucide-react'
 import { SectionBanner, ThemedActionButton, sectionThemeMap } from '@/components/section-banner'
 
-export const Route = createFileRoute('/_authenticated/exercises')({ component: ExercisesPage })
+export const Route = createFileRoute('/_authenticated/exercises')({
+  validateSearch: (search: Record<string, unknown>) => {
+    const raw = search.open
+    const open = typeof raw === 'number' ? raw : typeof raw === 'string' ? Number(raw) : undefined
+    return Number.isInteger(open) && open! > 0 ? { open: open! } : {}
+  },
+  component: ExercisesPage,
+})
 
 type UploadMeta = { fileUrl: string | null; fileName: string | null; fileType: string | null; fileSize: number | null }
 type ExerciseTab = UnitEvaluationDomain | 'correction'
@@ -25,6 +32,7 @@ const domainLabels: Record<UnitEvaluationDomain, string> = {
 }
 
 function ExercisesPage() {
+  const { open } = Route.useSearch()
   const [exercises, setExercises] = useState<Exercise[]>([])
   const [mySubmissions, setMySubmissions] = useState<ExerciseSubmission[]>([])
   const [loading, setLoading] = useState(true)
@@ -47,6 +55,14 @@ function ExercisesPage() {
   useEffect(() => {
     loadData().finally(() => setLoading(false))
   }, [])
+
+  useEffect(() => {
+    if (!open || exercises.length === 0) return
+    const exercise = exercises.find((item) => item.id === open)
+    if (!exercise) return
+    setActiveTab(exercise.domain || 'social-economic')
+    setSelectedExercise(exercise)
+  }, [open, exercises])
 
   const groupedExercises = useMemo(() => {
     return exercises.reduce((acc, exercise) => {

@@ -7,6 +7,7 @@ import { AdminSectionBoard } from '@/components/admin-section-board'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { GraduationCap, Loader2, Search } from 'lucide-react'
+import { matchesFuzzySearchAny } from '@/lib/fuzzy-search'
 
 export const Route = createFileRoute('/_authenticated/students')({
   component: StudentsPage,
@@ -34,7 +35,13 @@ function StudentsPage() {
   if (!isAuthenticated) return <Navigate to="/login" />
   if (!isAdmin) return <Navigate to="/home" />
 
-  const filtered = users.filter((user) => `${user.fullName || ''} ${user.email}`.toLowerCase().includes(search.toLowerCase()))
+  const filtered = users.filter((user) =>
+    matchesFuzzySearchAny(search, [
+      user.fullName || '',
+      user.email,
+      user.email.split('@')[0] || '',
+    ]),
+  )
 
   return (
     <div className="space-y-6">

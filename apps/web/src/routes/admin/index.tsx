@@ -22,7 +22,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { PlayCircle, FileText, Users, Plus, Pencil, Trash2, Loader2, ClipboardList, Eye, BarChart3, ChevronLeft, Shield, UserPlus, Upload, Paperclip, Palette, BookOpenCheck, Mic, Image, PanelsTopLeft, Search, Download, GraduationCap, CheckCircle2, XCircle } from 'lucide-react'
+import { PlayCircle, FileText, Users, Plus, Pencil, Trash2, Loader2, ClipboardList, Eye, BarChart3, ChevronLeft, Shield, UserPlus, Upload, Paperclip, Palette, BookOpenCheck, Mic, Image, PanelsTopLeft, Search, Download, GraduationCap, CheckCircle2, XCircle, Sparkles } from 'lucide-react'
+import { PlatformHelperAdmin } from '@/components/platform-helper-admin'
+import { matchesFuzzySearchAny } from '@/lib/fuzzy-search'
 
 export const Route = createFileRoute('/admin/')({
   component: AdminPage,
@@ -70,6 +72,7 @@ function AdminPage() {
   const sections = [
     { value: 'groups', label: 'المجموعات', icon: Users, description: 'إنشاء المجموعات وإضافة الأعضاء' },
     { value: 'tutorials', label: 'فيديوهات الشرح', icon: PlayCircle, description: 'التحكم في أزرار الفيديو التوضيحي داخل الأقسام' },
+    { value: 'helper', label: 'مرشد نخلة', icon: Sparkles, description: 'تعديل نصوص المساعدة وموضع المرشد على الشاشة' },
     { value: 'domains', label: 'المجالات', icon: BookOpenCheck, description: 'إضافة محتوى للمجالات' },
     { value: 'creations', label: 'إبداعات التلاميذ', icon: Palette, description: 'بودكاست، قصص مصورة، قصص قصيرة، وصورة و تعليق' },
     { value: 'lectures', label: 'المكتبة الرقمية', icon: PlayCircle, description: 'قصص، قصص مرقمنة، قصص مصورة، بودكاست، لغتي، والدرس المفضل' },
@@ -125,6 +128,9 @@ function AdminPage() {
           </TabsContent>
           <TabsContent value="tutorials" className="mt-0">
             <SectionTutorialVideosAdmin />
+          </TabsContent>
+          <TabsContent value="helper" className="mt-0">
+            <PlatformHelperAdmin />
           </TabsContent>
           <TabsContent value="domains" className="mt-0">
             <DomainsAdmin />
@@ -1197,7 +1203,13 @@ function GroupsAdmin() {
   const userAvatar = (candidate: User) => candidate.profilePhotoUrl ? (
     <img src={candidate.profilePhotoUrl} alt={displayUserName(candidate)} className="h-full w-full rounded-full object-cover" />
   ) : avatarText(displayUserName(candidate))
-  const filteredStudents = students.filter((candidate) => `${displayUserName(candidate)} ${candidate.email}`.toLowerCase().includes(studentSearch.trim().toLowerCase()))
+  const filteredStudents = students.filter((candidate) =>
+    matchesFuzzySearchAny(studentSearch, [
+      displayUserName(candidate),
+      candidate.email,
+      candidate.email.split('@')[0] || '',
+    ]),
+  )
   const allFilteredSelected = filteredStudents.length > 0 && filteredStudents.every((candidate) => selectedMemberIds.includes(candidate.id))
 
   const toggleAllFilteredStudents = (checked: boolean) => {

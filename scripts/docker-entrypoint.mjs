@@ -31,7 +31,9 @@ function copyDir(sourceDir, targetDir) {
 }
 
 const seedDb = path.join(seedDataDir, 'teaching-app.db')
-if (restoreSeedData && fs.existsSync(seedDb)) {
+const shouldRestoreDb =
+  fs.existsSync(seedDb) && (restoreSeedData || !fs.existsSync(dbPath))
+if (shouldRestoreDb) {
   fs.copyFileSync(seedDb, dbPath)
   console.log('Restored database from seed-data/teaching-app.db')
 }
@@ -45,25 +47,34 @@ const env = {
   UPLOAD_DIR: uploadDir,
 }
 
-async function runSeed(command, args) {
-  await new Promise((resolve, reject) => {
-    const child = spawn(command, args, {
-      cwd: apiDir,
-      env,
-      stdio: 'inherit',
-      shell: true,
+async function runSeed(command, args, optional = false) {
+  try {
+    await new Promise((resolve, reject) => {
+      const child = spawn(command, args, {
+        cwd: apiDir,
+        env,
+        stdio: 'inherit',
+        shell: true,
+      })
+      child.on('close', (code) => {
+        if (code === 0) resolve()
+        else reject(new Error(`${args.join(' ')} exited with code ${code}`))
+      })
     })
-    child.on('close', (code) => {
-      if (code === 0) resolve()
-      else reject(new Error(`${args.join(' ')} exited with code ${code}`))
-    })
-  })
+  } catch (error) {
+    if (optional) {
+      console.warn(`Optional seed skipped: ${error instanceof Error ? error.message : error}`)
+      return
+    }
+    throw error
+  }
 }
 
+await runSeed('npx', ['tsx', 'init-db.ts'])
 await runSeed('npx', ['tsx', 'seed-admin.ts'])
 await runSeed('npx', ['tsx', 'seed-students.ts'])
-await runSeed('node', ['seed-map-quiz.mjs'])
-await runSeed('node', ['seed-writing-lesson.mjs'])
+await runSeed('node', ['seed-map-quiz.mjs'], true)
+await runSeed('node', ['seed-writing-lesson.mjs'], true)
 
 const server = spawn('npx', ['tsx', 'src/index.ts'], {
   cwd: apiDir,

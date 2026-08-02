@@ -4,7 +4,7 @@ import {
   ArrowLeft,
   ArrowRight,
   BookOpenCheck,
-  CheckCircle2,
+  ChevronLeft,
   Ear,
   HeartHandshake,
   Landmark,
@@ -18,6 +18,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import type { AdminSectionPost, QuizQuestion, DomainCardContent } from "@teaching-app/shared";
 import { parseDomainCardContent, getDomainCardDisplayBody } from "@teaching-app/shared";
 import { api, getWebSocketUrl } from "@/lib/api";
+import { clearSearchOpenPayload, peekSearchOpenPayload } from "@/lib/platform-search";
+import {
+  computeReadAlongProgress,
+  progressToActiveWordCount,
+} from "@/lib/read-along-sync";
 import { ThemedActionButton } from "@/components/section-banner";
 
 export const Route = createFileRoute("/_authenticated/important-content")({
@@ -1167,7 +1172,7 @@ function levelBadgeClass(level: string, nakhla: boolean) {
 function QuestionStage({
   groups,
   numbered = false,
-  sequential = false,
+  sequential = true,
   variant = "default",
   glossaryPanel,
   onProgress,
@@ -1228,34 +1233,19 @@ function QuestionStage({
 
   const active = groups[Math.min(activeGroup, groups.length - 1)];
   const questions = active.questions.map((question, index) => normalizeQuestion(question, index));
-  const totalQuestions = groups.reduce((sum, group) => sum + group.questions.length, 0);
   const safeQuestionIndex = Math.min(activeQuestionIndex, Math.max(questions.length - 1, 0));
   const visibleQuestions = sequential ? [questions[safeQuestionIndex]].filter(Boolean) : questions;
-  const globalQuestionIndex = groups
-    .slice(0, activeGroup)
-    .reduce((sum, group) => sum + group.questions.length, 0) + safeQuestionIndex;
+  const groupQuestionCount = questions.length;
 
   const goPrevQuestion = () => {
     if (safeQuestionIndex > 0) {
       setActiveQuestionIndex((value) => Math.max(0, value - 1));
-      return;
-    }
-    if (activeGroup > 0) {
-      const prevGroupIndex = activeGroup - 1;
-      const prevQuestions = groups[prevGroupIndex]?.questions.length || 1;
-      setActiveGroup(prevGroupIndex);
-      setActiveQuestionIndex(Math.max(0, prevQuestions - 1));
     }
   };
 
   const goNextQuestion = () => {
     if (safeQuestionIndex < questions.length - 1) {
       setActiveQuestionIndex((value) => Math.min(questions.length - 1, value + 1));
-      return;
-    }
-    if (activeGroup < groups.length - 1) {
-      setActiveGroup((value) => Math.min(groups.length - 1, value + 1));
-      setActiveQuestionIndex(0);
     }
   };
 
@@ -1317,6 +1307,32 @@ function QuestionStage({
     glossaryPanel &&
     (active.key.includes("vocabulary") || active.label.includes("معجم"));
 
+  const questionNavButtons = (
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <button
+        type="button"
+        onClick={goNextQuestion}
+        disabled={safeQuestionIndex >= groupQuestionCount - 1}
+        className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-4 py-2 font-['Cairo'] text-sm font-bold text-white disabled:opacity-50 ${nakhla ? "bg-[#2D6A4F] hover:bg-[#358062]" : "bg-[#123c69] hover:bg-[#0f2f57]"}`}
+      >
+        التالي
+        <ChevronLeft className="h-4 w-4" />
+      </button>
+      <div className={`hidden truncate text-center text-sm font-bold sm:block ${nakhla ? "text-[#2D6A4F]" : "text-[#123c69]"}`}>
+        {active.label}
+      </div>
+      <button
+        type="button"
+        onClick={goPrevQuestion}
+        disabled={safeQuestionIndex <= 0}
+        className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border bg-white px-4 py-2 font-['Cairo'] text-sm font-bold disabled:opacity-50 ${nakhla ? "border-[#95D5B2] text-[#2D6A4F] hover:bg-[#EEF4EC]" : "border-[#d5ddd7] text-[#123c69] hover:bg-slate-50"}`}
+      >
+        رجوع
+        <ArrowRight className="h-4 w-4" />
+      </button>
+    </div>
+  );
+
   return (
     <div className={`rounded-[20px] ${nakhla ? "border border-[#E8E1D4] bg-white shadow-[0_10px_30px_-12px_rgba(22,53,42,.22)]" : "border border-[#e8e1d4] bg-white shadow-sm"}`}>
       <div className={`${numbered ? "flex justify-start gap-2 overflow-x-auto bg-white p-3 [-webkit-overflow-scrolling:touch]" : nakhla ? "grid grid-cols-2 gap-1 bg-[#EEF4EC] p-[7px] sm:flex sm:gap-1" : "flex gap-1 bg-[#eaf2ff] p-2"}`}>
@@ -1369,29 +1385,10 @@ function QuestionStage({
         {sequential ? (
           <div className={`mb-5 rounded-[18px] border p-3 text-right ${nakhla ? "border-[#95D5B2] bg-[#EEF4EC]" : "border-[#93b7e7] bg-[#eaf2ff]"}`}>
             <div className="mb-2 flex items-center gap-3">
-              <span className={`font-['Cairo'] text-base font-extrabold ${nakhla ? "text-[#16352A]" : "text-[#0b2447]"}`}>السؤال {globalQuestionIndex + 1} من {totalQuestions}</span>
-              <span className={`h-2 flex-1 overflow-hidden rounded-full ${nakhla ? "bg-[#D8F0E2]" : "bg-[#bfd7ff]"}`}><i className={`block h-full ${nakhla ? "bg-[#2D6A4F]" : "bg-[#123c69]"}`} style={{ width: `${((globalQuestionIndex + 1) / Math.max(totalQuestions, 1)) * 100}%` }} /></span>
+              <span className={`font-['Cairo'] text-base font-extrabold ${nakhla ? "text-[#16352A]" : "text-[#0b2447]"}`}>السؤال {safeQuestionIndex + 1} من {groupQuestionCount}</span>
+              <span className={`h-2 flex-1 overflow-hidden rounded-full ${nakhla ? "bg-[#D8F0E2]" : "bg-[#bfd7ff]"}`}><i className={`block h-full ${nakhla ? "bg-[#2D6A4F]" : "bg-[#123c69]"}`} style={{ width: `${((safeQuestionIndex + 1) / Math.max(groupQuestionCount, 1)) * 100}%` }} /></span>
             </div>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <button
-                type="button"
-                onClick={goPrevQuestion}
-                disabled={globalQuestionIndex <= 0}
-                className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border bg-white px-4 py-2 font-['Cairo'] text-sm font-bold disabled:opacity-50 ${nakhla ? "border-[#95D5B2] text-[#2D6A4F] hover:bg-[#EEF4EC]" : "border-[#d5ddd7] text-[#123c69] hover:bg-slate-50"}`}
-              >
-                <ArrowRight className="h-4 w-4" />
-                رجوع
-              </button>
-              <div className={`hidden truncate text-center text-sm font-bold sm:block ${nakhla ? "text-[#2D6A4F]" : "text-[#123c69]"}`}>{active.label}</div>
-              <button
-                type="button"
-                onClick={goNextQuestion}
-                disabled={globalQuestionIndex >= totalQuestions - 1}
-                className={`min-h-10 rounded-xl px-4 py-2 font-['Cairo'] text-sm font-bold text-white disabled:opacity-50 ${nakhla ? "bg-[#2D6A4F] hover:bg-[#358062]" : "bg-[#123c69]"}`}
-              >
-                التالي
-              </button>
-            </div>
+            {questionNavButtons}
           </div>
         ) : null}
 
@@ -1434,7 +1431,7 @@ function QuestionStage({
 
                 <div className="mb-3 text-[1.04rem] font-semibold leading-8 text-[#1E2B26]">
                   <span className={`ml-2 inline-grid h-7 w-7 place-items-center rounded-full font-['Cairo'] text-sm font-extrabold ${nakhla ? "bg-[#D8F0E2] text-[#2D6A4F]" : "bg-[#dbeafe] text-[#123c69]"}`}>
-                    {sequential ? globalQuestionIndex + 1 : questionIndex + 1}
+                    {sequential ? safeQuestionIndex + 1 : questionIndex + 1}
                   </span>
                   <span className={`ml-2 rounded-full px-2 py-0.5 font-['Cairo'] text-[11px] font-bold ${nakhla ? "bg-[#EEF4EC] text-[#5C6B63]" : "bg-[#eaf2ff] text-[#475569]"}`}>
                     {typeLabel(type)}
@@ -1599,6 +1596,12 @@ function QuestionStage({
             );
           })}
         </div>
+
+        {sequential ? (
+          <div className={`mt-5 border-t pt-4 ${nakhla ? "border-[#E8E1D4]" : "border-[#e8e1d4]"}`}>
+            {questionNavButtons}
+          </div>
+        ) : null}
       </div>
 
     </div>
@@ -1627,9 +1630,7 @@ function ReadAlongText({
   const wordIndexes = tokens
     .map((token, index) => (/\s+/.test(token) ? -1 : index))
     .filter((index) => index >= 0);
-  const activeWords = Math.floor(
-    Math.min(Math.max(progress, 0), 1) * Math.max(wordIndexes.length, 1),
-  );
+  const activeWords = progressToActiveWordCount(text, progress);
   const activeSet = new Set(wordIndexes.slice(0, activeWords));
   const terms = [...glossary].sort((a, b) => b.term.length - a.term.length);
 
@@ -1710,6 +1711,20 @@ function ReadingAudioControl({
       audio.removeEventListener("timeupdate", onTimeUpdate);
     };
   }, [audioUrl, audioRef, onDurationChange, onPlayState, onTimeChange]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || !playing) return;
+    let frame = 0;
+    const tick = () => {
+      onTimeChange(audio.currentTime || 0);
+      if (!audio.paused && !audio.ended) {
+        frame = requestAnimationFrame(tick);
+      }
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [playing, audioUrl, audioRef, onTimeChange]);
 
   const toggle = async () => {
     const audio = audioRef.current;
@@ -1804,14 +1819,51 @@ function LessonLikeLayout({
   const [readingPlaying, setReadingPlaying] = useState(false);
   const [readingCurrentTime, setReadingCurrentTime] = useState(0);
   const [readingDuration, setReadingDuration] = useState(0);
-  // نحسب التلوين بتأخير بسيط حتى ما يسبقش الصوت.
-  // التزامن الدقيق يحتاج timestamps، ولكن هذا التعويض كيخلي التلوين أقرب للصوت.
-  const syncDelaySeconds = Math.min(1.8, Math.max(0.6, readingDuration * 0.018));
-  const adjustedReadingTime = Math.max(0, readingCurrentTime - syncDelaySeconds);
-  const readingProgress =
-    readingAudioUrl && readingDuration > 0
-      ? Math.min(adjustedReadingTime / readingDuration, 1)
-      : 0;
+  const [readAlongTick, setReadAlongTick] = useState(0);
+
+  useEffect(() => {
+    setReadingPlaying(false);
+    setReadingCurrentTime(0);
+    setReadingDuration(0);
+    readingAudioRef.current?.pause();
+    if (readingAudioRef.current) readingAudioRef.current.currentTime = 0;
+  }, [readingAudioUrl, body]);
+
+  useEffect(() => {
+    if (!readingPlaying) return;
+    const audio = readingAudioRef.current;
+    if (!audio) return;
+    let frame = 0;
+    const loop = () => {
+      setReadAlongTick((tick) => tick + 1);
+      if (!audio.paused && !audio.ended) {
+        frame = requestAnimationFrame(loop);
+      }
+    };
+    frame = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(frame);
+  }, [readingPlaying, readingAudioUrl]);
+
+  const readingProgress = useMemo(() => {
+    const audio = readingAudioRef.current;
+    const time =
+      readingPlaying && audio
+        ? audio.currentTime
+        : readingCurrentTime;
+    const duration =
+      audio && Number.isFinite(audio.duration) && audio.duration > 0
+        ? audio.duration
+        : readingDuration;
+    if (!readingAudioUrl || duration <= 0) return 0;
+    return computeReadAlongProgress(body, time, duration);
+  }, [
+    body,
+    readAlongTick,
+    readingAudioUrl,
+    readingCurrentTime,
+    readingDuration,
+    readingPlaying,
+  ]);
 
   if (green) {
     return (
@@ -1886,6 +1938,7 @@ function LessonLikeLayout({
             {questionGroups.length > 0 ? (
               <QuestionStage
                 groups={questionGroups}
+                sequential
                 variant="nakhla"
                 glossaryPanel={glossary.length > 0 ? <GlossaryPanel items={glossary} variant="green" /> : null}
               />
@@ -2172,7 +2225,7 @@ function extractYouTubeVideoId(url: string): string {
 function LanguageVideoBlock({ post }: { post: AdminSectionPost | null }) {
   if (!post?.fileUrl) {
     return (
-      <div className="rounded-2xl border-2 border-dashed border-[#d6dcf3] bg-[#eef1fa] p-8 text-center font-['Cairo'] text-sm font-bold text-[#3a4790]">
+      <div className="rounded-2xl border-2 border-dashed border-[#95D5B2] bg-[#EEF4EC] p-8 text-center font-['Cairo'] text-sm font-bold text-[#2D6A4F]">
         أضف فيديو هذا الجزء من التحكم عن بعد.
       </div>
     );
@@ -2206,7 +2259,7 @@ function LanguageLines({ text }: { text: string }) {
   return (
     <ul className="space-y-2 text-right text-sm font-semibold leading-7 text-[#1e2233]">
       {lines.map((line, index) => (
-        <li key={`${line}-${index}`} className="relative pr-4 before:absolute before:right-0 before:top-3 before:text-[8px] before:text-[#4c5ca8] before:content-['◆']">
+        <li key={`${line}-${index}`} className="relative pr-4 before:absolute before:right-0 before:top-3 before:text-[8px] before:text-[#40916C] before:content-['◆']">
           {line}
         </li>
       ))}
@@ -2251,17 +2304,17 @@ function LanguageComments({ storageKey }: { storageKey: string }) {
   };
 
   return (
-    <div className="mt-4 space-y-3 rounded-2xl border border-[#d5ddd7] bg-white p-4 text-right">
-      <div className="font-['Cairo'] text-lg font-extrabold text-[#123c69]">تعليقات التلاميذ</div>
+    <div className="mt-4 space-y-3 rounded-2xl border border-[#E8E1D4] bg-white p-4 text-right">
+      <div className="font-['Cairo'] text-lg font-extrabold text-[#16352A]">تعليقات التلاميذ</div>
       <div className="grid gap-2 md:grid-cols-[180px_1fr_auto]">
-        <input value={name} onChange={(event) => setName(event.target.value)} placeholder="اسمك" className="rounded-xl border border-[#d5ddd7] px-3 py-2 text-sm outline-none focus:border-[#123c69]" />
-        <input value={text} onChange={(event) => setText(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") submit(); }} placeholder="اكتب تعليقك على الدرس مثل YouTube..." className="rounded-xl border border-[#d5ddd7] px-3 py-2 text-sm outline-none focus:border-[#123c69]" />
-        <button type="button" onClick={submit} className="rounded-xl bg-[#123c69] px-4 py-2 font-['Cairo'] text-sm font-bold text-white">نشر</button>
+        <input value={name} onChange={(event) => setName(event.target.value)} placeholder="اسمك" className="rounded-xl border border-[#E8E1D4] px-3 py-2 text-sm outline-none focus:border-[#2D6A4F]" />
+        <input value={text} onChange={(event) => setText(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") submit(); }} placeholder="اكتب تعليقك على الدرس مثل YouTube..." className="rounded-xl border border-[#E8E1D4] px-3 py-2 text-sm outline-none focus:border-[#2D6A4F]" />
+        <button type="button" onClick={submit} className="rounded-xl bg-[#2D6A4F] px-4 py-2 font-['Cairo'] text-sm font-bold text-white hover:bg-[#358062]">نشر</button>
       </div>
       <div className="space-y-2">
         {comments.length > 0 ? comments.map((comment) => (
-          <div key={comment.id} className="rounded-xl border border-[#e8e1d4] bg-[#fcf9f2] p-3">
-            <div className="mb-1 flex flex-wrap items-center justify-between gap-2 font-['Cairo'] text-xs font-extrabold text-[#123c69]">
+          <div key={comment.id} className="rounded-xl border border-[#E8E1D4] bg-[#FCF9F2] p-3">
+            <div className="mb-1 flex flex-wrap items-center justify-between gap-2 font-['Cairo'] text-xs font-extrabold text-[#2D6A4F]">
               <span>{comment.name}</span>
               <span className="text-[#64748b]">{new Date(comment.createdAt).toLocaleString("ar-MA")}</span>
             </div>
@@ -2355,19 +2408,17 @@ function LanguagePreview({ posts, selectedPostId }: { posts: AdminSectionPost[];
   const isTawdif = active.key === "language:tab:tawdif";
 
   return (
-    <div className="mx-auto max-w-5xl overflow-hidden rounded-[28px] border border-[#e6e3d9] bg-[#fbf7f0] shadow-sm" dir="rtl">
-      <div className="border-b border-[#e6e3d9] bg-[#fcf9f2] px-5 py-4 text-right">
-        <h2 className="font-['Cairo'] text-2xl font-extrabold text-[#123c69]">{entry?.title || "الظاهرة اللغوية"}</h2>
-        {entry?.content ? <p className="mt-2 text-sm font-semibold leading-7 text-[#475569] whitespace-pre-wrap">{entry.content}</p> : null}
-      </div>
-      <div className="flex flex-wrap border-b border-[#e6e3d9] bg-[#fcf9f2]">
+    <div className="mx-auto max-w-5xl overflow-hidden rounded-[28px] border border-[#E8E1D4] bg-[#FBF7F0] shadow-[0_10px_30px_-12px_rgba(22,53,42,.22)]" dir="rtl">
+      <div className="grid grid-cols-2 gap-1 border-b border-[#E8E1D4] bg-[#EEF4EC] p-[7px] sm:flex sm:gap-1">
         {tabs.map((tab) => (
           <button
             key={tab.key}
             type="button"
             onClick={() => setActiveTab(tab.key)}
-            className={`flex-1 px-4 py-4 font-['Cairo'] text-sm font-extrabold transition ${
-              activeTab === tab.key ? "bg-white text-[#123c69] shadow-inner border-b-4 border-[#123c69]" : "text-[#5c6173] hover:bg-[#eaf2ff]"
+            className={`flex-1 rounded-[13px] px-3 py-3 font-['Cairo'] text-sm font-extrabold transition sm:py-[11px] ${
+              activeTab === tab.key
+                ? "bg-white text-[#2D6A4F] shadow-[0_4px_12px_-4px_rgba(22,53,42,.25)]"
+                : "bg-transparent text-[#5C6B63] hover:text-[#2D6A4F]"
             }`}
           >
             {tab.label}
@@ -2376,7 +2427,7 @@ function LanguagePreview({ posts, selectedPostId }: { posts: AdminSectionPost[];
       </div>
       <div className="space-y-4 bg-white p-5">
         {active.intro ? (
-          <div className="rounded-2xl border border-[#93b7e7] bg-[#eaf2ff] p-4 text-right text-sm font-semibold leading-7 text-[#123c69]">
+          <div className="rounded-2xl border border-[#95D5B2] bg-[#EEF4EC] p-4 text-right text-sm font-semibold leading-7 text-[#16352A]">
             {active.intro}
           </div>
         ) : null}
@@ -2384,12 +2435,12 @@ function LanguagePreview({ posts, selectedPostId }: { posts: AdminSectionPost[];
         {"video" in active && active.videoEnabled ? (
           <div className="space-y-4">
             <LanguageVideoBlock post={active.video || null} />
-            <div className="rounded-2xl border border-[#e8e1d4] bg-[#fcf9f2] p-4 text-right">
-              <h3 className="font-['Cairo'] text-xl font-extrabold text-[#0b2447]">{active.videoTitle}</h3>
-              <p className="mt-2 text-sm font-semibold leading-7 text-[#475569]">{active.videoDescription}</p>
+            <div className="rounded-2xl border border-[#E8E1D4] bg-[#FCF9F2] p-4 text-right">
+              <h3 className="font-['Cairo'] text-xl font-extrabold text-[#16352A]">{active.videoTitle}</h3>
+              <p className="mt-2 text-sm font-semibold leading-7 text-[#5C6B63]">{active.videoDescription}</p>
               <div className="mt-4 flex flex-wrap items-center gap-3">
-                <button type="button" onClick={() => setShowComments((value) => !value)} className="rounded-xl border border-[#d5ddd7] bg-white px-4 py-2 font-['Cairo'] text-sm font-bold text-[#123c69]">{showComments ? "إخفاء التعليقات" : "التعليقات"}</button>
-                <button type="button" onClick={() => setShowApplications((value) => !value)} className="rounded-xl bg-[#123c69] px-4 py-2 font-['Cairo'] text-sm font-bold text-white">{showApplications ? "إخفاء التطبيقات" : "التطبيقات"}</button>
+                <button type="button" onClick={() => setShowComments((value) => !value)} className="rounded-xl border border-[#95D5B2] bg-white px-4 py-2 font-['Cairo'] text-sm font-bold text-[#2D6A4F] hover:bg-[#EEF4EC]">{showComments ? "إخفاء التعليقات" : "التعليقات"}</button>
+                <button type="button" onClick={() => setShowApplications((value) => !value)} className="rounded-xl bg-[#2D6A4F] px-4 py-2 font-['Cairo'] text-sm font-bold text-white hover:bg-[#358062]">{showApplications ? "إخفاء التطبيقات" : "التطبيقات"}</button>
               </div>
               {showComments ? (
                 <LanguageComments storageKey={`nakhla-language-comments:${entry?.id || selectedPostId || active.key}`} />
@@ -2400,39 +2451,39 @@ function LanguagePreview({ posts, selectedPostId }: { posts: AdminSectionPost[];
 
         {isKhulasa && "concept" in active ? (
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="overflow-hidden rounded-2xl border border-[#e6e3d9] bg-white">
-              <div className="bg-[#123c69] px-4 py-3 text-center font-['Cairo'] text-base font-extrabold text-white">المفهوم والأركان</div>
+            <div className="overflow-hidden rounded-2xl border border-[#E8E1D4] bg-white">
+              <div className="bg-[#16352A] px-4 py-3 text-center font-['Cairo'] text-base font-extrabold text-white">المفهوم والأركان</div>
               <div className="space-y-3 p-4">
                 <LanguageLines text={active.concept || ""} />
-                {active.examples ? <div className="whitespace-pre-wrap rounded-xl bg-[#fcf9f2] p-3 font-['Amiri'] text-lg leading-8 text-[#1e2233]">{active.examples}</div> : null}
+                {active.examples ? <div className="whitespace-pre-wrap rounded-xl bg-[#FCF9F2] p-3 font-['Amiri'] text-lg leading-8 text-[#1E2B26]">{active.examples}</div> : null}
               </div>
             </div>
-            <div className="overflow-hidden rounded-2xl border border-[#e6e3d9] bg-white">
-              <div className="bg-[#123c69] px-4 py-3 text-center font-['Cairo'] text-base font-extrabold text-white">الأنواع</div>
+            <div className="overflow-hidden rounded-2xl border border-[#E8E1D4] bg-white">
+              <div className="bg-[#16352A] px-4 py-3 text-center font-['Cairo'] text-base font-extrabold text-white">الأنواع</div>
               <div className="p-4"><LanguageLines text={active.types || ""} /></div>
             </div>
           </div>
         ) : null}
 
         {isTawdif && "reminder" in active && active.reminder ? (
-          <div className="overflow-hidden rounded-2xl border border-[#e6e3d9] bg-white">
-            <div className="bg-[#123c69] px-4 py-3 text-center font-['Cairo'] text-base font-extrabold text-white">تذكّر قبل التوظيف</div>
+          <div className="overflow-hidden rounded-2xl border border-[#E8E1D4] bg-white">
+            <div className="bg-[#16352A] px-4 py-3 text-center font-['Cairo'] text-base font-extrabold text-white">تذكّر قبل التوظيف</div>
             <div className="p-4"><LanguageLines text={active.reminder} /></div>
           </div>
         ) : null}
         {isTawdif && "image" in active && active.image?.fileUrl ? (
-          <div className="rounded-2xl border border-[#93b7e7] bg-[#eaf2ff] p-3">{renderMedia(active.image, "max-h-[260px]")}</div>
+          <div className="rounded-2xl border border-[#95D5B2] bg-[#EEF4EC] p-3">{renderMedia(active.image, "max-h-[260px]")}</div>
         ) : null}
 
         {isKhulasa && "questionsTitle" in active && active.questions.length > 0 ? (
-          <div className="rounded-xl bg-[#eaf2ff] px-4 py-3 text-right font-['Cairo'] text-sm font-extrabold text-[#123c69]">
+          <div className="rounded-xl bg-[#EEF4EC] px-4 py-3 text-right font-['Cairo'] text-sm font-extrabold text-[#2D6A4F]">
             {active.questionsTitle}
           </div>
         ) : null}
 
         {((!active.videoEnabled && active.questions.length > 0) || showApplications) ? (
           active.questions.length > 0 ? (
-            <QuestionStage groups={active.questions} sequential />
+            <QuestionStage groups={active.questions} sequential variant="nakhla" />
           ) : (
             <EmptyComponentState text="لم يضف الأستاذ تطبيقات هذا الجزء بعد." />
           )
@@ -3200,6 +3251,14 @@ function DomainContent({
   }, [activeComponent?.key, domain.id]);
 
   useEffect(() => {
+    const payload = peekSearchOpenPayload();
+    if (!payload || payload.type !== "domain-post" || !payload.postId) return;
+    if (payload.component && payload.component !== activeComponent?.key) return;
+    setOpenedPostId(payload.postId);
+    clearSearchOpenPayload();
+  }, [activeComponent?.key]);
+
+  useEffect(() => {
     if (introPost?.fileUrl && !introShownRef.current) {
       introShownRef.current = true;
       setIntroOpen(true);
@@ -3212,9 +3271,12 @@ function DomainContent({
     activeComponent.key === "reading" || activeComponent.key === "listening" || activeComponent.key === "language";
   const readingLessonOpen =
     activeComponent.key === "reading" && openedPostId !== null;
+  const languageLessonOpen =
+    activeComponent.key === "language" && openedPostId !== null;
   const writingLessonOpen = activeComponent.key === "writing";
-  const nakhlaLessonOpen = readingLessonOpen || writingLessonOpen;
-  const hideComponentTabs = readingLessonOpen;
+  const nakhlaLessonOpen =
+    readingLessonOpen || writingLessonOpen || languageLessonOpen;
+  const hideComponentTabs = readingLessonOpen || languageLessonOpen;
   const componentPosts = posts.filter(
     (post) =>
       post.category === activeComponent.key ||
@@ -3294,14 +3356,6 @@ function DomainContent({
             </div>
           )}
 
-          {!nakhlaLessonOpen ? (
-            <div className="mt-4 flex justify-end">
-              <div className="inline-flex items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2 text-xs font-bold text-blue-900 shadow-sm">
-                <CheckCircle2 className="h-4 w-4" />
-                يتم تسجيل هذا المكون تلقائياً في تقدم الطلاب
-              </div>
-            </div>
-          ) : null}
         </section>
       </CardContent>
     </Card>

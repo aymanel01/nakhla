@@ -9,6 +9,7 @@ primary_region = "cdg"
   WEB_DIST = "/app/apps/web/dist"
   DB_PATH = "/data/teaching-app.db"
   UPLOAD_DIR = "/data/uploads"
+  RESTORE_SEED_DATA = "false"
 
 [http_service]
   internal_port = 3000

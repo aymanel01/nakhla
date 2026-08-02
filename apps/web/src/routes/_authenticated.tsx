@@ -25,6 +25,7 @@ import {
 import { cn } from "@/lib/utils";
 import { getSectionThemeByPath } from "@/lib/platform-section-themes";
 import { playCardClickSound, playCardHoverSound } from "@/lib/ui-sound";
+import { PlatformHelper } from "@/components/platform-helper";
 
 const defaultPageTheme = {
   accent: "#0f766e",
@@ -275,6 +276,8 @@ function AuthenticatedLayout() {
           ) : null}
         </>
       ) : null}
+
+      <PlatformHelper accent={pageTheme.accent} />
 
       <main className="min-w-0 flex-1">
         <div

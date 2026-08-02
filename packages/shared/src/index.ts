@@ -58,6 +58,47 @@ export interface AdminSectionPost {
   createdAt: string
 }
 
+export const PLATFORM_HELPER_CONFIG_CATEGORY = 'helper:config'
+
+export type PlatformHelperCorner = 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right'
+
+export interface PlatformHelperPosition {
+  corner: PlatformHelperCorner
+  offsetX: number
+  offsetY: number
+  bubbleLift: number
+}
+
+export interface PlatformHelperSectionConfig {
+  greeting: string
+  tips: string[]
+}
+
+export interface PlatformHelperConfig {
+  enabled: boolean
+  position: PlatformHelperPosition
+  sections: Record<string, PlatformHelperSectionConfig>
+}
+
+export interface SearchIndexItem {
+  id: string
+  label: string
+  subtitle?: string
+  keywords: string[]
+  to: string
+  hash?: string
+  search?: Record<string, string | number>
+  openPayload?: {
+    type: 'domain-post'
+    postId: number
+    component?: string
+  }
+}
+
+export interface SearchIndexResponse {
+  items: SearchIndexItem[]
+}
+
 export interface AuthUser extends User {
   // User returned from /auth/me
 }

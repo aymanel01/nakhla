@@ -2,6 +2,13 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Quiz, QuizQuestion } from '@teaching-app/shared'
 import { api } from '@/lib/api'
+import {
+  playMoroccanDoorOpen,
+  playMoroccanStageDoorOpen,
+  playQuizTone,
+  setMoroccanGamePlayDucked,
+  startMoroccanGamePlaySound,
+} from '@/lib/quiz-game-sound'
 import { Button } from '@/components/ui/button'
 import {
   ChevronLeft,
@@ -235,42 +242,6 @@ function buildBonusStages(stageConfigs: StageConfig[]): GameStage[] {
   })
 }
 
-function playTone(type: 'door' | 'win' | 'bonus' | 'lose') {
-  if (typeof window === 'undefined') return
-
-  const AudioCtx = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
-  if (!AudioCtx) return
-
-  const ctx = new AudioCtx()
-  const gain = ctx.createGain()
-  gain.connect(ctx.destination)
-  gain.gain.value = 0.045
-  const notes =
-    type === 'door'
-      ? [392, 494]
-      : type === 'bonus'
-        ? [659, 783, 988]
-        : type === 'lose'
-          ? [392, 330, 262]
-          : [523, 659, 783, 1046]
-  const now = ctx.currentTime
-
-  notes.forEach((freq, index) => {
-    const osc = ctx.createOscillator()
-    osc.type = type === 'lose' ? 'sine' : 'triangle'
-    osc.frequency.value = freq
-    osc.connect(gain)
-    const start = now + index * 0.1
-    const end = start + 0.14
-    osc.start(start)
-    osc.stop(end)
-  })
-
-  window.setTimeout(() => {
-    void ctx.close()
-  }, 1000)
-}
-
 function nameFromEmail(email?: string | null) {
   if (!email) return 'player'
   return email.split('@')[0] || 'player'
@@ -307,6 +278,7 @@ function QuizzesPage() {
   const [resultPopup, setResultPopup] = useState<StageResultPopup | null>(null)
   const [isStageTransitioning, setIsStageTransitioning] = useState(false)
   const [rankingOpen, setRankingOpen] = useState(false)
+  const [gameView, setGameView] = useState<'landing' | 'opening' | 'playing'>('landing')
 
   const loadData = async () => {
     const [quizzesRes, gameRes, configRes] = await Promise.all([
@@ -323,6 +295,15 @@ function QuizzesPage() {
     loadData().finally(() => setLoading(false))
   }, [])
 
+  useEffect(() => {
+    if (gameView === 'landing') return
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [gameView])
+
   const mainStages = useMemo(() => buildMainStages(quizzes, stageConfigs), [quizzes, stageConfigs])
   const bonusStages = useMemo(() => buildBonusStages(stageConfigs), [stageConfigs])
 
@@ -331,6 +312,17 @@ function QuizzesPage() {
   const currentQuestion = activeStage?.questions[questionIndex]
   const leaderboard = snapshot?.leaderboard ?? []
   const progressStage = profile.bestStage ?? 0
+
+  useEffect(() => {
+    if (gameView !== 'playing' || !soundEnabled) return
+    const stopGameplaySound = startMoroccanGamePlaySound()
+    return () => stopGameplaySound()
+  }, [gameView, soundEnabled])
+
+  useEffect(() => {
+    if (gameView !== 'playing' || !soundEnabled) return
+    setMoroccanGamePlayDucked(Boolean(activeStage) || Boolean(resultPopup?.open))
+  }, [gameView, soundEnabled, activeStage, resultPopup?.open])
 
   const [playerPosition, setPlayerPosition] = useState<{ x: number; y: number }>(startPoint)
   const [isPlayerWalking, setIsPlayerWalking] = useState(false)
@@ -372,7 +364,7 @@ function QuizzesPage() {
     const unlocked = stage.type === 'main' ? stage.number <= profile.unlockedStage : profile.completedMainStages.includes(stage.number)
     if (!unlocked) return
 
-    if (soundEnabled) playTone('door')
+    if (soundEnabled) playMoroccanStageDoorOpen()
     setDoorBurst(stage.number * (stage.type === 'bonus' ? 100 : 1))
     setIsStageTransitioning(true)
     window.setTimeout(() => setDoorBurst(null), 320)
@@ -388,6 +380,22 @@ function QuizzesPage() {
     setActiveStage(null)
     setQuestionIndex(0)
     setAnswers({})
+  }
+
+  const enterGame = () => {
+    if (soundEnabled) playMoroccanDoorOpen()
+    setGameView('opening')
+  }
+
+  const finishDoorOpening = () => {
+    setGameView('playing')
+  }
+
+  const exitGame = () => {
+    closeStage()
+    setResultPopup(null)
+    setRankingOpen(false)
+    setGameView('landing')
   }
 
   const retryStage = (stage: GameStage) => {
@@ -474,7 +482,7 @@ function QuizzesPage() {
 
       setResultPopup(popupData)
 
-      if (soundEnabled) playTone(kind === 'bonus' ? 'bonus' : kind === 'lose' ? 'lose' : 'win')
+      if (soundEnabled) playQuizTone(kind === 'bonus' ? 'bonus' : kind === 'lose' ? 'lose' : 'win')
 
     } finally {
       setSaving(false)
@@ -490,30 +498,93 @@ function QuizzesPage() {
   }
 
   return (
-    <div className="relative min-h-app-content w-full rounded-xl bg-black">
+    <>
       <style>{`
-        .map-screen { background: radial-gradient(circle at top, #1e293b 0%, #020617 70%); padding:0; min-height:calc(100dvh - var(--app-chrome-h)); max-height:calc(100dvh - var(--app-chrome-h)); overflow-x:hidden; overflow-y:auto; align-items:flex-start; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
-        .map-canvas { flex:0 0 auto; width:100%; max-width:100%; height:auto; min-height:min(56dvh, 420px); aspect-ratio:1376 / 768; }
-        @supports not (height: 100dvh) { .map-screen { min-height:calc(100vh - var(--app-chrome-h)); max-height:calc(100vh - var(--app-chrome-h)); } }
+        .ranking-card { background: linear-gradient(180deg, rgba(245,232,202,.96), rgba(227,201,145,.94)); color: #3b2209; border: 1px solid rgba(255,247,220,.72); box-shadow: 0 28px 80px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.42); }
+        .ranking-row { background: rgba(255,248,230,.62); }
+        .ranking-top { background: linear-gradient(180deg, rgba(255,248,228,.99), rgba(241,219,170,.94)); }
+        .ranking-panel { scrollbar-width: thin; }
+      `}</style>
+
+      {gameView === 'landing' ? (
+        <div className="relative min-h-app-content w-full overflow-hidden rounded-xl bg-slate-950" dir="rtl">
+          <img src={MAIN_MAP} alt="" className="absolute inset-0 h-full w-full object-cover opacity-35" aria-hidden />
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/40 via-slate-950/75 to-black" />
+          <div className="relative z-10 mx-auto flex min-h-app-content max-w-3xl flex-col items-center justify-center px-4 py-10 text-center text-white">
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-amber-300/25 bg-amber-400/10 px-4 py-1.5 text-xs font-bold text-amber-100">
+              <Sparkles className="h-4 w-4 text-amber-200" />
+              مغامرة الأسئلة
+            </div>
+            <h1 className="text-3xl font-black leading-tight sm:text-4xl">أبواب القصر</h1>
+            <p className="mt-3 max-w-lg text-sm leading-7 text-white/75 sm:text-base">
+              افتح الباب، سافر عبر خريطة القصر، وأجب على الأسئلة لفتح المراحل التالية وجمع النجوم والمكافآت.
+            </p>
+
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <div className="rounded-2xl border border-white/15 bg-black/35 px-4 py-3 text-sm font-bold backdrop-blur-md">
+                ⭐ {profile.totalStars}
+              </div>
+              <div className="rounded-2xl border border-white/15 bg-black/35 px-4 py-3 text-sm font-bold backdrop-blur-md">
+                🎁 {profile.totalRewards}
+              </div>
+              <div className="rounded-2xl border border-white/15 bg-black/35 px-4 py-3 text-sm font-bold backdrop-blur-md">
+                أفضل باب {Math.max(progressStage || 1, 1)}
+              </div>
+            </div>
+
+            <div className="mt-8 flex w-full max-w-md flex-col gap-3 sm:flex-row sm:justify-center">
+              <Button
+                type="button"
+                onClick={enterGame}
+                className="h-14 flex-1 gap-2 rounded-2xl bg-gradient-to-l from-amber-500 via-yellow-500 to-orange-600 text-base font-extrabold text-slate-950 shadow-[0_18px_40px_rgba(245,158,11,.35)] hover:brightness-105"
+              >
+                <Sparkles className="h-5 w-5" />
+                افتح أبواب القصر
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setRankingOpen(true)}
+                className="h-14 gap-2 rounded-2xl border border-yellow-200/30 bg-black/40 px-6 text-base font-bold text-white hover:bg-black/55"
+              >
+                <Trophy className="h-5 w-5 text-yellow-200" />
+                الترتيب
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {gameView !== 'landing' ? (
+    <div className={`quiz-game-fullscreen fixed inset-0 z-[88] overflow-hidden bg-black ${gameView === 'opening' ? 'pointer-events-none' : ''}`}>
+      <style>{`
+        .map-screen { background: radial-gradient(circle at top, #1e293b 0%, #020617 70%); padding:0; min-height:100dvh; max-height:100dvh; overflow-x:hidden; overflow-y:auto; align-items:flex-start; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+        .map-canvas { flex:0 0 auto; width:100%; max-width:100%; height:auto; min-height:min(100dvh, 100%); aspect-ratio:1376 / 768; }
+        @supports not (height: 100dvh) { .map-screen { min-height:100vh; max-height:100vh; } }
         @media (max-width: 640px) { .map-canvas { min-height:min(52dvh, 360px); border-radius:0; } .door-label { font-size:10px; padding:3px 8px; bottom:-24px; } }
         .map-depth::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 50% 48%, rgba(255,220,140,.16), transparent 30%), radial-gradient(circle at 16% 68%, rgba(34,197,94,.10), transparent 18%), radial-gradient(circle at 88% 18%, rgba(255,214,102,.10), transparent 18%); mix-blend-mode: screen; pointer-events: none; }
-        .door-node { position:absolute; transform: translate(-50%, -50%); transition: transform .22s ease, filter .22s ease, opacity .22s ease; transform-origin: center; }
-        .door-node:hover { transform: translate(-50%, -50%) scale(1.03); filter: brightness(1.06); }
-        .door-node:active { transform: translate(-50%, -50%) scale(.98); }
-        .door-hitbox { position:relative; width:100%; height:100%; border-radius:18px; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.08); box-shadow: inset 0 0 0 1px rgba(255,255,255,.03), 0 10px 28px rgba(0,0,0,.18); overflow:visible; }
+        .door-anchor { transform: translate(-50%, -50%); }
+        .door-node { position:relative; display:block; width:100%; height:100%; border:0; background:transparent; padding:0; cursor:pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+        .door-node:disabled { cursor:not-allowed; }
+        .door-hitbox { position:relative; width:100%; height:100%; border-radius:18px; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.08); box-shadow: inset 0 0 0 1px rgba(255,255,255,.03), 0 10px 28px rgba(0,0,0,.18); overflow:visible; transition: filter .2s ease, box-shadow .2s ease; }
+        .door-node:not(:disabled):hover .door-hitbox { filter: brightness(1.08); }
+        .door-node:not(:disabled):active .door-hitbox { filter: brightness(0.96); }
         .door-hitbox.unlocked { box-shadow: inset 0 0 0 1px rgba(255,244,181,.18), 0 0 0 2px rgba(255,219,77,.14), 0 14px 34px rgba(0,0,0,.22); }
         .door-hitbox.completed { box-shadow: inset 0 0 0 1px rgba(167,243,208,.26), 0 0 0 2px rgba(74,222,128,.16), 0 14px 34px rgba(0,0,0,.22); }
         .door-hitbox.locked { background:rgba(0,0,0,.16); }
         .door-label { position:absolute; left:50%; bottom:-28px; transform:translateX(-50%); white-space:nowrap; border-radius:999px; padding:4px 10px; font-size:12px; font-weight:700; color:#fff; background:rgba(15,23,42,.68); backdrop-filter: blur(8px); box-shadow:0 10px 22px rgba(0,0,0,.2); }
         .door-node-main { animation: none; }
-        .player-marker { position:absolute; width:48px; height:62px; transform: translate(-50%, -86%); transition: left .42s linear, top .42s linear; z-index:22; filter: drop-shadow(0 10px 14px rgba(0,0,0,.25)); }
+        .player-marker { position:absolute; width:48px; height:62px; transform: translate(-50%, -86%); transition: left .42s linear, top .42s linear; z-index:22; filter: drop-shadow(0 10px 14px rgba(0,0,0,.25)); pointer-events:none; }
         .player-marker img { width:100%; height:100%; object-fit:contain; animation: playerFloat 2.2s ease-in-out infinite; transform-origin: 50% 92%; }
         .player-marker.walking img { animation: playerWalk .48s ease-in-out infinite; }
         .player-marker.walking .player-aura { animation: auraWalk .48s ease-in-out infinite; }
-        .player-aura { position:absolute; left:50%; bottom:5px; width:30px; height:10px; transform:translateX(-50%); border-radius:999px; background: radial-gradient(circle, rgba(255,255,255,.32), rgba(255,255,255,.06) 65%, transparent 72%); filter: blur(3px); }
+        .player-aura { position:absolute; left:50%; bottom:5px; width:30px; height:10px; transform:translateX(-50%); border-radius:999px; background: radial-gradient(circle, rgba(255,255,255,.32), rgba(255,255,255,.06) 65%, transparent 72%); filter: blur(3px); pointer-events:none; }
         .stage-point { box-shadow: 0 0 0 1px rgba(255,255,255,.22), 0 0 18px rgba(251,191,36,.55), 0 0 42px rgba(250,204,21,.35); }
         .stage-point:hover { box-shadow: 0 0 0 1px rgba(255,255,255,.35), 0 0 22px rgba(251,191,36,.78), 0 0 56px rgba(250,204,21,.48); }
-        .door-node-bonus { }
+        .door-node-bonus { display:flex; align-items:center; justify-content:center; border-radius:14px; border:2px solid; transition: filter .2s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent; cursor:pointer; }
+        .door-node-bonus:disabled { cursor:not-allowed; }
+        .door-node-bonus:not(:disabled):hover { filter: brightness(1.06); }
+        .door-node-bonus:not(:disabled):active { filter: brightness(0.94); }
         .door-ring { animation: ringGlow 1.8s ease-in-out infinite; }
         .burst { animation: clickBurst .75s ease-out forwards; }
         .ranking-card { background: linear-gradient(180deg, rgba(245,232,202,.96), rgba(227,201,145,.94)); color: #3b2209; border: 1px solid rgba(255,247,220,.72); box-shadow: 0 28px 80px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.42); }
@@ -564,9 +635,9 @@ function QuizzesPage() {
           to { opacity: 1; transform: scale(1); }
         }
         @keyframes chestOpen {
-          0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); filter: drop-shadow(0 0 0 rgba(255,255,255,0)); }
-          50% { transform: translate(-50%, -50%) scale(1.25) rotate(-8deg); filter: drop-shadow(0 0 18px rgba(250,204,21,.95)); }
-          100% { transform: translate(-50%, -50%) scale(1.05) rotate(0deg); filter: drop-shadow(0 0 12px rgba(250,204,21,.8)); }
+          0% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 0 rgba(255,255,255,0)); }
+          50% { transform: scale(1.15) rotate(-8deg); filter: drop-shadow(0 0 18px rgba(250,204,21,.95)); }
+          100% { transform: scale(1.05) rotate(0deg); filter: drop-shadow(0 0 12px rgba(250,204,21,.8)); }
         }
         @keyframes popupStrong {
           0% { opacity: 0; transform: scale(.75) translateY(30px); }
@@ -630,6 +701,17 @@ function QuizzesPage() {
           0%,100% { transform:translateX(-50%) scaleX(1); opacity:.72; }
           50% { transform:translateX(-50%) scaleX(.72); opacity:.42; }
         }
+        .door-opening-scene { pointer-events:none; }
+        .door-opening-backdrop { position:absolute; inset:0; background: radial-gradient(circle at center, rgba(255,220,140,.28), rgba(2,6,23,.92) 58%); animation: doorBackdropFade 1.35s ease-out forwards; }
+        .door-opening-glow { position:absolute; left:50%; top:50%; width:min(42vw, 280px); height:min(62vh, 420px); transform:translate(-50%, -50%); border-radius:999px; background: radial-gradient(circle, rgba(255,236,170,.95), rgba(255,200,80,.35) 42%, transparent 72%); filter: blur(8px); animation: doorGlowPulse 1.35s ease-out forwards; }
+        .door-panel { position:absolute; top:0; bottom:0; width:50.5%; background-image: url('/quiz-map/door-1.jpeg'); background-size: 200% 100%; background-repeat:no-repeat; box-shadow: inset 0 0 40px rgba(0,0,0,.45), 0 0 60px rgba(0,0,0,.35); }
+        .door-panel-left { left:0; background-position:left center; transform-origin:left center; animation: doorOpenLeft 1.35s cubic-bezier(.45,.02,.2,1) forwards; border-right:2px solid rgba(255,236,170,.35); }
+        .door-panel-right { right:0; background-position:right center; transform-origin:right center; animation: doorOpenRight 1.35s cubic-bezier(.45,.02,.2,1) forwards; border-left:2px solid rgba(255,236,170,.35); }
+        .door-panel-shine { position:absolute; inset:0; background: linear-gradient(120deg, rgba(255,255,255,.18), transparent 35%, transparent 65%, rgba(255,255,255,.08)); mix-blend-mode: screen; }
+        @keyframes doorOpenLeft { 0% { transform: perspective(1200px) rotateY(0deg); } 100% { transform: perspective(1200px) rotateY(78deg); } }
+        @keyframes doorOpenRight { 0% { transform: perspective(1200px) rotateY(0deg); } 100% { transform: perspective(1200px) rotateY(-78deg); } }
+        @keyframes doorBackdropFade { 0% { opacity:1; } 70% { opacity:.55; } 100% { opacity:0; } }
+        @keyframes doorGlowPulse { 0% { opacity:0; transform:translate(-50%, -50%) scale(.7); } 35% { opacity:1; transform:translate(-50%, -50%) scale(1); } 100% { opacity:0; transform:translate(-50%, -50%) scale(1.15); } }
       `}</style>
 
       <div className="map-screen relative flex w-full items-start justify-start bg-slate-950 lg:justify-center">
@@ -638,6 +720,10 @@ function QuizzesPage() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/22 via-transparent to-black/5" />
         <div className="absolute left-2 right-2 top-2 z-30 flex flex-col items-start gap-2 sm:left-4 sm:right-auto sm:top-4 sm:flex-row sm:items-center">
           <div className="flex w-full flex-wrap items-center gap-1.5 rounded-[18px] border border-white/15 bg-black/28 px-2 py-1.5 text-white shadow-2xl backdrop-blur-xl sm:w-auto sm:gap-2 sm:rounded-[22px] sm:px-3 sm:py-2">
+          <Button variant="secondary" size="sm" onClick={exitGame} className="h-8 gap-1.5 bg-white/90 px-2 text-xs text-slate-900 hover:bg-white sm:gap-2 sm:px-3 sm:text-sm">
+            <ArrowRight className="h-4 w-4" />
+            <span className="hidden sm:inline">خروج</span>
+          </Button>
           <Button variant="secondary" size="sm" onClick={() => void persistSound(!soundEnabled)} className="h-8 gap-1.5 bg-white/90 px-2 text-xs text-slate-900 hover:bg-white sm:gap-2 sm:px-3 sm:text-sm">
             {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
             <span className="hidden sm:inline">{soundEnabled ? 'الصوت شغال' : 'الصوت متوقف'}</span>
@@ -657,64 +743,6 @@ function QuizzesPage() {
           الترتيب
         </button>
 
-        {rankingOpen ? (
-          <div className="fixed inset-0 z-[95] flex items-start justify-center bg-black/55 p-4 pt-20 backdrop-blur-sm" onClick={() => setRankingOpen(false)}>
-            <div className="ranking-panel ranking-card w-full max-w-[760px] overflow-hidden rounded-[32px]" onClick={(e) => e.stopPropagation()}>
-              <div className="ranking-top px-5 py-4">
-                <div className="flex items-center justify-between gap-3">
-                  <button type="button" onClick={() => setRankingOpen(false)} className="rounded-full bg-amber-950/10 px-3 py-1.5 text-xs font-bold text-amber-950 hover:bg-amber-950/18">إغلاق</button>
-                  <div className="text-right">
-                    <div className="text-xl font-black">ترتيب نقاط المكافآت</div>
-                    <div className="text-[12px] text-amber-950/70">اضغط على زر الترتيب فوق الخريطة باش يطلع rank ديالك</div>
-                  </div>
-                  <Trophy className="h-7 w-7 text-amber-700" />
-                </div>
-                <div className="mt-4 grid gap-3 md:grid-cols-3">
-                  {leaderboard.slice(0, 3).map((entry) => (
-                    <div key={`top-${entry.id}`} className="rounded-3xl border border-white/45 bg-white/55 px-3 py-4 text-center shadow-sm">
-                      <div className="flex items-center justify-center gap-1 text-[12px] font-black text-amber-900">
-                        {entry.rank === 1 ? <Crown className="h-5 w-5 text-yellow-500" /> : <span>#{entry.rank}</span>}
-                        <span>{entry.rank === 1 ? 'Top 1' : entry.rank === 2 ? 'Top 2' : 'Top 3'}</span>
-                      </div>
-                      <div className="mt-2 truncate text-sm font-bold">{nameFromEmail(entry.email)}</div>
-                      <div className="mt-1 text-xs text-amber-950/75">🎁 {entry.totalRewards} · ⭐ {entry.totalStars} · باب {entry.bestStage}</div>
-                    </div>
-                  ))}
-                </div>
-                {snapshot.monthlyChampion ? (
-                  <div className="mt-4 rounded-2xl border border-white/40 bg-white/42 px-4 py-3 text-right text-sm text-amber-950/80">
-                    <div className="flex items-center justify-end gap-2 font-bold text-amber-800"><span>فائز الشهر</span><Sparkles className="h-4 w-4" /></div>
-                    <div className="mt-1 font-semibold">{nameFromEmail(snapshot.monthlyChampion.email)} · {snapshot.monthlyChampion.monthlyPrizeDh} DH</div>
-                  </div>
-                ) : null}
-              </div>
-              <div className="max-h-[46vh] overflow-y-auto px-4 pb-4 pt-3">
-                <div className="grid gap-3 md:grid-cols-2">
-                  {leaderboard.length === 0 ? (
-                    <div className="col-span-full rounded-2xl bg-white/45 p-6 text-center text-sm font-semibold text-amber-950/70">مازال ما كاين حتى ترتيب.</div>
-                  ) : leaderboard.map((entry) => (
-                    <div key={entry.id} className="ranking-row rounded-2xl px-4 py-3 shadow-sm">
-                      <div className="flex items-center justify-between gap-3 text-amber-950">
-                        <div className="text-left text-xs font-semibold opacity-85">
-                          <div>⭐ {entry.totalStars}</div>
-                          <div>🎁 {entry.totalRewards}</div>
-                        </div>
-                        <div className="min-w-0 text-right">
-                          <div className="flex items-center justify-end gap-2 font-bold">
-                            <span className="truncate">{nameFromEmail(entry.email)}</span>
-                            {entry.rank === 1 ? <Crown className="h-4 w-4 text-yellow-500" /> : <span className="text-[11px] opacity-65">#{entry.rank}</span>}
-                          </div>
-                          <div className="mt-1 text-[11px] opacity-70">وصل إلى الباب {Math.min(entry.stopStage, 5)}</div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : null}
-
         <div
           className={`player-marker pointer-events-none ${isPlayerWalking ? 'walking' : ''}`}
           style={{ left: `${playerPosition.x}%`, top: `${playerPosition.y}%` }}
@@ -731,15 +759,15 @@ function QuizzesPage() {
           return (
             <div
               key={`main-${stage.number}`}
-              className="absolute z-20"
+              className="door-anchor absolute z-30"
               style={{ left: `${stage.x}%`, top: `${stage.y}%`, width: `${position.width}%`, height: `${position.height}%` }}
             >
-              {doorBurst === stage.number ? <span className="burst absolute inset-0 rounded-[20px] border-2 border-yellow-200/90" /> : null}
+              {doorBurst === stage.number ? <span className="burst pointer-events-none absolute inset-0 rounded-[20px] border-2 border-yellow-200/90" /> : null}
               <button
                 type="button"
+                disabled={!unlocked}
                 onClick={() => openStage(stage)}
-                className={`door-node door-node-main ${unlocked ? 'cursor-pointer' : 'cursor-not-allowed opacity-90'}`}
-                style={{ width: '100%', height: '100%' }}
+                className={`door-node door-node-main ${unlocked ? '' : 'opacity-90'}`}
                 title={stage.title}
               >
                 <span className={`door-hitbox ${completed ? 'completed' : unlocked ? 'unlocked' : 'locked'}`}>
@@ -769,12 +797,13 @@ function QuizzesPage() {
           const burstKey = stage.number * 100
           const isOpenAnimating = openedChest === stage.number
           return (
-            <div key={`bonus-${stage.number}`} className="absolute z-30" style={{ left: `${stage.x}%`, top: `${stage.y}%` }}>
-              {doorBurst === burstKey ? <span className="burst absolute h-20 w-20 rounded-full border-2 border-yellow-200/90" /> : null}
+            <div key={`bonus-${stage.number}`} className="door-anchor absolute z-30" style={{ left: `${stage.x}%`, top: `${stage.y}%` }}>
+              {doorBurst === burstKey ? <span className="burst pointer-events-none absolute h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-yellow-200/90" /> : null}
               <button
                 type="button"
+                disabled={!unlocked}
                 onClick={() => openStage(stage)}
-                className={`door-node door-node-bonus absolute flex h-[58px] w-[58px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-[14px] border-2 ${completed ? 'border-emerald-300 bg-emerald-500' : unlocked ? 'border-yellow-300 bg-yellow-400' : 'border-white/30 bg-slate-800/85'} text-white shadow-lg ${isOpenAnimating ? 'chest-open' : ''}`}
+                className={`door-node-bonus h-[58px] w-[58px] ${completed ? 'border-emerald-300 bg-emerald-500' : unlocked ? 'border-yellow-300 bg-yellow-400' : 'border-white/30 bg-slate-800/85'} text-white shadow-lg ${isOpenAnimating ? 'chest-open' : ''}`}
                 title={stage.rewardLabel}
               >
                 {unlocked ? <Gift className="h-4 w-4 text-amber-950" /> : <Lock className="h-4 w-4" />}
@@ -788,7 +817,7 @@ function QuizzesPage() {
         </div>
       </div>
 
-      {activeStage && currentQuestion ? (
+      {gameView === 'playing' && activeStage && currentQuestion ? (
         <div className="fixed inset-0 z-50 h-[100dvh] overflow-y-auto overflow-x-hidden bg-black stage-view-enter" style={{ WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain' }}>
           <img src={activeStage.image} alt={activeStage.title} className="stage-door-scene fixed inset-0 h-full w-full object-cover" />
           <div className="fixed inset-0 bg-gradient-to-t from-black/82 via-black/35 to-black/30" />
@@ -800,8 +829,8 @@ function QuizzesPage() {
               onClick={closeStage}
               className="inline-flex items-center gap-1.5 rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-xs font-bold transition hover:bg-white/20"
             >
-              <ArrowRight className="h-4 w-4" />
               رجوع للخريطة
+              <ArrowRight className="h-4 w-4" />
             </button>
             <div>
               <div className="text-[11px] text-white/70">{activeStage.type === 'main' ? 'مرحلة رئيسية' : 'سؤال مكافأة'}</div>
@@ -833,18 +862,7 @@ function QuizzesPage() {
                   </div>
                 </div>
 
-                <div className="sticky bottom-0 z-30 mt-3 flex shrink-0 flex-col gap-2 rounded-b-[18px] border-t border-white/10 bg-black/80 pt-3 pb-2 backdrop-blur-md sm:flex-row sm:items-center sm:justify-between sm:pb-1">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (questionIndex > 0) setQuestionIndex((prev) => prev - 1)
-                    }}
-                    disabled={questionIndex <= 0}
-                    className="inline-flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-bold text-white transition hover:bg-white/20 disabled:opacity-40"
-                  >
-                    <ArrowRight className="h-4 w-4" />
-                    رجوع
-                  </button>
+                <div className="sticky bottom-0 z-30 mt-3 flex shrink-0 flex-col gap-2 border-t border-white/15 pt-3 pb-1 sm:flex-row sm:items-center sm:justify-between">
                   {questionIndex < activeStage.questions.length - 1 ? (
                     <Button onClick={() => setQuestionIndex((prev) => prev + 1)} disabled={answers[currentQuestion.id] === undefined} className="gap-2 rounded-2xl bg-white text-slate-950 hover:bg-white/90">
                       التالي
@@ -857,6 +875,17 @@ function QuizzesPage() {
                       <span className="hidden sm:inline">إنهاء المرحلة والرجوع للخريطة</span>
                     </Button>
                   )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (questionIndex > 0) setQuestionIndex((prev) => prev - 1)
+                    }}
+                    disabled={questionIndex <= 0}
+                    className="inline-flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-bold text-white transition hover:bg-white/20 disabled:opacity-40"
+                  >
+                    رجوع
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
                 </div>
               </div>
             </div>
@@ -864,7 +893,7 @@ function QuizzesPage() {
         </div>
       ) : null}
 
-      {resultPopup?.open ? (
+      {gameView === 'playing' && resultPopup?.open ? (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/55 p-4 backdrop-blur-sm">
           <div className={`popup-shell popup-rays relative flex max-h-[90dvh] w-full max-w-[380px] flex-col overflow-hidden rounded-[26px] border p-4 text-center text-white ${resultPopup.kind === 'lose' ? 'popup-lose' : resultPopup.kind === 'bonus' ? 'popup-bonus' : 'popup-win'}`}>
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -950,6 +979,90 @@ function QuizzesPage() {
           </div>
         </div>
       ) : null}
+    </div>
+      ) : null}
+
+      {gameView === 'opening' ? (
+        <DoorOpeningOverlay onComplete={finishDoorOpening} />
+      ) : null}
+
+      {rankingOpen ? (
+        <div className="fixed inset-0 z-[120] flex items-start justify-center bg-black/55 p-4 pt-20 backdrop-blur-sm" onClick={() => setRankingOpen(false)}>
+          <div className="ranking-panel ranking-card w-full max-w-[760px] overflow-hidden rounded-[32px]" onClick={(e) => e.stopPropagation()}>
+            <div className="ranking-top px-5 py-4">
+              <div className="flex items-center justify-between gap-3">
+                <button type="button" onClick={() => setRankingOpen(false)} className="rounded-full bg-amber-950/10 px-3 py-1.5 text-xs font-bold text-amber-950 hover:bg-amber-950/18">إغلاق</button>
+                <div className="text-right">
+                  <div className="text-xl font-black">ترتيب نقاط المكافآت</div>
+                  <div className="text-[12px] text-amber-950/70">اضغط على زر الترتيب باش يطلع rank ديالك</div>
+                </div>
+                <Trophy className="h-7 w-7 text-amber-700" />
+              </div>
+              <div className="mt-4 grid gap-3 md:grid-cols-3">
+                {leaderboard.slice(0, 3).map((entry) => (
+                  <div key={`top-${entry.id}`} className="rounded-3xl border border-white/45 bg-white/55 px-3 py-4 text-center shadow-sm">
+                    <div className="flex items-center justify-center gap-1 text-[12px] font-black text-amber-900">
+                      {entry.rank === 1 ? <Crown className="h-5 w-5 text-yellow-500" /> : <span>#{entry.rank}</span>}
+                      <span>{entry.rank === 1 ? 'Top 1' : entry.rank === 2 ? 'Top 2' : 'Top 3'}</span>
+                    </div>
+                    <div className="mt-2 truncate text-sm font-bold">{nameFromEmail(entry.email)}</div>
+                    <div className="mt-1 text-xs text-amber-950/75">🎁 {entry.totalRewards} · ⭐ {entry.totalStars} · باب {entry.bestStage}</div>
+                  </div>
+                ))}
+              </div>
+              {snapshot.monthlyChampion ? (
+                <div className="mt-4 rounded-2xl border border-white/40 bg-white/42 px-4 py-3 text-right text-sm text-amber-950/80">
+                  <div className="flex items-center justify-end gap-2 font-bold text-amber-800"><span>فائز الشهر</span><Sparkles className="h-4 w-4" /></div>
+                  <div className="mt-1 font-semibold">{nameFromEmail(snapshot.monthlyChampion.email)} · {snapshot.monthlyChampion.monthlyPrizeDh} DH</div>
+                </div>
+              ) : null}
+            </div>
+            <div className="max-h-[46vh] overflow-y-auto px-4 pb-4 pt-3">
+              <div className="grid gap-3 md:grid-cols-2">
+                {leaderboard.length === 0 ? (
+                  <div className="col-span-full rounded-2xl bg-white/45 p-6 text-center text-sm font-semibold text-amber-950/70">مازال ما كاين حتى ترتيب.</div>
+                ) : leaderboard.map((entry) => (
+                  <div key={entry.id} className="ranking-row rounded-2xl px-4 py-3 shadow-sm">
+                    <div className="flex items-center justify-between gap-3 text-amber-950">
+                      <div className="text-left text-xs font-semibold opacity-85">
+                        <div>⭐ {entry.totalStars}</div>
+                        <div>🎁 {entry.totalRewards}</div>
+                      </div>
+                      <div className="min-w-0 text-right">
+                        <div className="flex items-center justify-end gap-2 font-bold">
+                          <span className="truncate">{nameFromEmail(entry.email)}</span>
+                          {entry.rank === 1 ? <Crown className="h-4 w-4 text-yellow-500" /> : <span className="text-[11px] opacity-65">#{entry.rank}</span>}
+                        </div>
+                        <div className="mt-1 text-[11px] opacity-70">وصل إلى الباب {Math.min(entry.stopStage, 5)}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </>
+  )
+}
+
+function DoorOpeningOverlay({ onComplete }: { onComplete: () => void }) {
+  useEffect(() => {
+    const timer = window.setTimeout(onComplete, 1380)
+    return () => window.clearTimeout(timer)
+  }, [onComplete])
+
+  return (
+    <div className="door-opening-scene fixed inset-0 z-[100] overflow-hidden bg-black">
+      <div className="door-opening-backdrop" />
+      <div className="door-opening-glow" />
+      <div className="door-panel door-panel-left">
+        <span className="door-panel-shine" aria-hidden />
+      </div>
+      <div className="door-panel door-panel-right">
+        <span className="door-panel-shine" aria-hidden />
+      </div>
     </div>
   )
 }

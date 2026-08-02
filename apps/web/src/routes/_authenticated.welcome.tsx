@@ -1,5 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useRef } from 'react'
+import { Button } from '@/components/ui/button'
+import { SkipForward } from 'lucide-react'
 
 export const Route = createFileRoute('/_authenticated/welcome')({
   component: WelcomePage,
@@ -38,12 +40,21 @@ function WelcomePage() {
       <div className="absolute -right-24 top-12 h-96 w-96 rounded-full bg-amber-200/20 blur-3xl" />
       <div className="absolute -left-20 bottom-0 h-96 w-96 rounded-full bg-teal-200/15 blur-3xl" />
 
-      <section className="relative z-10 flex w-full max-w-3xl items-center justify-center rounded-[30px] border border-white/25 bg-white/10 p-3 shadow-[0_24px_80px_rgba(0,0,0,0.25)] backdrop-blur-xl md:p-4">
+      <section className="relative z-10 flex w-full max-w-5xl items-center justify-center rounded-[30px] border border-white/25 bg-white/10 p-3 shadow-[0_24px_80px_rgba(0,0,0,0.25)] backdrop-blur-xl md:p-5">
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={startDashboard}
+          className="absolute left-4 top-4 z-20 gap-2 rounded-full border border-white/40 bg-white/90 px-5 py-2.5 text-base font-semibold text-[#1f4d3a] shadow-lg backdrop-blur-sm hover:bg-white md:left-6 md:top-6"
+        >
+          <SkipForward className="h-5 w-5" />
+          تخطّي
+        </Button>
         <div className="absolute inset-x-12 bottom-4 h-10 rounded-full bg-black/30 blur-2xl" />
         <video
           ref={videoRef}
           src="/important-content/welcome-auto.mp4"
-          className="relative z-10 aspect-video w-full max-h-[70vh] rounded-[24px] bg-black object-contain shadow-[0_18px_48px_rgba(0,0,0,0.32)]"
+          className="relative z-10 aspect-video w-full max-h-[82vh] min-h-[240px] rounded-[24px] bg-black object-contain shadow-[0_18px_48px_rgba(0,0,0,0.32)] md:min-h-[320px]"
           autoPlay
           muted
           playsInline

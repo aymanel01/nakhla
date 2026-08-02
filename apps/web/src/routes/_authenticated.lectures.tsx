@@ -9,6 +9,11 @@ import { SectionBanner, ThemedActionButton, sectionThemeMap } from '@/components
 import { MediaCard, MediaViewer } from '@/components/media-viewer'
 
 export const Route = createFileRoute('/_authenticated/lectures')({
+  validateSearch: (search: Record<string, unknown>) => {
+    const raw = search.open
+    const open = typeof raw === 'number' ? raw : typeof raw === 'string' ? Number(raw) : undefined
+    return Number.isInteger(open) && open! > 0 ? { open: open! } : {}
+  },
   component: LecturesPage,
 })
 
@@ -28,6 +33,7 @@ function getLibraryType(lecture: Lecture): LibraryType {
 }
 
 function LecturesPage() {
+  const { open } = Route.useSearch()
   const [lectures, setLectures] = useState<Lecture[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedLecture, setSelectedLecture] = useState<Lecture | null>(null)
@@ -49,6 +55,14 @@ function LecturesPage() {
     loadLectures().finally(() => setLoading(false))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  useEffect(() => {
+    if (!open || lectures.length === 0) return
+    const lecture = lectures.find((item) => item.id === open)
+    if (!lecture) return
+    setSelectedLecture(lecture)
+    setSelectedType(getLibraryType(lecture))
+  }, [open, lectures])
 
   const filteredLectures = useMemo(() => lectures.filter((lecture) => getLibraryType(lecture) === selectedType), [lectures, selectedType])
 
