@@ -19,6 +19,7 @@ export type WSEventType =
   | 'user:deleted'
   | 'registration:requested'
   | 'registration:reviewed'
+  | 'password-reset:requested'
   | 'homework:created'
   | 'homework:updated'
   | 'homework:deleted'

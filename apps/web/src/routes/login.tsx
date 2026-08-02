@@ -7,6 +7,14 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Loader2, GraduationCap, Home } from 'lucide-react'
 import type { AdminSectionPost } from '@teaching-app/shared'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { api } from '@/lib/api'
 
 export const Route = createFileRoute('/login')({
@@ -23,6 +31,10 @@ function LoginPage() {
   const [showResend, setShowResend] = useState(false)
   const [resendLoading, setResendLoading] = useState(false)
   const [resendMessage, setResendMessage] = useState('')
+  const [forgotOpen, setForgotOpen] = useState(false)
+  const [forgotEmail, setForgotEmail] = useState('')
+  const [forgotLoading, setForgotLoading] = useState(false)
+  const [forgotMessage, setForgotMessage] = useState('')
   const [featuresVideoPost, setFeaturesVideoPost] = useState<AdminSectionPost | null>(null)
 
   useEffect(() => {
@@ -114,7 +126,20 @@ function LoginPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">كلمة المرور</Label>
+                <div className="flex items-center justify-between gap-2">
+                  <Label htmlFor="password">كلمة المرور</Label>
+                  <button
+                    type="button"
+                    className="text-xs font-semibold text-primary hover:underline"
+                    onClick={() => {
+                      setForgotEmail(email)
+                      setForgotMessage('')
+                      setForgotOpen(true)
+                    }}
+                  >
+                    نسيت كلمة المرور؟
+                  </button>
+                </div>
                 <Input
                   id="password"
                   type="password"
@@ -180,6 +205,54 @@ function LoginPage() {
           </div>
         </section>
       </div>
+
+      <Dialog open={forgotOpen} onOpenChange={setForgotOpen}>
+        <DialogContent dir="rtl" className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>استعادة كلمة المرور</DialogTitle>
+            <DialogDescription>
+              أدخل بريدك الإلكتروني. سيتم إرسال طلبك إلى الإدارة لتعيين كلمة مرور جديدة لك.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="forgotEmail">البريد الإلكتروني</Label>
+            <Input
+              id="forgotEmail"
+              type="email"
+              value={forgotEmail}
+              onChange={(e) => setForgotEmail(e.target.value)}
+              dir="ltr"
+              placeholder="example@email.com"
+            />
+            {forgotMessage ? <p className="text-sm text-emerald-700">{forgotMessage}</p> : null}
+          </div>
+          <DialogFooter>
+            <Button
+              type="button"
+              disabled={forgotLoading || !forgotEmail.trim()}
+              onClick={async () => {
+                setForgotLoading(true)
+                setForgotMessage('')
+                try {
+                  const response = await api.post<{ message: string }>(
+                    '/auth/forgot-password',
+                    { email: forgotEmail.trim() },
+                    { skipAuth: true },
+                  )
+                  setForgotMessage(response.message)
+                } catch (err) {
+                  setForgotMessage(err instanceof Error ? err.message : 'تعذر إرسال الطلب.')
+                } finally {
+                  setForgotLoading(false)
+                }
+              }}
+            >
+              {forgotLoading ? <Loader2 className="ml-2 h-4 w-4 animate-spin" /> : null}
+              إرسال الطلب
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

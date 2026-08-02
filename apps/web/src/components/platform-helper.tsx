@@ -77,7 +77,10 @@ export function PlatformHelper({ accent = '#0f766e' }: PlatformHelperProps) {
     bubbleLift: 42,
   }
   const anchorLeft = position.corner.includes('left')
-  const positionStyle = getHelperPositionStyle(position)
+  const positionStyle = {
+    ...getHelperPositionStyle(position),
+    ...(location.pathname === '/quizzes' ? { zIndex: 92 } : {}),
+  }
   const characterPointsLeft = anchorLeft
 
   const tip = section.tips[tipIndex] ?? section.tips[0]
@@ -139,7 +142,7 @@ export function PlatformHelper({ accent = '#0f766e' }: PlatformHelperProps) {
   const speechBubble =
     open && !peekOnly ? (
       <div
-        className={`platform-helper-bubble pointer-events-auto relative min-w-0 flex-1 rounded-[22px] border bg-white/97 p-3 shadow-[0_16px_40px_rgba(15,23,42,0.18)] backdrop-blur-md platform-helper-bubble-in ${anchorLeft ? 'mr-1 sm:mr-2' : 'ml-1 sm:ml-2'}`}
+        className={`platform-helper-bubble pointer-events-auto relative min-w-0 flex-1 rounded-[22px] border bg-white p-3 text-slate-900 shadow-[0_16px_40px_rgba(15,23,42,0.18)] platform-helper-bubble-in ${anchorLeft ? 'mr-1 sm:mr-2' : 'ml-1 sm:ml-2'}`}
         style={{
           borderColor: `${accent}33`,
           marginBottom: `${position.bubbleLift}px`,
@@ -147,7 +150,7 @@ export function PlatformHelper({ accent = '#0f766e' }: PlatformHelperProps) {
         dir="rtl"
       >
         <span
-          className={`platform-helper-bubble-tail pointer-events-none absolute bottom-[2.1rem] h-4 w-4 rotate-45 border-b bg-white/97 sm:bottom-[2.35rem] ${anchorLeft ? '-right-2 border-r border-l-0' : '-left-2 border-l'}`}
+          className={`platform-helper-bubble-tail pointer-events-none absolute bottom-[2.1rem] h-4 w-4 rotate-45 border-b bg-white sm:bottom-[2.35rem] ${anchorLeft ? '-right-2 border-r border-l-0' : '-left-2 border-l'}`}
           style={{ borderColor: `${accent}33` }}
           aria-hidden
         />
@@ -171,7 +174,7 @@ export function PlatformHelper({ accent = '#0f766e' }: PlatformHelperProps) {
           </button>
         </div>
 
-        <p className="text-right text-[13px] leading-6 text-slate-700">{tip}</p>
+        <p className="text-right text-[13px] leading-6 text-slate-800">{tip}</p>
 
         <div className="mt-3 flex items-center justify-between gap-2">
           {hasMultipleTips ? (

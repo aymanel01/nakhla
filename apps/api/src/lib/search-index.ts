@@ -237,19 +237,21 @@ function pushResources(items: SearchIndexItem[]) {
 }
 
 function pushStudentCreations(items: SearchIndexItem[]) {
-  const rows = db.prepare('SELECT id, title, description, type FROM student_creations').all() as Array<{
+  const rows = db.prepare('SELECT id, title, description, type, creator_name, section_name FROM student_creations').all() as Array<{
     id: number
     title: string
     description: string | null
     type: string
+    creator_name: string | null
+    section_name: string | null
   }>
 
   for (const row of rows) {
     items.push({
       id: `creation-${row.id}`,
       label: row.title,
-      subtitle: `إبداعات التلاميذ · ${row.type}`,
-      keywords: uniqueTerms([row.title, row.description, row.type]),
+      subtitle: [row.type, row.creator_name, row.section_name].filter(Boolean).join(' · ') || `إبداعات التلاميذ · ${row.type}`,
+      keywords: uniqueTerms([row.title, row.description, row.type, row.creator_name, row.section_name]),
       to: '/resources',
     })
   }

@@ -404,6 +404,16 @@ export function initializeDatabase(db: Database.Database): void {
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
+    CREATE TABLE IF NOT EXISTS password_reset_requests (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending', 'resolved', 'dismissed')),
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      resolved_at DATETIME,
+      resolved_by INTEGER,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (resolved_by) REFERENCES users(id) ON DELETE SET NULL
+    );
     CREATE TABLE IF NOT EXISTS schema_migrations (name TEXT PRIMARY KEY);
   `)
 
@@ -422,6 +432,8 @@ export function initializeDatabase(db: Database.Database): void {
   addColumn(db, 'lectures', 'file_size', 'INTEGER')
   addColumn(db, 'lectures', 'thumbnail_url', 'TEXT')
   addColumn(db, 'student_creations', 'thumbnail_url', 'TEXT')
+  addColumn(db, 'student_creations', 'creator_name', 'TEXT')
+  addColumn(db, 'student_creations', 'section_name', 'TEXT')
 
   addColumn(db, 'exercises', 'domain', "TEXT DEFAULT 'social-economic'")
   addColumn(db, 'exercises', 'file_url', 'TEXT')

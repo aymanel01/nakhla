@@ -19,6 +19,13 @@ const creationTypes: { type: StudentCreationType; title: string; icon: typeof Pa
   { type: 'صورة و تعليق', title: 'صورة و تعليق', icon: Image, description: 'صور مرفقة بتعليقات وأفكار.' },
 ]
 
+function formatCreationMeta(creation: StudentCreation) {
+  const parts: string[] = []
+  if (creation.creatorName) parts.push(`المبدع(ة): ${creation.creatorName}`)
+  if (creation.sectionName) parts.push(`القسم: ${creation.sectionName}`)
+  return parts.join(' • ')
+}
+
 function StudentCreationsPage() {
   const [creations, setCreations] = useState<StudentCreation[]>([])
   const [selectedType, setSelectedType] = useState<StudentCreationType>(creationTypes[0].type)
@@ -50,10 +57,30 @@ function StudentCreationsPage() {
         <Card>
           <CardHeader>
             <CardTitle>{selectedCreation.title}</CardTitle>
-            <CardDescription>{selectedCreation.type} • {new Date(selectedCreation.createdAt).toLocaleDateString('ar-MA')}</CardDescription>
+            <CardDescription>
+              {selectedCreation.type} • {new Date(selectedCreation.createdAt).toLocaleDateString('ar-MA')}
+            </CardDescription>
+            {(selectedCreation.creatorName || selectedCreation.sectionName) && (
+              <div className="mt-2 flex flex-wrap gap-2 text-sm font-semibold text-muted-foreground">
+                {selectedCreation.creatorName ? (
+                  <span className="rounded-full bg-primary/10 px-3 py-1 text-primary">
+                    المبدع(ة): {selectedCreation.creatorName}
+                  </span>
+                ) : null}
+                {selectedCreation.sectionName ? (
+                  <span className="rounded-full bg-primary/10 px-3 py-1 text-primary">
+                    القسم: {selectedCreation.sectionName}
+                  </span>
+                ) : null}
+              </div>
+            )}
           </CardHeader>
           <CardContent className="space-y-4">
-            <MediaViewer media={selectedCreation} title={selectedCreation.title} />
+            <MediaViewer
+              media={selectedCreation}
+              title={selectedCreation.title}
+              thumbnailUrl={selectedCreation.thumbnailUrl}
+            />
             {selectedCreation.description && (
               <p className="whitespace-pre-wrap text-sm leading-7 text-muted-foreground">{selectedCreation.description}</p>
             )}
@@ -98,6 +125,7 @@ function StudentCreationsPage() {
                 key={creation.id}
                 title={creation.title}
                 badge={`${creation.type} • ${new Date(creation.createdAt).toLocaleDateString('ar-MA')}`}
+                meta={formatCreationMeta(creation) || undefined}
                 description={creation.description}
                 thumbnailUrl={creation.thumbnailUrl}
                 media={creation}

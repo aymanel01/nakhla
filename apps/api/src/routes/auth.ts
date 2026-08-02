@@ -46,6 +46,15 @@ function mapDbUser(dbUser: Omit<DbUser, 'password_hash'>): User {
   }
 }
 
+function validatePassword(password: string): string | null {
+  if (password.length < 8) return 'Password must be at least 8 characters'
+  return null
+}
+
+function revokeUserSessions(userId: number) {
+  db.prepare('DELETE FROM refresh_tokens WHERE user_id = ?').run(userId)
+}
+
 auth.post('/register', async (c) => {
   const body = await c.req.json<RegisterRequest>()
   const fullName = body.fullName?.trim() || ''
@@ -191,6 +200,117 @@ auth.patch('/profile', authMiddleware, async (c) => {
   }
 
   return c.json({ user: mapDbUser(dbUser), message: 'Profile updated successfully' })
+})
+
+auth.patch('/password', authMiddleware, async (c) => {
+  const tokenUser = c.get('user')
+  const body = await c.req.json<{ currentPassword?: string; newPassword?: string }>()
+  const currentPassword = body.currentPassword || ''
+  const newPassword = body.newPassword || ''
+
+  if (!currentPassword || !newPassword) {
+    return c.json({ error: 'Bad Request', message: 'Current password and new password are required' }, 400)
+  }
+
+  const passwordError = validatePassword(newPassword)
+  if (passwordError) {
+    return c.json({ error: 'Bad Request', message: passwordError }, 400)
+  }
+
+  const dbUser = db.prepare('SELECT * FROM users WHERE id = ?').get(tokenUser.userId) as DbUser | undefined
+  if (!dbUser) {
+    return c.json({ error: 'Not Found', message: 'User not found' }, 404)
+  }
+
+  const validPassword = await bcrypt.compare(currentPassword, dbUser.password_hash)
+  if (!validPassword) {
+    return c.json({ error: 'Unauthorized', message: 'كلمة المرور الحالية غير صحيحة' }, 401)
+  }
+
+  const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS)
+  db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(passwordHash, tokenUser.userId)
+  revokeUserSessions(tokenUser.userId)
+
+  return c.json({ message: 'تم تحديث كلمة المرور بنجاح' })
+})
+
+auth.patch('/email', authMiddleware, async (c) => {
+  const tokenUser = c.get('user')
+  const body = await c.req.json<{ currentPassword?: string; newEmail?: string }>()
+  const currentPassword = body.currentPassword || ''
+  const newEmail = normalizeEmail(body.newEmail || '')
+
+  if (!currentPassword || !newEmail) {
+    return c.json({ error: 'Bad Request', message: 'Current password and new email are required' }, 400)
+  }
+
+  if (!EMAIL_PATTERN.test(newEmail)) {
+    return c.json({ error: 'Bad Request', message: 'البريد الإلكتروني غير صالح' }, 400)
+  }
+
+  const dbUser = db.prepare('SELECT * FROM users WHERE id = ?').get(tokenUser.userId) as DbUser | undefined
+  if (!dbUser) {
+    return c.json({ error: 'Not Found', message: 'User not found' }, 404)
+  }
+
+  const validPassword = await bcrypt.compare(currentPassword, dbUser.password_hash)
+  if (!validPassword) {
+    return c.json({ error: 'Unauthorized', message: 'كلمة المرور الحالية غير صحيحة' }, 401)
+  }
+
+  if (newEmail === dbUser.email) {
+    return c.json({ error: 'Bad Request', message: 'البريد الإلكتروني الجديد مطابق للبريد الحالي' }, 400)
+  }
+
+  const existingUser = db.prepare('SELECT id FROM users WHERE email = ? AND id != ?').get(newEmail, tokenUser.userId)
+  if (existingUser) {
+    return c.json({ error: 'Conflict', message: 'البريد الإلكتروني مستخدم بالفعل' }, 409)
+  }
+
+  db.prepare('UPDATE users SET email = ?, email_verified = 1 WHERE id = ?').run(newEmail, tokenUser.userId)
+
+  const updatedUser = db
+    .prepare('SELECT id, email, full_name, role, status, email_verified, profile_photo_url, created_at FROM users WHERE id = ?')
+    .get(tokenUser.userId) as Omit<DbUser, 'password_hash'>
+
+  return c.json({ user: mapDbUser(updatedUser), message: 'تم تحديث البريد الإلكتروني بنجاح' })
+})
+
+auth.post('/forgot-password', async (c) => {
+  const body = await c.req.json<{ email?: string }>()
+  const email = normalizeEmail(body.email || '')
+
+  if (!email || !EMAIL_PATTERN.test(email)) {
+    return c.json({ error: 'Bad Request', message: 'البريد الإلكتروني غير صالح' }, 400)
+  }
+
+  const dbUser = db.prepare('SELECT id, email, full_name, status FROM users WHERE email = ?').get(email) as
+    | Pick<DbUser, 'id' | 'email' | 'full_name' | 'status'>
+    | undefined
+
+  if (dbUser && dbUser.status !== 'rejected') {
+    const existingRequest = db
+      .prepare("SELECT id FROM password_reset_requests WHERE user_id = ? AND status = 'pending'")
+      .get(dbUser.id) as { id: number } | undefined
+
+    if (!existingRequest) {
+      db.prepare('INSERT INTO password_reset_requests (user_id) VALUES (?)').run(dbUser.id)
+    }
+
+    wsManager.broadcast({
+      type: 'password-reset:requested',
+      data: {
+        userId: dbUser.id,
+        email: dbUser.email,
+        userEmail: dbUser.email,
+        userFullName: dbUser.full_name || dbUser.email.split('@')[0],
+      },
+    })
+  }
+
+  return c.json({
+    message: 'إذا كان الحساب موجوداً، فقد تم إرسال طلبك إلى الإدارة لإعادة تعيين كلمة المرور.',
+  })
 })
 
 auth.post('/logout', async (c) => {

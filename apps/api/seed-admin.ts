@@ -4,7 +4,7 @@ import path from 'node:path'
 import { initializeDatabase } from './src/db/schema.js'
 
 const dbPath = process.env.DB_PATH || path.resolve('teaching-app.db')
-const email = process.env.ADMIN_EMAIL || 'admin@app.com'
+const email = process.env.ADMIN_EMAIL || 'elharouni@nakhla.com'
 const password = process.env.ADMIN_PASSWORD || '12345678'
 
 const db = new Database(dbPath)
@@ -13,6 +13,13 @@ db.pragma('foreign_keys = ON')
 initializeDatabase(db)
 
 const passwordHash = await bcrypt.hash(password, 12)
+const legacyAdmin = db.prepare("SELECT id FROM users WHERE email = 'admin@app.com' AND role = 'admin'").get() as { id: number } | undefined
+
+if (legacyAdmin && email !== 'admin@app.com') {
+  db.prepare('UPDATE users SET email = ? WHERE id = ?').run(email, legacyAdmin.id)
+  console.log(`Migrated admin email to: ${email}`)
+}
+
 const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(email)
 
 if (existing) {

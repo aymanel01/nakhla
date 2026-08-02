@@ -1,7 +1,7 @@
 import { createFileRoute, Navigate } from '@tanstack/react-router'
 import { useState, useEffect, type ReactNode } from 'react'
 import { useAuth } from '../__root'
-import type { Lecture, Exercise, ExerciseSubmission, Quiz, User, Group, ExerciseField, QuizQuestion, Homework, HomeworkSubmission, QuizDifficulty, StudentCreation, StudentCreationType, UnitEvaluationDomain, StudentFullProgress, AdminSectionPost } from '@teaching-app/shared'
+import type { Lecture, Exercise, ExerciseSubmission, Quiz, User, Group, ExerciseField, QuizQuestion, Homework, HomeworkSubmission, QuizDifficulty, StudentCreation, StudentCreationType, UnitEvaluationDomain, StudentFullProgress, AdminSectionPost, PasswordResetRequest } from '@teaching-app/shared'
 import { api } from '@/lib/api'
 import { AdminSectionBoard, makeQuestion } from '@/components/admin-section-board'
 import { DomainCardsAdmin, type DomainCardConfig } from '@/components/domain-cards-admin'
@@ -22,7 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { PlayCircle, FileText, Users, Plus, Pencil, Trash2, Loader2, ClipboardList, Eye, BarChart3, ChevronLeft, Shield, UserPlus, Upload, Paperclip, Palette, BookOpenCheck, Mic, Image, PanelsTopLeft, Search, Download, GraduationCap, CheckCircle2, XCircle, Sparkles } from 'lucide-react'
+import { PlayCircle, FileText, Users, Plus, Pencil, Trash2, Loader2, ClipboardList, Eye, BarChart3, ChevronLeft, Shield, UserPlus, Upload, Paperclip, Palette, BookOpenCheck, Mic, Image, PanelsTopLeft, Search, Download, GraduationCap, CheckCircle2, XCircle, Sparkles, KeyRound } from 'lucide-react'
 import { PlatformHelperAdmin } from '@/components/platform-helper-admin'
 import { matchesFuzzySearchAny } from '@/lib/fuzzy-search'
 
@@ -916,7 +916,13 @@ function StudentCreationsAdmin() {
   const [thumb, setThumb] = useState<File | null>(null)
   const [editingId, setEditingId] = useState<number | null>(null)
   const [existingThumb, setExistingThumb] = useState<string | null>(null)
-  const [form, setForm] = useState({ title: '', type: 'بودكاست' as StudentCreationType, description: '' })
+  const [form, setForm] = useState({
+    title: '',
+    type: 'بودكاست' as StudentCreationType,
+    description: '',
+    creatorName: '',
+    sectionName: '',
+  })
 
   const loadCreations = () => {
     api.get<{ creations: StudentCreation[] }>('/student-creations')
@@ -929,7 +935,7 @@ function StudentCreationsAdmin() {
   }, [])
 
   const resetForm = () => {
-    setForm({ title: '', type: 'بودكاست', description: '' })
+    setForm({ title: '', type: 'بودكاست', description: '', creatorName: '', sectionName: '' })
     setFile(null)
     setThumb(null)
     setEditingId(null)
@@ -952,6 +958,8 @@ function StudentCreationsAdmin() {
         title: form.title.trim(),
         type: form.type,
         description: form.description.trim(),
+        creatorName: form.creatorName.trim(),
+        sectionName: form.sectionName.trim(),
         ...(uploaded ? { fileUrl: uploaded.fileUrl, fileName: uploaded.fileName, fileType: uploaded.fileType, fileSize: uploaded.fileSize } : {}),
         ...(uploadedThumb ? { thumbnailUrl: uploadedThumb.fileUrl } : {}),
       }
@@ -973,7 +981,13 @@ function StudentCreationsAdmin() {
 
   const startEdit = (creation: StudentCreation) => {
     setEditingId(creation.id)
-    setForm({ title: creation.title, type: creation.type, description: creation.description || '' })
+    setForm({
+      title: creation.title,
+      type: creation.type,
+      description: creation.description || '',
+      creatorName: creation.creatorName || '',
+      sectionName: creation.sectionName || '',
+    })
     setFile(null)
     setThumb(null)
     setExistingThumb(creation.thumbnailUrl || null)
@@ -1010,6 +1024,12 @@ function StudentCreationsAdmin() {
               <select className="h-10 w-full rounded-md border bg-background px-3 text-sm" value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as StudentCreationType }))}>
                 {creationTypes.map((item) => <option key={item.type} value={item.type}>{item.label}</option>)}
               </select>
+            </AdminField>
+            <AdminField label="المبدع(ة)">
+              <Input value={form.creatorName} onChange={(e) => setForm((f) => ({ ...f, creatorName: e.target.value }))} placeholder="اسم التلميذ أو التلميذة" />
+            </AdminField>
+            <AdminField label="القسم">
+              <Input value={form.sectionName} onChange={(e) => setForm((f) => ({ ...f, sectionName: e.target.value }))} placeholder="مثال: الأولى إعدادي أ" />
             </AdminField>
             <AdminField label="رفع ملف (أي نوع)">
               <Input type="file" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
@@ -1057,6 +1077,13 @@ function StudentCreationsAdmin() {
                   <div className="min-w-0">
                     <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs text-primary"><Icon className="h-3 w-3" />{creation.type}</div>
                     <h4 className="font-medium">{creation.title}</h4>
+                    {(creation.creatorName || creation.sectionName) && (
+                      <p className="mt-1 text-xs font-semibold text-muted-foreground">
+                        {creation.creatorName ? `المبدع(ة): ${creation.creatorName}` : ''}
+                        {creation.creatorName && creation.sectionName ? ' • ' : ''}
+                        {creation.sectionName ? `القسم: ${creation.sectionName}` : ''}
+                      </p>
+                    )}
                     {creation.description && <p className="text-sm text-muted-foreground line-clamp-2">{creation.description}</p>}
                     {creation.fileUrl && (
                       <a href={creation.fileUrl} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-2 text-xs text-primary">
@@ -2569,13 +2596,31 @@ function RegistrationsAdmin() {
 
 function UsersAdmin() {
   const [users, setUsers] = useState<User[]>([])
+  const [resetRequests, setResetRequests] = useState<PasswordResetRequest[]>([])
   const [loading, setLoading] = useState(true)
+  const [resetTarget, setResetTarget] = useState<User | null>(null)
+  const [newPassword, setNewPassword] = useState('')
+  const [resetSaving, setResetSaving] = useState(false)
+  const [createOpen, setCreateOpen] = useState(false)
+  const [createSaving, setCreateSaving] = useState(false)
+  const [createError, setCreateError] = useState('')
+  const [createForm, setCreateForm] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+    role: 'user' as 'user' | 'admin',
+  })
   const { user: currentUser } = useAuth()
 
   const fetchUsers = () => {
-    api
-      .get<{ users: User[] }>('/admin/users')
-      .then(({ users }) => setUsers(users))
+    Promise.all([
+      api.get<{ users: User[] }>('/admin/users'),
+      api.get<{ requests: PasswordResetRequest[] }>('/admin/users/password-resets'),
+    ])
+      .then(([usersRes, resetsRes]) => {
+        setUsers(usersRes.users)
+        setResetRequests(resetsRes.requests)
+      })
       .finally(() => setLoading(false))
   }
 
@@ -2583,7 +2628,6 @@ function UsersAdmin() {
     fetchUsers()
   }, [])
 
-  // Pending sign-ups live in the "طلبات التسجيل" tab; only show reviewed accounts here.
   const visibleUsers = users.filter((user) => user.status !== 'pending')
 
   const toggleRole = async (userId: number, currentRole: string) => {
@@ -2598,48 +2642,246 @@ function UsersAdmin() {
     fetchUsers()
   }
 
+  const dismissResetRequest = async (requestId: number) => {
+    await api.patch(`/admin/users/password-resets/${requestId}/dismiss`)
+    fetchUsers()
+  }
+
+  const submitPasswordReset = async () => {
+    if (!resetTarget || newPassword.length < 8) return
+    setResetSaving(true)
+    try {
+      await api.patch(`/admin/users/${resetTarget.id}/password`, { newPassword })
+      setResetTarget(null)
+      setNewPassword('')
+      fetchUsers()
+    } finally {
+      setResetSaving(false)
+    }
+  }
+
+  const submitCreateUser = async () => {
+    if (!createForm.fullName.trim() || !createForm.email.trim() || !createForm.password) {
+      setCreateError('أكمل جميع الحقول')
+      return
+    }
+    if (createForm.password.length < 8) {
+      setCreateError('كلمة المرور يجب أن تكون 8 أحرف على الأقل')
+      return
+    }
+    setCreateSaving(true)
+    setCreateError('')
+    try {
+      await api.post('/admin/users', {
+        fullName: createForm.fullName.trim(),
+        email: createForm.email.trim(),
+        password: createForm.password,
+        role: createForm.role,
+      })
+      setCreateOpen(false)
+      setCreateForm({ fullName: '', email: '', password: '', role: 'user' })
+      fetchUsers()
+    } catch (err) {
+      setCreateError(err instanceof Error ? err.message : 'تعذر إنشاء الحساب')
+    } finally {
+      setCreateSaving(false)
+    }
+  }
+
   if (loading) {
     return <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>إدارة المستخدمين</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {visibleUsers.map((user) => (
-            <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
-              <div className="flex min-w-0 items-center gap-3">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/10 text-sm font-bold text-primary">
-                  {user.profilePhotoUrl ? <img src={user.profilePhotoUrl} alt={user.fullName || user.email} className="h-full w-full object-cover" /> : (user.fullName || user.email).slice(0, 1).toUpperCase()}
-                </span>
-                <div className="min-w-0">
-                <h4 className="font-medium">{user.fullName || user.email}</h4>
-                <p className="text-xs text-muted-foreground">{user.email}</p>
-                <p className="text-sm text-muted-foreground">
-                  {user.role === 'admin' ? 'مسؤول' : 'مستخدم'}
-                  {user.status === 'rejected' && <span className="text-destructive"> • مرفوض</span>} •{' '}
-                  {new Date(user.createdAt).toLocaleDateString('ar')}
-                </p>
+    <>
+      <Card className="mb-4">
+        <CardHeader>
+          <CardTitle>طلبات استعادة كلمة المرور</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {resetRequests.length === 0 ? (
+            <p className="text-sm text-muted-foreground">لا توجد طلبات معلّقة حالياً.</p>
+          ) : (
+            <div className="space-y-3">
+              {resetRequests.map((request) => (
+                <div key={request.id} className="flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50/70 p-4 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <div className="font-semibold">{request.userFullName}</div>
+                    <div className="text-sm text-muted-foreground">{request.userEmail}</div>
+                    <div className="text-xs text-amber-800">
+                      {new Date(request.createdAt).toLocaleString('ar-MA')}
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        const target = users.find((user) => user.id === request.userId) || null
+                        setResetTarget(target ?? {
+                          id: request.userId,
+                          email: request.userEmail,
+                          fullName: request.userFullName,
+                          role: 'user',
+                          status: 'approved',
+                          emailVerified: true,
+                          createdAt: request.createdAt,
+                          profilePhotoUrl: null,
+                        })
+                        setNewPassword('')
+                      }}
+                    >
+                      <KeyRound className="ml-1 h-4 w-4" />
+                      تعيين كلمة مرور
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => void dismissResetRequest(request.id)}>
+                      تجاهل
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between gap-3">
+          <CardTitle>إدارة المستخدمين</CardTitle>
+          <Button onClick={() => { setCreateError(''); setCreateOpen(true) }} className="gap-2">
+            <UserPlus className="h-4 w-4" />
+            إنشاء حساب
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {visibleUsers.map((user) => (
+              <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
+                <div className="flex min-w-0 items-center gap-3">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/10 text-sm font-bold text-primary">
+                    {user.profilePhotoUrl ? <img src={user.profilePhotoUrl} alt={user.fullName || user.email} className="h-full w-full object-cover" /> : (user.fullName || user.email).slice(0, 1).toUpperCase()}
+                  </span>
+                  <div className="min-w-0">
+                    <h4 className="font-medium">{user.fullName || user.email}</h4>
+                    <p className="text-xs text-muted-foreground">{user.email}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {user.role === 'admin' ? 'مسؤول' : 'مستخدم'}
+                      {user.status === 'rejected' && <span className="text-destructive"> • مرفوض</span>} •{' '}
+                      {new Date(user.createdAt).toLocaleDateString('ar')}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setResetTarget(user)
+                      setNewPassword('')
+                    }}
+                  >
+                    <KeyRound className="ml-1 h-4 w-4" />
+                    كلمة المرور
+                  </Button>
+                  {user.id !== currentUser?.id && (
+                    <>
+                      <Button variant="outline" size="sm" onClick={() => toggleRole(user.id, user.role)}>
+                        {user.role === 'admin' ? 'إزالة الصلاحيات' : 'ترقية لمسؤول'}
+                      </Button>
+                      <Button variant="destructive" size="icon" onClick={() => handleDelete(user.id)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
-              {user.id !== currentUser?.id && (
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => toggleRole(user.id, user.role)}>
-                    {user.role === 'admin' ? 'إزالة الصلاحيات' : 'ترقية لمسؤول'}
-                  </Button>
-                  <Button variant="destructive" size="icon" onClick={() => handleDelete(user.id)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent dir="rtl" className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>إنشاء حساب جديد</DialogTitle>
+            <DialogDescription>
+              أنشئ حساباً للتلميذ أو المستخدم. الحساب يكون مفعّلاً مباشرة دون انتظار الموافقة.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {createError ? <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{createError}</div> : null}
+            <AdminField label="الاسم الكامل">
+              <Input
+                value={createForm.fullName}
+                onChange={(e) => setCreateForm((prev) => ({ ...prev, fullName: e.target.value }))}
+                placeholder="الاسم الكامل"
+              />
+            </AdminField>
+            <AdminField label="البريد الإلكتروني">
+              <Input
+                type="email"
+                dir="ltr"
+                value={createForm.email}
+                onChange={(e) => setCreateForm((prev) => ({ ...prev, email: e.target.value }))}
+                placeholder="example@nakhla.com"
+              />
+            </AdminField>
+            <AdminField label="كلمة المرور">
+              <Input
+                type="password"
+                dir="ltr"
+                value={createForm.password}
+                onChange={(e) => setCreateForm((prev) => ({ ...prev, password: e.target.value }))}
+                placeholder="8 أحرف على الأقل"
+              />
+            </AdminField>
+            <AdminField label="نوع الحساب">
+              <select
+                className="w-full h-10 rounded-md border px-3"
+                value={createForm.role}
+                onChange={(e) => setCreateForm((prev) => ({ ...prev, role: e.target.value as 'user' | 'admin' }))}
+              >
+                <option value="user">مستخدم (تلميذ)</option>
+                <option value="admin">مسؤول</option>
+              </select>
+            </AdminField>
+          </div>
+          <DialogFooter>
+            <Button onClick={() => void submitCreateUser()} disabled={createSaving} className="gap-2">
+              {createSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
+              إنشاء الحساب
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={Boolean(resetTarget)} onOpenChange={(open) => !open && setResetTarget(null)}>
+        <DialogContent dir="rtl" className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>تعيين كلمة مرور جديدة</DialogTitle>
+            <DialogDescription>
+              {resetTarget ? `للمستخدم: ${resetTarget.fullName || resetTarget.email}` : ''}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="adminNewPassword">كلمة المرور الجديدة</Label>
+            <Input
+              id="adminNewPassword"
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              dir="ltr"
+              placeholder="8 أحرف على الأقل"
+            />
+          </div>
+          <DialogFooter>
+            <Button onClick={() => void submitPasswordReset()} disabled={resetSaving || newPassword.length < 8}>
+              {resetSaving ? <Loader2 className="ml-2 h-4 w-4 animate-spin" /> : null}
+              حفظ كلمة المرور
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
 
@@ -3329,22 +3571,22 @@ function ProgressDetailBox({ title, completed, remaining }: { title: string; com
       <div className="mb-2 text-sm font-extrabold text-slate-900">{title}</div>
       <div className="grid gap-2 md:grid-cols-2">
         <div className="rounded-xl border border-green-100 bg-green-50 p-2">
-          <div className="mb-1 text-xs font-bold text-green-800">كمل</div>
+          <div className="mb-1 text-xs font-bold text-green-800">المُنجَز</div>
           {shortCompleted.length ? (
             <div className="flex flex-wrap gap-1">
               {shortCompleted.map((item) => <span key={item} className="rounded-full bg-white px-2 py-1 text-[11px] font-bold text-green-800">{item}</span>)}
               {completed.length > shortCompleted.length ? <span className="text-[11px] text-green-800">+{completed.length - shortCompleted.length}</span> : null}
             </div>
-          ) : <div className="text-[11px] text-green-700">مازال ما كمل والو هنا</div>}
+          ) : <div className="text-[11px] text-green-700">لا توجد عناصر مُنجَزة بعد</div>}
         </div>
         <div className="rounded-xl border border-amber-100 bg-amber-50 p-2">
-          <div className="mb-1 text-xs font-bold text-amber-800">باقي</div>
+          <div className="mb-1 text-xs font-bold text-amber-800">المتبقّي</div>
           {shortRemaining.length ? (
             <div className="flex flex-wrap gap-1">
               {shortRemaining.map((item) => <span key={item} className="rounded-full bg-white px-2 py-1 text-[11px] font-bold text-amber-800">{item}</span>)}
               {remaining.length > shortRemaining.length ? <span className="text-[11px] text-amber-800">+{remaining.length - shortRemaining.length}</span> : null}
             </div>
-          ) : <div className="text-[11px] text-amber-700">كمل كلشي فهاد القسم</div>}
+          ) : <div className="text-[11px] text-amber-700">تم إنجاز جميع عناصر هذا القسم</div>}
         </div>
       </div>
     </div>
@@ -3353,18 +3595,25 @@ function ProgressDetailBox({ title, completed, remaining }: { title: string; com
 
 function StudentProgressAdmin() {
   const [students, setStudents] = useState<StudentFullProgress[]>([])
+  const [selectedStudentId, setSelectedStudentId] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     api
       .get<{ students: StudentFullProgress[] }>('/progress/admin/students')
-      .then(({ students }) => setStudents(students))
+      .then(({ students }) => {
+        setStudents(students)
+        setSelectedStudentId(students[0]?.id ?? null)
+      })
       .catch((error) => {
         console.error('Failed to load full student progress:', error)
         setStudents([])
+        setSelectedStudentId(null)
       })
       .finally(() => setLoading(false))
   }, [])
+
+  const selectedStudent = students.find((student) => student.id === selectedStudentId) ?? null
 
   if (loading) {
     return <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
@@ -3379,40 +3628,54 @@ function StudentProgressAdmin() {
         {students.length === 0 ? (
           <p className="text-center text-muted-foreground py-8">لا يوجد طلاب مسجلين</p>
         ) : (
-          <div className="space-y-4">
-            {students.map((student) => (
-              <div key={student.id} className="rounded-3xl border bg-muted/30 p-4 shadow-sm">
+          <div className="space-y-6">
+            <AdminField label="اختر الطالب">
+              <select
+                className="w-full h-10 rounded-md border px-3 md:max-w-md"
+                value={selectedStudentId ?? ''}
+                onChange={(event) => setSelectedStudentId(Number(event.target.value))}
+              >
+                {students.map((student) => (
+                  <option key={student.id} value={student.id}>
+                    {student.email}
+                  </option>
+                ))}
+              </select>
+            </AdminField>
+
+            {selectedStudent ? (
+              <div className="rounded-3xl border bg-muted/30 p-4 shadow-sm">
                 <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                   <div>
-                    <h3 className="font-semibold">{student.email}</h3>
+                    <h3 className="font-semibold">{selectedStudent.email}</h3>
                     <p className="text-xs text-muted-foreground">
-                      آخر نشاط: {student.lastActivity ? new Date(student.lastActivity).toLocaleString('ar-MA') : 'لم يبدأ بعد'}
+                      آخر نشاط: {selectedStudent.lastActivity ? new Date(selectedStudent.lastActivity).toLocaleString('ar-MA') : 'لم يبدأ بعد'}
                     </p>
                   </div>
                   <div className="rounded-2xl bg-white px-4 py-2 text-sm shadow-sm">
-                    متوسط أبواب القصر: <span className="font-bold text-primary">{student.averageScore}%</span> • المحاولات: {student.totalAttempts}
+                    متوسط أبواب القصر: <span className="font-bold text-primary">{selectedStudent.averageScore}%</span> • المحاولات: {selectedStudent.totalAttempts}
                   </div>
                 </div>
 
                 <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
-                  <ProgressPill label="أبواب القصر" completed={student.palace.completed} total={student.palace.total} />
-                  <ProgressPill label="المجالات" completed={student.domains.completed} total={student.domains.total} />
-                  <ProgressPill label="المكتبة الرقمية" completed={student.lectures.completed} total={student.lectures.total} />
-                  <ProgressPill label="تقويم الوحدة" completed={student.exercises.completed} total={student.exercises.total} />
-                  <ProgressPill label="مشاريع المجموعات" completed={student.homework.completed} total={student.homework.total} />
+                  <ProgressPill label="أبواب القصر" completed={selectedStudent.palace.completed} total={selectedStudent.palace.total} />
+                  <ProgressPill label="المجالات" completed={selectedStudent.domains.completed} total={selectedStudent.domains.total} />
+                  <ProgressPill label="المكتبة الرقمية" completed={selectedStudent.lectures.completed} total={selectedStudent.lectures.total} />
+                  <ProgressPill label="تقويم الوحدة" completed={selectedStudent.exercises.completed} total={selectedStudent.exercises.total} />
+                  <ProgressPill label="مشاريع المجموعات" completed={selectedStudent.homework.completed} total={selectedStudent.homework.total} />
                 </div>
 
-                {student.details ? (
+                {selectedStudent.details ? (
                   <div className="mt-4 grid gap-3 lg:grid-cols-2">
-                    <ProgressDetailBox title="أبواب القصر" completed={student.details.palace.completed} remaining={student.details.palace.remaining} />
-                    <ProgressDetailBox title="المجالات" completed={student.details.domains.completed} remaining={student.details.domains.remaining} />
-                    <ProgressDetailBox title="المكتبة الرقمية" completed={student.details.lectures.completed} remaining={student.details.lectures.remaining} />
-                    <ProgressDetailBox title="تقويم الوحدة" completed={student.details.exercises.completed} remaining={student.details.exercises.remaining} />
-                    <ProgressDetailBox title="مشاريع المجموعات" completed={student.details.homework.completed} remaining={student.details.homework.remaining} />
+                    <ProgressDetailBox title="أبواب القصر" completed={selectedStudent.details.palace.completed} remaining={selectedStudent.details.palace.remaining} />
+                    <ProgressDetailBox title="المجالات" completed={selectedStudent.details.domains.completed} remaining={selectedStudent.details.domains.remaining} />
+                    <ProgressDetailBox title="المكتبة الرقمية" completed={selectedStudent.details.lectures.completed} remaining={selectedStudent.details.lectures.remaining} />
+                    <ProgressDetailBox title="تقويم الوحدة" completed={selectedStudent.details.exercises.completed} remaining={selectedStudent.details.exercises.remaining} />
+                    <ProgressDetailBox title="مشاريع المجموعات" completed={selectedStudent.details.homework.completed} remaining={selectedStudent.details.homework.remaining} />
                   </div>
                 ) : null}
               </div>
-            ))}
+            ) : null}
           </div>
         )}
       </CardContent>

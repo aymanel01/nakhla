@@ -148,6 +148,50 @@ export interface UsersListResponse {
   users: User[]
 }
 
+export interface ChangePasswordRequest {
+  currentPassword: string
+  newPassword: string
+}
+
+export interface ChangeEmailRequest {
+  currentPassword: string
+  newEmail: string
+}
+
+export interface ForgotPasswordRequest {
+  email: string
+}
+
+export interface PasswordResetRequest {
+  id: number
+  userId: number
+  userEmail: string
+  userFullName: string
+  status: 'pending' | 'resolved' | 'dismissed'
+  createdAt: string
+  resolvedAt: string | null
+}
+
+export interface PasswordResetRequestsResponse {
+  requests: PasswordResetRequest[]
+}
+
+export interface AdminResetPasswordRequest {
+  newPassword: string
+}
+
+export interface CreateUserRequest {
+  fullName: string
+  email: string
+  password: string
+  role?: UserRole
+}
+
+export interface CreateUserResponse {
+  user: User
+  message: string
+}
+
 // Lectures (YouTube videos)
 export interface Lecture {
   id: number
@@ -185,6 +229,8 @@ export interface StudentCreation {
   title: string
   type: StudentCreationType
   description: string | null
+  creatorName: string | null
+  sectionName: string | null
   fileUrl: string | null
   fileName: string | null
   fileType: string | null
@@ -198,6 +244,8 @@ export interface CreateStudentCreationRequest {
   title: string
   type: StudentCreationType
   description?: string
+  creatorName?: string
+  sectionName?: string
   fileUrl?: string | null
   fileName?: string | null
   fileType?: string | null

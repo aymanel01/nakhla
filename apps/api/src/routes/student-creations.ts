@@ -13,6 +13,8 @@ interface DbStudentCreation {
   title: string
   type: StudentCreationType
   description: string | null
+  creator_name: string | null
+  section_name: string | null
   file_url: string | null
   file_name: string | null
   file_type: string | null
@@ -28,6 +30,8 @@ function mapCreation(row: DbStudentCreation): StudentCreation {
     title: row.title,
     type: row.type,
     description: row.description,
+    creatorName: row.creator_name,
+    sectionName: row.section_name,
     fileUrl: row.file_url,
     fileName: row.file_name,
     fileType: row.file_type,
@@ -82,12 +86,14 @@ studentCreations.post('/', adminMiddleware, async (c) => {
   }
 
   const result = db.prepare(`
-    INSERT INTO student_creations (title, type, description, file_url, file_name, file_type, file_size, thumbnail_url, created_by)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO student_creations (title, type, description, creator_name, section_name, file_url, file_name, file_type, file_size, thumbnail_url, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     body.title.trim(),
     type,
     body.description?.trim() || null,
+    body.creatorName?.trim() || null,
+    body.sectionName?.trim() || null,
     body.fileUrl?.trim() || null,
     body.fileName?.trim() || null,
     body.fileType?.trim() || null,
@@ -118,12 +124,14 @@ studentCreations.put('/:id', adminMiddleware, async (c) => {
 
   db.prepare(`
     UPDATE student_creations
-    SET title = ?, type = ?, description = ?, file_url = ?, file_name = ?, file_type = ?, file_size = ?, thumbnail_url = ?
+    SET title = ?, type = ?, description = ?, creator_name = ?, section_name = ?, file_url = ?, file_name = ?, file_type = ?, file_size = ?, thumbnail_url = ?
     WHERE id = ?
   `).run(
     body.title?.trim() || existing.title,
     type,
     body.description !== undefined ? (body.description?.trim() || null) : existing.description,
+    body.creatorName !== undefined ? (body.creatorName?.trim() || null) : existing.creator_name,
+    body.sectionName !== undefined ? (body.sectionName?.trim() || null) : existing.section_name,
     body.fileUrl !== undefined ? (body.fileUrl?.trim() || null) : existing.file_url,
     body.fileName !== undefined ? (body.fileName?.trim() || null) : existing.file_name,
     body.fileType !== undefined ? (body.fileType?.trim() || null) : existing.file_type,

@@ -1,0 +1,237 @@
+﻿[
+    {
+        "category":  "language",
+        "len":  41,
+        "fileUrl":  "/api/files/1783282055680-a707a860-d38b-4b9f-8567-9809a72f2a8c-photo_2026-06-15_19-16-18.jpg"
+    },
+    {
+        "category":  "language:11:tab:1:label",
+        "len":  27,
+        "fileUrl":  null
+    },
+    {
+        "category":  "language:11:tab:1:questions",
+        "len":  2706,
+        "fileUrl":  null
+    },
+    {
+        "category":  "language:11:tab:1:video",
+        "len":  0,
+        "fileUrl":  "https://www.youtube.com/watch?v=DjkoJXi7rno"
+    },
+    {
+        "category":  "language:11:tab:1:video-description",
+        "len":  189,
+        "fileUrl":  null
+    },
+    {
+        "category":  "language:11:tab:1:video-title",
+        "len":  42,
+        "fileUrl":  null
+    },
+    {
+        "category":  "language:11:tab:2:label",
+        "len":  25,
+        "fileUrl":  null
+    },
+    {
+        "category":  "language:11:tab:2:questions",
+        "len":  3393,
+        "fileUrl":  null
+    },
+    {
+        "category":  "language:11:tab:2:video",
+        "len":  0,
+        "fileUrl":  "https://www.youtube.com/watch?v=pey1LHb-DGI"
+    },
+    {
+        "category":  "language:11:tab:2:video-description",
+        "len":  189,
+        "fileUrl":  null
+    },
+    {
+        "category":  "language:11:tab:2:video-title",
+        "len":  25,
+        "fileUrl":  null
+    },
+    {
+        "category":  "language:11:tab:khulasa:concept",
+        "len":  238,
+        "fileUrl":  null
+    },
+    {
+        "category":  "language:11:tab:khulasa:intro",
+        "len":  166,
+        "fileUrl":  null
+    },
+    {
+        "category":  "language:11:tab:khulasa:questions",
+        "len":  2358,
+        "fileUrl":  null
+    },
+    {
+        "category":  "language:11:tab:khulasa:questions-title",
+        "len":  55,
+        "fileUrl":  null
+    },
+    {
+        "category":  "language:11:tab:khulasa:types",
+        "len":  347,
+        "fileUrl":  null
+    },
+    {
+        "category":  "language:11:tab:tawdif:image",
+        "len":  0,
+        "fileUrl":  "/api/files/1783281468384-13d052ac-d3d7-43f8-9d90-9827d29c70ed-Screenshot_2026-07-05_205656.png"
+    },
+    {
+        "category":  "language:11:tab:tawdif:intro",
+        "len":  330,
+        "fileUrl":  null
+    },
+    {
+        "category":  "language:11:tab:tawdif:questions",
+        "len":  1821,
+        "fileUrl":  null
+    },
+    {
+        "category":  "language:11:tab:tawdif:reminder",
+        "len":  367,
+        "fileUrl":  null
+    },
+    {
+        "category":  "listening",
+        "len":  264,
+        "fileUrl":  "/api/files/1783280003632-3830a7e1-3478-4b1b-8169-2f3a47cbb7ea-Screenshot_2026-07-05_203301.png"
+    },
+    {
+        "category":  "listening:7:questions:1",
+        "len":  2427,
+        "fileUrl":  null
+    },
+    {
+        "category":  "listening:7:questions:2",
+        "len":  2271,
+        "fileUrl":  null
+    },
+    {
+        "category":  "listening:7:questions:3",
+        "len":  2391,
+        "fileUrl":  null
+    },
+    {
+        "category":  "reading",
+        "len":  4608,
+        "fileUrl":  "/api/files/1783268396572-8dd12f87-4eed-4777-bb98-b56d4eca91f8-______________.png"
+    },
+    {
+        "category":  "reading:1:questions:analysis",
+        "len":  3703,
+        "fileUrl":  null
+    },
+    {
+        "category":  "reading:1:questions:grammar",
+        "len":  2747,
+        "fileUrl":  null
+    },
+    {
+        "category":  "reading:1:questions:tarkib",
+        "len":  785,
+        "fileUrl":  null
+    },
+    {
+        "category":  "reading:1:questions:vocabulary",
+        "len":  1939,
+        "fileUrl":  null
+    },
+    {
+        "category":  "writing:acquisition:description",
+        "len":  244,
+        "fileUrl":  null
+    },
+    {
+        "category":  "writing:acquisition:events",
+        "len":  216,
+        "fileUrl":  null
+    },
+    {
+        "category":  "writing:acquisition:people",
+        "len":  139,
+        "fileUrl":  null
+    },
+    {
+        "category":  "writing:acquisition:place",
+        "len":  81,
+        "fileUrl":  null
+    },
+    {
+        "category":  "writing:acquisition:text",
+        "len":  1204,
+        "fileUrl":  null
+    },
+    {
+        "category":  "writing:acquisition:time",
+        "len":  91,
+        "fileUrl":  null
+    },
+    {
+        "category":  "writing:lesson:author",
+        "len":  25,
+        "fileUrl":  null
+    },
+    {
+        "category":  "writing:lesson:source",
+        "len":  101,
+        "fileUrl":  null
+    },
+    {
+        "category":  "writing:lesson:title",
+        "len":  65,
+        "fileUrl":  null
+    },
+    {
+        "category":  "writing:objective",
+        "len":  237,
+        "fileUrl":  null
+    },
+    {
+        "category":  "writing:questions:acquisition",
+        "len":  5440,
+        "fileUrl":  null
+    },
+    {
+        "category":  "writing:resources:description",
+        "len":  184,
+        "fileUrl":  null
+    },
+    {
+        "category":  "writing:resources:events",
+        "len":  93,
+        "fileUrl":  null
+    },
+    {
+        "category":  "writing:resources:people",
+        "len":  135,
+        "fileUrl":  null
+    },
+    {
+        "category":  "writing:resources:place",
+        "len":  152,
+        "fileUrl":  null
+    },
+    {
+        "category":  "writing:resources:time",
+        "len":  139,
+        "fileUrl":  null
+    },
+    {
+        "category":  "writing:situation:context",
+        "len":  310,
+        "fileUrl":  null
+    },
+    {
+        "category":  "writing:situation:task",
+        "len":  422,
+        "fileUrl":  null
+    }
+]

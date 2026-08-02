@@ -4,11 +4,11 @@ import {
   ArrowLeft,
   ArrowRight,
   BookOpenCheck,
+  BookText,
   ChevronLeft,
   Ear,
   HeartHandshake,
   Landmark,
-  Languages,
   Pause,
   PenSquare,
   Play,
@@ -54,7 +54,7 @@ const domains: DomainSection[] = [
     components: [
       { key: "reading", title: "فهم المقروء", icon: BookOpenCheck },
       { key: "listening", title: "فهم المسموع", icon: Ear },
-      { key: "language", title: "الظاهرة اللغوية", icon: Languages },
+      { key: "language", title: "الظاهرة اللغوية", icon: BookText },
       { key: "writing", title: "الإنتاج الكتابي", icon: PenSquare },
     ],
   },
@@ -807,15 +807,15 @@ function GlossaryTerm({
           setOpen((value) => !value);
         }}
         onMouseEnter={() => setOpen(true)}
-        className={`mx-0.5 inline cursor-pointer rounded-[3px] border-b-2 border-dotted border-[#40916C] px-0.5 font-bold text-[#2D6A4F] transition hover:bg-[#D8F0E2] focus:outline-none focus:ring-2 focus:ring-[#95D5B2] ${open ? "bg-[#D8F0E2]" : ""}`}
+        className={`mx-0.5 inline cursor-pointer rounded-[3px] border-b-2 border-dotted border-[#1d4f8a] px-0.5 font-bold text-[#123c69] transition hover:bg-[#dbeafe] focus:outline-none focus:ring-2 focus:ring-[#93b7e7] ${open ? "bg-[#dbeafe]" : ""}`}
       >
         {term}
       </button>
       {open ? (
-        <span className="absolute right-0 top-full z-30 mt-2 w-max max-w-[min(290px,calc(100vw-2rem))] rounded-[14px] bg-[#16352A] px-4 py-3 text-[0.95rem] leading-7 text-white shadow-[0_18px_40px_-10px_rgba(0,0,0,.4)] sm:bottom-full sm:top-auto sm:mb-2 sm:mt-0">
-          <span className="mb-1 block font-['Cairo'] text-[1.05rem] font-extrabold text-[#95D5B2]">{term}</span>
+        <span className="absolute right-0 top-full z-30 mt-2 w-max max-w-[min(290px,calc(100vw-2rem))] rounded-[14px] bg-[#0b2447] px-4 py-3 text-[0.95rem] leading-7 text-white shadow-[0_18px_40px_-10px_rgba(0,0,0,.4)] sm:bottom-full sm:top-auto sm:mb-2 sm:mt-0">
+          <span className="mb-1 block font-['Cairo'] text-[1.05rem] font-extrabold text-[#93b7e7]">{term}</span>
           {explanation}
-          <span className="absolute right-6 top-[-7px] border-x-[7px] border-b-[7px] border-x-transparent border-b-[#16352A] sm:bottom-[-7px] sm:top-auto sm:border-b-0 sm:border-t-[7px] sm:border-t-[#16352A]" />
+          <span className="absolute right-6 top-[-7px] border-x-[7px] border-b-[7px] border-x-transparent border-b-[#0b2447] sm:bottom-[-7px] sm:top-auto sm:border-b-0 sm:border-t-[7px] sm:border-t-[#0b2447]" />
         </span>
       ) : null}
     </span>
@@ -835,7 +835,7 @@ function GlossaryPanel({
   if (variant === "green") {
     return (
       <div className="mb-4 space-y-3 text-right">
-        <h4 className="flex items-center justify-end gap-2 font-['Cairo'] text-[1.18rem] font-extrabold text-[#16352A]">
+        <h4 className="flex items-center justify-end gap-2 font-['Cairo'] text-[1.18rem] font-extrabold text-[#0b2447]">
           {label}
           <span className="h-[22px] w-1.5 rounded bg-[#C0813B]" />
         </h4>
@@ -846,9 +846,9 @@ function GlossaryPanel({
           {items.map((item) => (
             <div
               key={item.term}
-              className="grid grid-cols-1 items-start gap-2 rounded-[14px] border border-[#E8E1D4] bg-[#FCF9F2] px-4 py-3 sm:grid-cols-[auto_1fr] sm:items-center sm:gap-3.5"
+              className="grid grid-cols-1 items-start gap-2 rounded-[14px] border border-[#E8E1D4] bg-[#f5f9ff] px-4 py-3 sm:grid-cols-[auto_1fr] sm:items-center sm:gap-3.5"
             >
-              <span className="whitespace-nowrap rounded-full bg-[#D8F0E2] px-3 py-1 font-['Cairo'] text-[1.08rem] font-extrabold text-[#2D6A4F]">
+              <span className="whitespace-nowrap rounded-full bg-[#dbeafe] px-3 py-1 font-['Cairo'] text-[1.08rem] font-extrabold text-[#123c69]">
                 {item.term}
               </span>
               <span className="text-[0.96rem] leading-7 text-[#33453d]">{item.explanation}</span>
@@ -1162,11 +1162,11 @@ function SpotifyAudioPlayer({
 
 function levelBadgeClass(level: string, nakhla: boolean) {
   if (!nakhla) return "rounded-full bg-[#1d4f8a] px-2 py-0.5 text-[10px] text-white";
-  if (level.includes("مباشر")) return "rounded-full bg-[#40916C] px-2 py-0.5 text-[10px] font-extrabold text-white";
+  if (level.includes("مباشر")) return "rounded-full bg-[#1d4f8a] px-2 py-0.5 text-[10px] font-extrabold text-white";
   if (level.includes("استنتاج")) return "rounded-full bg-[#C0813B] px-2 py-0.5 text-[10px] font-extrabold text-white";
   if (level.includes("ضمني")) return "rounded-full bg-[#7C6BAE] px-2 py-0.5 text-[10px] font-extrabold text-white";
   if (level.includes("إبداع")) return "rounded-full bg-[#C96B8E] px-2 py-0.5 text-[10px] font-extrabold text-white";
-  return "rounded-full bg-[#40916C] px-2 py-0.5 text-[10px] font-extrabold text-white";
+  return "rounded-full bg-[#1d4f8a] px-2 py-0.5 text-[10px] font-extrabold text-white";
 }
 
 function QuestionStage({
@@ -1313,19 +1313,19 @@ function QuestionStage({
         type="button"
         onClick={goNextQuestion}
         disabled={safeQuestionIndex >= groupQuestionCount - 1}
-        className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-4 py-2 font-['Cairo'] text-sm font-bold text-white disabled:opacity-50 ${nakhla ? "bg-[#2D6A4F] hover:bg-[#358062]" : "bg-[#123c69] hover:bg-[#0f2f57]"}`}
+        className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-4 py-2 font-['Cairo'] text-sm font-bold text-white disabled:opacity-50 ${nakhla ? "bg-[#123c69] hover:bg-[#0f2f57]" : "bg-[#123c69] hover:bg-[#0f2f57]"}`}
       >
         التالي
         <ChevronLeft className="h-4 w-4" />
       </button>
-      <div className={`hidden truncate text-center text-sm font-bold sm:block ${nakhla ? "text-[#2D6A4F]" : "text-[#123c69]"}`}>
+      <div className={`hidden truncate text-center text-sm font-bold sm:block ${nakhla ? "text-[#123c69]" : "text-[#123c69]"}`}>
         {active.label}
       </div>
       <button
         type="button"
         onClick={goPrevQuestion}
         disabled={safeQuestionIndex <= 0}
-        className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border bg-white px-4 py-2 font-['Cairo'] text-sm font-bold disabled:opacity-50 ${nakhla ? "border-[#95D5B2] text-[#2D6A4F] hover:bg-[#EEF4EC]" : "border-[#d5ddd7] text-[#123c69] hover:bg-slate-50"}`}
+        className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border bg-white px-4 py-2 font-['Cairo'] text-sm font-bold disabled:opacity-50 ${nakhla ? "border-[#93b7e7] text-[#123c69] hover:bg-[#eaf2ff]" : "border-[#d5ddd7] text-[#123c69] hover:bg-slate-50"}`}
       >
         رجوع
         <ArrowRight className="h-4 w-4" />
@@ -1334,8 +1334,8 @@ function QuestionStage({
   );
 
   return (
-    <div className={`rounded-[20px] ${nakhla ? "border border-[#E8E1D4] bg-white shadow-[0_10px_30px_-12px_rgba(22,53,42,.22)]" : "border border-[#e8e1d4] bg-white shadow-sm"}`}>
-      <div className={`${numbered ? "flex justify-start gap-2 overflow-x-auto bg-white p-3 [-webkit-overflow-scrolling:touch]" : nakhla ? "grid grid-cols-2 gap-1 bg-[#EEF4EC] p-[7px] sm:flex sm:gap-1" : "flex gap-1 bg-[#eaf2ff] p-2"}`}>
+    <div className={`rounded-[20px] ${nakhla ? "border border-[#E8E1D4] bg-white shadow-[0_10px_30px_-12px_rgba(11,36,71,.22)]" : "border border-[#e8e1d4] bg-white shadow-sm"}`}>
+      <div className={`${numbered ? "flex justify-start gap-2 overflow-x-auto bg-white p-3 [-webkit-overflow-scrolling:touch]" : nakhla ? "grid grid-cols-2 gap-1 bg-[#eaf2ff] p-[7px] sm:flex sm:gap-1" : "flex gap-1 bg-[#eaf2ff] p-2"}`}>
         {groups.map((group, index) => (
           <button
             key={group.key}
@@ -1352,12 +1352,12 @@ function QuestionStage({
                 ? numbered
                   ? "bg-[#123c69] text-white shadow-sm"
                   : nakhla
-                    ? "bg-white text-[#2D6A4F] shadow-[0_4px_12px_-4px_rgba(22,53,42,.25)]"
+                    ? "bg-white text-[#123c69] shadow-[0_4px_12px_-4px_rgba(11,36,71,.25)]"
                     : "bg-white text-[#123c69] shadow-sm"
                 : numbered
                   ? "bg-[#eaf2ff] text-[#123c69] hover:bg-[#123c69] hover:text-white"
                   : nakhla
-                    ? "bg-transparent text-[#5C6B63] hover:text-[#2D6A4F]"
+                    ? "bg-transparent text-[#5C6B63] hover:text-[#123c69]"
                     : "text-[#475569] hover:bg-white/60 hover:text-[#123c69]"
             }`}
           >
@@ -1370,11 +1370,11 @@ function QuestionStage({
       <div className={nakhla ? "min-h-[320px] px-4 pb-6 pt-4 sm:min-h-[420px] sm:px-[26px] sm:pb-[30px] sm:pt-6" : "p-3"}>
         {!numbered ? (
           <div className="mb-5 text-right">
-            <h4 className={`flex items-center justify-end gap-2 font-['Cairo'] text-xl font-extrabold ${nakhla ? "text-[#16352A]" : "text-[#0b2447]"}`}>
-              {active.label}
+            <h4 className={`flex items-center justify-start gap-2 font-['Cairo'] text-xl font-extrabold ${nakhla ? "text-[#0b2447]" : "text-[#0b2447]"}`}>
               <span className="h-6 w-1.5 rounded-full bg-[#c0813b]" />
+              {active.label}
             </h4>
-            {nakhla && active.lead ? (
+            {active.lead ? (
               <p className="mt-1.5 font-['Cairo'] text-sm leading-7 text-[#5C6B63]">{active.lead}</p>
             ) : null}
           </div>
@@ -1383,10 +1383,10 @@ function QuestionStage({
         {showVocabularyPanel ? glossaryPanel : null}
 
         {sequential ? (
-          <div className={`mb-5 rounded-[18px] border p-3 text-right ${nakhla ? "border-[#95D5B2] bg-[#EEF4EC]" : "border-[#93b7e7] bg-[#eaf2ff]"}`}>
+          <div className={`mb-5 rounded-[18px] border p-3 text-right ${nakhla ? "border-[#93b7e7] bg-[#eaf2ff]" : "border-[#93b7e7] bg-[#eaf2ff]"}`}>
             <div className="mb-2 flex items-center gap-3">
-              <span className={`font-['Cairo'] text-base font-extrabold ${nakhla ? "text-[#16352A]" : "text-[#0b2447]"}`}>السؤال {safeQuestionIndex + 1} من {groupQuestionCount}</span>
-              <span className={`h-2 flex-1 overflow-hidden rounded-full ${nakhla ? "bg-[#D8F0E2]" : "bg-[#bfd7ff]"}`}><i className={`block h-full ${nakhla ? "bg-[#2D6A4F]" : "bg-[#123c69]"}`} style={{ width: `${((safeQuestionIndex + 1) / Math.max(groupQuestionCount, 1)) * 100}%` }} /></span>
+              <span className={`font-['Cairo'] text-base font-extrabold ${nakhla ? "text-[#0b2447]" : "text-[#0b2447]"}`}>السؤال {safeQuestionIndex + 1} من {groupQuestionCount}</span>
+              <span className={`h-2 flex-1 overflow-hidden rounded-full ${nakhla ? "bg-[#dbeafe]" : "bg-[#bfd7ff]"}`}><i className={`block h-full ${nakhla ? "bg-[#123c69]" : "bg-[#123c69]"}`} style={{ width: `${((safeQuestionIndex + 1) / Math.max(groupQuestionCount, 1)) * 100}%` }} /></span>
             </div>
             {questionNavButtons}
           </div>
@@ -1419,7 +1419,7 @@ function QuestionStage({
                 key={questionKey}
                 className="rounded-[16px] border border-[#e8e1d4] bg-[#fcf9f2] p-4 text-right"
               >
-                <div className={`mb-3 flex items-start gap-2 rounded-[10px] border border-dashed bg-white px-3 py-2 font-['Cairo'] text-xs font-bold leading-6 ${nakhla ? "border-[#95D5B2] text-[#2D6A4F]" : "border-[#93b7e7] text-[#123c69]"}`}>
+                <div className={`mb-3 flex items-start gap-2 rounded-[10px] border border-dashed bg-white px-3 py-2 font-['Cairo'] text-xs font-bold leading-6 ${nakhla ? "border-[#93b7e7] text-[#123c69]" : "border-[#93b7e7] text-[#123c69]"}`}>
                   <span>🎯</span>
                   <span className="flex-1">{question.objective || "الهدف التعليمي الخاص بهذا السؤال"}</span>
                   {question.level ? (
@@ -1430,10 +1430,10 @@ function QuestionStage({
                 </div>
 
                 <div className="mb-3 text-[1.04rem] font-semibold leading-8 text-[#1E2B26]">
-                  <span className={`ml-2 inline-grid h-7 w-7 place-items-center rounded-full font-['Cairo'] text-sm font-extrabold ${nakhla ? "bg-[#D8F0E2] text-[#2D6A4F]" : "bg-[#dbeafe] text-[#123c69]"}`}>
+                  <span className={`ml-2 inline-grid h-7 w-7 place-items-center rounded-full font-['Cairo'] text-sm font-extrabold ${nakhla ? "bg-[#dbeafe] text-[#123c69]" : "bg-[#dbeafe] text-[#123c69]"}`}>
                     {sequential ? safeQuestionIndex + 1 : questionIndex + 1}
                   </span>
-                  <span className={`ml-2 rounded-full px-2 py-0.5 font-['Cairo'] text-[11px] font-bold ${nakhla ? "bg-[#EEF4EC] text-[#5C6B63]" : "bg-[#eaf2ff] text-[#475569]"}`}>
+                  <span className={`ml-2 rounded-full px-2 py-0.5 font-['Cairo'] text-[11px] font-bold ${nakhla ? "bg-[#eaf2ff] text-[#5C6B63]" : "bg-[#eaf2ff] text-[#475569]"}`}>
                     {typeLabel(type)}
                   </span>
                   {question.question}
@@ -1453,10 +1453,10 @@ function QuestionStage({
                               onClick={() => chooseMatchLeft(questionKey, pair.index)}
                               className={`w-full rounded-xl border px-3 py-3 text-center text-sm font-bold transition ${
                                 matched
-                                  ? nakhla ? "border-[#40916C] bg-[#D8F0E2] text-[#16352A]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]"
+                                  ? nakhla ? "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]"
                                   : pairState.selected === pair.index
-                                    ? nakhla ? "border-[#2D6A4F] bg-[#EEF4EC] text-[#2D6A4F]" : "border-[#123c69] bg-[#eaf2ff] text-[#123c69]"
-                                    : nakhla ? "border-[#E8E1D4] bg-white text-[#1E2B26] hover:border-[#40916C] hover:bg-[#EEF4EC]" : "border-[#e8e1d4] bg-white text-[#0f172a] hover:border-[#1d4f8a] hover:bg-[#eaf2ff]"
+                                    ? nakhla ? "border-[#123c69] bg-[#eaf2ff] text-[#123c69]" : "border-[#123c69] bg-[#eaf2ff] text-[#123c69]"
+                                    : nakhla ? "border-[#E8E1D4] bg-white text-[#1E2B26] hover:border-[#1d4f8a] hover:bg-[#eaf2ff]" : "border-[#e8e1d4] bg-white text-[#0f172a] hover:border-[#1d4f8a] hover:bg-[#eaf2ff]"
                               }`}
                             >
                               {pair.left || `عنصر ${pair.index + 1}`}
@@ -1476,10 +1476,10 @@ function QuestionStage({
                               onClick={() => chooseMatchRight(questionKey, pair.index)}
                               className={`w-full rounded-xl border px-3 py-3 text-center text-sm font-bold transition ${
                                 matched
-                                  ? nakhla ? "border-[#40916C] bg-[#D8F0E2] text-[#16352A]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]"
+                                  ? nakhla ? "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]"
                                   : isWrong
                                     ? "border-[#c96b6b] bg-[#f7e3e3] text-[#7a2e2e]"
-                                    : nakhla ? "border-[#E8E1D4] bg-white text-[#1E2B26] hover:border-[#40916C] hover:bg-[#EEF4EC]" : "border-[#e8e1d4] bg-white text-[#0f172a] hover:border-[#1d4f8a] hover:bg-[#eaf2ff]"
+                                    : nakhla ? "border-[#E8E1D4] bg-white text-[#1E2B26] hover:border-[#1d4f8a] hover:bg-[#eaf2ff]" : "border-[#e8e1d4] bg-white text-[#0f172a] hover:border-[#1d4f8a] hover:bg-[#eaf2ff]"
                               }`}
                             >
                               {pair.right || `جواب ${pair.index + 1}`}
@@ -1488,7 +1488,7 @@ function QuestionStage({
                         })}
                       </div>
                     </div>
-                    <div className={`mt-3 rounded-[11px] border-r-4 px-3 py-2 text-sm font-semibold leading-7 ${matchDone ? nakhla ? "border-[#40916C] bg-[#D8F0E2] text-[#16352A]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]" : pairState.wrong ? "border-[#c96b6b] bg-[#f7e3e3] text-[#7a2e2e]" : nakhla ? "border-[#95D5B2] bg-[#EEF4EC] text-[#5C6B63]" : "border-[#93b7e7] bg-[#eaf2ff] text-[#475569]"}`}>
+                    <div className={`mt-3 rounded-[11px] border-r-4 px-3 py-2 text-sm font-semibold leading-7 ${matchDone ? nakhla ? "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]" : pairState.wrong ? "border-[#c96b6b] bg-[#f7e3e3] text-[#7a2e2e]" : nakhla ? "border-[#93b7e7] bg-[#eaf2ff] text-[#5C6B63]" : "border-[#93b7e7] bg-[#eaf2ff] text-[#475569]"}`}>
                       {matchDone
                         ? "أحسنت، تم الربط بنجاح."
                         : pairState.wrong
@@ -1499,7 +1499,7 @@ function QuestionStage({
                 ) : type === "fill-blank" ? (
                   <div>
                     <div className="mb-3 rounded-xl bg-white p-3 leading-8 text-[#1E2B26]">
-                      <span className={`inline-block min-w-[90px] border-b-2 px-4 text-center font-bold ${hasAnswered && !isCorrect ? "border-[#c96b6b] text-[#c96b6b]" : nakhla ? "border-dashed border-[#40916C] text-[#2D6A4F]" : "border-dashed border-[#1d4f8a] text-[#123c69]"}`}>
+                      <span className={`inline-block min-w-[90px] border-b-2 px-4 text-center font-bold ${hasAnswered && !isCorrect ? "border-[#c96b6b] text-[#c96b6b]" : nakhla ? "border-dashed border-[#1d4f8a] text-[#123c69]" : "border-dashed border-[#1d4f8a] text-[#123c69]"}`}>
                         {hasAnswered ? question.options[selectedAnswer] : "…"}
                       </span>
                     </div>
@@ -1515,10 +1515,10 @@ function QuestionStage({
                             onClick={() => setAnswers((current) => ({ ...current, [questionKey]: optionIndex }))}
                             className={`rounded-full border px-4 py-2 text-sm font-bold transition ${
                               revealCorrect
-                                ? nakhla ? "border-[#40916C] bg-[#D8F0E2] text-[#16352A]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]"
+                                ? nakhla ? "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]"
                                 : isWrongSelected
                                   ? "border-[#c96b6b] bg-[#f7e3e3] text-[#7a2e2e]"
-                                  : nakhla ? "border-[#95D5B2] bg-white text-[#2D6A4F] hover:bg-[#EEF4EC]" : "border-[#93b7e7] bg-white text-[#123c69] hover:bg-[#eaf2ff]"
+                                  : nakhla ? "border-[#93b7e7] bg-white text-[#123c69] hover:bg-[#eaf2ff]" : "border-[#93b7e7] bg-white text-[#123c69] hover:bg-[#eaf2ff]"
                             }`}
                           >
                             {option}
@@ -1533,17 +1533,17 @@ function QuestionStage({
                       value={textAnswers[questionKey] || ""}
                       onChange={(event) => setTextAnswers((current) => ({ ...current, [questionKey]: event.target.value }))}
                       placeholder="اكتب جوابك هنا..."
-                      className={`min-h-[100px] w-full rounded-xl border border-[#E8E1D4] bg-white p-3 leading-8 text-[#1E2B26] outline-none ${nakhla ? "focus:border-[#40916C]" : "focus:border-[#1d4f8a]"}`}
+                      className={`min-h-[100px] w-full rounded-xl border border-[#E8E1D4] bg-white p-3 leading-8 text-[#1E2B26] outline-none ${nakhla ? "focus:border-[#1d4f8a]" : "focus:border-[#1d4f8a]"}`}
                     />
                     <button
                       type="button"
                       onClick={() => setModelVisible((current) => ({ ...current, [questionKey]: !current[questionKey] }))}
-                      className={`mt-3 rounded-full px-4 py-2 font-['Cairo'] text-xs font-bold text-white ${nakhla ? "bg-[#2D6A4F] hover:bg-[#358062]" : "bg-[#123c69] hover:bg-[#0b2447]"}`}
+                      className={`mt-3 rounded-full px-4 py-2 font-['Cairo'] text-xs font-bold text-white ${nakhla ? "bg-[#123c69] hover:bg-[#0f2f57]" : "bg-[#123c69] hover:bg-[#0b2447]"}`}
                     >
                       أظهر إجابة مقترحة
                     </button>
                     {modelVisible[questionKey] ? (
-                      <div className={`mt-3 rounded-[11px] border-r-4 px-4 py-3 text-sm font-semibold leading-7 ${nakhla ? "border-[#40916C] bg-[#D8F0E2] text-[#16352A]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]"}`}>
+                      <div className={`mt-3 rounded-[11px] border-r-4 px-4 py-3 text-sm font-semibold leading-7 ${nakhla ? "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]"}`}>
                         <span className="block font-['Cairo'] font-extrabold">إجابة مقترحة</span>
                         {question.modelAnswer || "يضيف المشرف الإجابة المقترحة من التحكم عن بعد."}
                       </div>
@@ -1562,15 +1562,15 @@ function QuestionStage({
                           onClick={() => setAnswers((current) => ({ ...current, [questionKey]: optionIndex }))}
                           className={`flex items-center gap-2 rounded-xl border px-3 py-3 text-right text-sm font-medium transition ${
                             revealCorrect
-                              ? nakhla ? "border-[#40916C] bg-[#D8F0E2] text-[#16352A]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]"
+                              ? nakhla ? "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]"
                               : isWrongSelected
                                 ? "border-[#c96b6b] bg-[#f7e3e3] text-[#7a2e2e] opacity-100"
                                 : hasAnswered && !isCorrect
                                   ? "border-[#E8E1D4] bg-white text-[#1E2B26] opacity-50"
-                                  : nakhla ? "border-[#E8E1D4] bg-white text-[#1E2B26] hover:border-[#40916C] hover:bg-[#EEF4EC]" : "border-[#e8e1d4] bg-white text-[#0f172a] hover:border-[#1d4f8a] hover:bg-[#eaf2ff]"
+                                  : nakhla ? "border-[#E8E1D4] bg-white text-[#1E2B26] hover:border-[#1d4f8a] hover:bg-[#eaf2ff]" : "border-[#e8e1d4] bg-white text-[#0f172a] hover:border-[#1d4f8a] hover:bg-[#eaf2ff]"
                           }`}
                         >
-                          <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-lg font-['Cairo'] text-xs font-extrabold ${revealCorrect ? nakhla ? "bg-[#40916C] text-white" : "bg-[#1d4f8a] text-white" : isWrongSelected ? "bg-[#c96b6b] text-white" : nakhla ? "bg-[#EEF4EC] text-[#2D6A4F]" : "bg-[#eaf2ff] text-[#123c69]"}`}>
+                          <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-lg font-['Cairo'] text-xs font-extrabold ${revealCorrect ? nakhla ? "bg-[#1d4f8a] text-white" : "bg-[#1d4f8a] text-white" : isWrongSelected ? "bg-[#c96b6b] text-white" : nakhla ? "bg-[#eaf2ff] text-[#123c69]" : "bg-[#eaf2ff] text-[#123c69]"}`}>
                             {optionIndex + 1}
                           </span>
                           <span>{option}</span>
@@ -1583,7 +1583,7 @@ function QuestionStage({
                 {feedback ? (
                   <div className={`mt-3 rounded-[11px] border-r-4 px-4 py-3 text-sm font-semibold leading-7 ${
                     isCorrect
-                      ? nakhla ? "border-[#40916C] bg-[#D8F0E2] text-[#16352A]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]"
+                      ? nakhla ? "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]"
                       : "border-[#c96b6b] bg-[#f7e3e3] text-[#7a2e2e]"
                   }`}>
                     <span className="block font-['Cairo'] font-extrabold">
@@ -1649,7 +1649,7 @@ function ReadAlongText({
         );
         const highlighted = activeSet.has(index);
         const className = highlighted
-          ? "rounded-[3px] bg-[#D8F0E2] px-0.5 text-[#16352A] transition-colors"
+          ? "rounded-[3px] bg-[#dbeafe] px-0.5 text-[#0b2447] transition-colors"
           : "transition-colors";
         if (match) {
           return (
@@ -1750,7 +1750,7 @@ function ReadingAudioControl({
   };
 
   return (
-    <div className="mb-4 rounded-2xl border border-[#95D5B2] bg-[#EEF4EC] p-3 text-[#1E2B26] shadow-sm">
+    <div className="mb-4 rounded-2xl border border-[#93b7e7] bg-[#eaf2ff] p-3 text-[#1E2B26] shadow-sm">
       {audioUrl ? (
         <audio ref={audioRef} src={audioUrl} preload="metadata" className="hidden" />
       ) : null}
@@ -1759,13 +1759,13 @@ function ReadingAudioControl({
           type="button"
           onClick={toggle}
           disabled={!audioUrl}
-          className="inline-flex items-center gap-2 rounded-full bg-[#16352A] px-4 py-2 text-sm font-extrabold text-white shadow-sm transition hover:bg-[#2D6A4F] disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex items-center gap-2 rounded-full bg-[#0b2447] px-4 py-2 text-sm font-extrabold text-white shadow-sm transition hover:bg-[#123c69] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
           {playing ? "إيقاف القراءة" : "تشغيل صوت النص"}
         </button>
         <div className="min-w-[180px] flex-1 text-right">
-          <div className="truncate font-['Cairo'] text-xs font-bold text-[#16352A]">
+          <div className="truncate font-['Cairo'] text-xs font-bold text-[#0b2447]">
             {title || "صوت النص"}
           </div>
           <div className="mt-1 flex items-center gap-2 font-['Cairo'] text-[11px] font-bold text-[#5C6B63]" dir="ltr">
@@ -1778,13 +1778,13 @@ function ReadingAudioControl({
               value={Math.min(currentTime, duration || currentTime)}
               onChange={(event) => seek(event.target.value)}
               disabled={!audioUrl}
-              className="h-1 flex-1 cursor-pointer accent-[#2D6A4F]"
+              className="h-1 flex-1 cursor-pointer accent-[#123c69]"
             />
             <span className="min-w-[2.5rem] tabular-nums">{format(duration)}</span>
           </div>
         </div>
       </div>
-      <div className="mt-2 font-['Cairo'] text-xs font-semibold leading-6 text-[#2D6A4F]">
+      <div className="mt-2 font-['Cairo'] text-xs font-semibold leading-6 text-[#123c69]">
         أثناء تشغيل الصوت يتلوّن النص حسب موضع القراءة، وعند الإيقاف يبقى التلوين في نفس المكان.
       </div>
     </div>
@@ -1867,23 +1867,23 @@ function LessonLikeLayout({
 
   if (green) {
     return (
-      <div className="overflow-hidden rounded-[20px] bg-[#FBF7F0] font-['Tajawal'] text-[#1E2B26] shadow-[0_10px_30px_-12px_rgba(22,53,42,.22)]">
+      <div className="overflow-hidden rounded-[20px] bg-[#f8fbff] font-['Tajawal'] text-[#1E2B26] shadow-[0_10px_30px_-12px_rgba(11,36,71,.22)]">
         <div className="mx-auto grid max-w-[1280px] gap-4 p-3 sm:gap-[22px] sm:p-5 xl:grid-cols-[1.05fr_0.95fr] xl:items-start">
-          <section className="overflow-hidden rounded-[20px] border border-[#E8E1D4] bg-white shadow-[0_10px_30px_-12px_rgba(22,53,42,.22)] xl:sticky xl:top-4 xl:max-h-[calc(100vh-2rem)] xl:overflow-y-auto">
-            <div className="bg-[#FCF9F2]">
+          <section className="overflow-hidden rounded-[20px] border border-[#E8E1D4] bg-white shadow-[0_10px_30px_-12px_rgba(11,36,71,.22)] xl:sticky xl:top-4 xl:max-h-[calc(100vh-2rem)] xl:overflow-y-auto">
+            <div className="bg-[#f5f9ff]">
               <figure className="relative m-0 bg-white">
                 {media}
                 {entry?.title ? (
-                  <figcaption className="absolute bottom-2.5 right-3.5 rounded-full bg-[rgba(22,53,42,0.78)] px-3 py-1 font-['Cairo'] text-[0.72rem] text-white backdrop-blur-[3px]">
+                  <figcaption className="absolute bottom-2.5 right-3.5 rounded-full bg-[rgba(11,36,71,0.78)] px-3 py-1 font-['Cairo'] text-[0.72rem] text-white backdrop-blur-[3px]">
                     {entry.title} — صورة توضيحية
                   </figcaption>
                 ) : null}
               </figure>
               <div className="px-4 pb-5 pt-4 sm:px-[26px] sm:pb-[26px] sm:pt-[22px]">
                 {entry ? (
-                  <div className="mb-[18px] flex flex-wrap items-start justify-between gap-3 border-b-2 border-dashed border-[#95D5B2] pb-3.5">
+                  <div className="mb-[18px] flex flex-wrap items-start justify-between gap-3 border-b-2 border-dashed border-[#93b7e7] pb-3.5">
                     <div>
-                      <h1 className="font-['Cairo'] text-xl font-extrabold text-[#16352A] sm:text-[1.5rem]">
+                      <h1 className="font-['Cairo'] text-xl font-extrabold text-[#0b2447] sm:text-[1.5rem]">
                         {entry.title}
                       </h1>
                       <span className="mt-2 inline-flex rounded-full bg-[#F4E6CF] px-3 py-1 font-['Cairo'] text-[0.72rem] font-bold text-[#C0813B]">
@@ -1892,8 +1892,8 @@ function LessonLikeLayout({
                     </div>
                     {(entry.author || entry.source) ? (
                       <div className="text-left font-['Cairo'] text-[0.76rem] leading-7 text-[#5C6B63]">
-                        {entry.author ? <div><b className="font-bold text-[#2D6A4F]">الكاتب:</b> {entry.author}</div> : null}
-                        {entry.source ? <div><b className="font-bold text-[#2D6A4F]">المصدر:</b> {entry.source}</div> : null}
+                        {entry.author ? <div><b className="font-bold text-[#123c69]">الكاتب:</b> {entry.author}</div> : null}
+                        {entry.source ? <div><b className="font-bold text-[#123c69]">المصدر:</b> {entry.source}</div> : null}
                       </div>
                     ) : null}
                   </div>
@@ -1926,20 +1926,20 @@ function LessonLikeLayout({
                   )}
                 </div>
 
-                <div className="mt-4 flex items-center gap-2 rounded-xl bg-[#EEF4EC] px-3 py-2 font-['Cairo'] text-[0.78rem] text-[#5C6B63]">
-                  <span className="font-bold text-[#2D6A4F]">●</span>
+                <div className="mt-4 flex items-center gap-2 rounded-xl bg-[#eaf2ff] px-3 py-2 font-['Cairo'] text-[0.78rem] text-[#5C6B63]">
+                  <span className="font-bold text-[#123c69]">●</span>
                   انقُر على الكلمات المُلوَّنة لتظهرَ معانيها في موضعها.
                 </div>
               </div>
             </div>
           </section>
 
-          <section className="overflow-hidden rounded-[20px] border border-[#E8E1D4] bg-white shadow-[0_10px_30px_-12px_rgba(22,53,42,.22)]">
+          <section className="overflow-hidden rounded-[20px] border border-[#E8E1D4] bg-white shadow-[0_10px_30px_-12px_rgba(11,36,71,.22)]">
             {questionGroups.length > 0 ? (
               <QuestionStage
                 groups={questionGroups}
                 sequential
-                variant="nakhla"
+                variant="default"
                 glossaryPanel={glossary.length > 0 ? <GlossaryPanel items={glossary} variant="green" /> : null}
               />
             ) : glossary.length > 0 ? (
@@ -2225,7 +2225,7 @@ function extractYouTubeVideoId(url: string): string {
 function LanguageVideoBlock({ post }: { post: AdminSectionPost | null }) {
   if (!post?.fileUrl) {
     return (
-      <div className="rounded-2xl border-2 border-dashed border-[#95D5B2] bg-[#EEF4EC] p-8 text-center font-['Cairo'] text-sm font-bold text-[#2D6A4F]">
+      <div className="rounded-2xl border-2 border-dashed border-[#93b7e7] bg-[#eaf2ff] p-8 text-center font-['Cairo'] text-sm font-bold text-[#123c69]">
         أضف فيديو هذا الجزء من التحكم عن بعد.
       </div>
     );
@@ -2259,7 +2259,7 @@ function LanguageLines({ text }: { text: string }) {
   return (
     <ul className="space-y-2 text-right text-sm font-semibold leading-7 text-[#1e2233]">
       {lines.map((line, index) => (
-        <li key={`${line}-${index}`} className="relative pr-4 before:absolute before:right-0 before:top-3 before:text-[8px] before:text-[#40916C] before:content-['◆']">
+        <li key={`${line}-${index}`} className="relative pr-4 before:absolute before:right-0 before:top-3 before:text-[8px] before:text-[#1d4f8a] before:content-['◆']">
           {line}
         </li>
       ))}
@@ -2305,16 +2305,16 @@ function LanguageComments({ storageKey }: { storageKey: string }) {
 
   return (
     <div className="mt-4 space-y-3 rounded-2xl border border-[#E8E1D4] bg-white p-4 text-right">
-      <div className="font-['Cairo'] text-lg font-extrabold text-[#16352A]">تعليقات التلاميذ</div>
+      <div className="font-['Cairo'] text-lg font-extrabold text-[#0b2447]">تعليقات التلاميذ</div>
       <div className="grid gap-2 md:grid-cols-[180px_1fr_auto]">
-        <input value={name} onChange={(event) => setName(event.target.value)} placeholder="اسمك" className="rounded-xl border border-[#E8E1D4] px-3 py-2 text-sm outline-none focus:border-[#2D6A4F]" />
-        <input value={text} onChange={(event) => setText(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") submit(); }} placeholder="اكتب تعليقك على الدرس مثل YouTube..." className="rounded-xl border border-[#E8E1D4] px-3 py-2 text-sm outline-none focus:border-[#2D6A4F]" />
-        <button type="button" onClick={submit} className="rounded-xl bg-[#2D6A4F] px-4 py-2 font-['Cairo'] text-sm font-bold text-white hover:bg-[#358062]">نشر</button>
+        <input value={name} onChange={(event) => setName(event.target.value)} placeholder="اسمك" className="rounded-xl border border-[#E8E1D4] px-3 py-2 text-sm outline-none focus:border-[#123c69]" />
+        <input value={text} onChange={(event) => setText(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") submit(); }} placeholder="اكتب تعليقك على الدرس مثل YouTube..." className="rounded-xl border border-[#E8E1D4] px-3 py-2 text-sm outline-none focus:border-[#123c69]" />
+        <button type="button" onClick={submit} className="rounded-xl bg-[#123c69] px-4 py-2 font-['Cairo'] text-sm font-bold text-white hover:bg-[#0f2f57]">نشر</button>
       </div>
       <div className="space-y-2">
         {comments.length > 0 ? comments.map((comment) => (
-          <div key={comment.id} className="rounded-xl border border-[#E8E1D4] bg-[#FCF9F2] p-3">
-            <div className="mb-1 flex flex-wrap items-center justify-between gap-2 font-['Cairo'] text-xs font-extrabold text-[#2D6A4F]">
+          <div key={comment.id} className="rounded-xl border border-[#E8E1D4] bg-[#f5f9ff] p-3">
+            <div className="mb-1 flex flex-wrap items-center justify-between gap-2 font-['Cairo'] text-xs font-extrabold text-[#123c69]">
               <span>{comment.name}</span>
               <span className="text-[#64748b]">{new Date(comment.createdAt).toLocaleString("ar-MA")}</span>
             </div>
@@ -2408,8 +2408,8 @@ function LanguagePreview({ posts, selectedPostId }: { posts: AdminSectionPost[];
   const isTawdif = active.key === "language:tab:tawdif";
 
   return (
-    <div className="mx-auto max-w-5xl overflow-hidden rounded-[28px] border border-[#E8E1D4] bg-[#FBF7F0] shadow-[0_10px_30px_-12px_rgba(22,53,42,.22)]" dir="rtl">
-      <div className="grid grid-cols-2 gap-1 border-b border-[#E8E1D4] bg-[#EEF4EC] p-[7px] sm:flex sm:gap-1">
+    <div className="mx-auto max-w-5xl overflow-hidden rounded-[28px] border border-[#E8E1D4] bg-[#f8fbff] shadow-[0_10px_30px_-12px_rgba(11,36,71,.22)]" dir="rtl">
+      <div className="grid grid-cols-2 gap-1 border-b border-[#E8E1D4] bg-[#eaf2ff] p-[7px] sm:flex sm:gap-1">
         {tabs.map((tab) => (
           <button
             key={tab.key}
@@ -2417,8 +2417,8 @@ function LanguagePreview({ posts, selectedPostId }: { posts: AdminSectionPost[];
             onClick={() => setActiveTab(tab.key)}
             className={`flex-1 rounded-[13px] px-3 py-3 font-['Cairo'] text-sm font-extrabold transition sm:py-[11px] ${
               activeTab === tab.key
-                ? "bg-white text-[#2D6A4F] shadow-[0_4px_12px_-4px_rgba(22,53,42,.25)]"
-                : "bg-transparent text-[#5C6B63] hover:text-[#2D6A4F]"
+                ? "bg-white text-[#123c69] shadow-[0_4px_12px_-4px_rgba(11,36,71,.25)]"
+                : "bg-transparent text-[#5C6B63] hover:text-[#123c69]"
             }`}
           >
             {tab.label}
@@ -2427,7 +2427,7 @@ function LanguagePreview({ posts, selectedPostId }: { posts: AdminSectionPost[];
       </div>
       <div className="space-y-4 bg-white p-5">
         {active.intro ? (
-          <div className="rounded-2xl border border-[#95D5B2] bg-[#EEF4EC] p-4 text-right text-sm font-semibold leading-7 text-[#16352A]">
+          <div className="rounded-2xl border border-[#93b7e7] bg-[#eaf2ff] p-4 text-right text-sm font-semibold leading-7 text-[#0b2447]">
             {active.intro}
           </div>
         ) : null}
@@ -2435,12 +2435,12 @@ function LanguagePreview({ posts, selectedPostId }: { posts: AdminSectionPost[];
         {"video" in active && active.videoEnabled ? (
           <div className="space-y-4">
             <LanguageVideoBlock post={active.video || null} />
-            <div className="rounded-2xl border border-[#E8E1D4] bg-[#FCF9F2] p-4 text-right">
-              <h3 className="font-['Cairo'] text-xl font-extrabold text-[#16352A]">{active.videoTitle}</h3>
+            <div className="rounded-2xl border border-[#E8E1D4] bg-[#f5f9ff] p-4 text-right">
+              <h3 className="font-['Cairo'] text-xl font-extrabold text-[#0b2447]">{active.videoTitle}</h3>
               <p className="mt-2 text-sm font-semibold leading-7 text-[#5C6B63]">{active.videoDescription}</p>
               <div className="mt-4 flex flex-wrap items-center gap-3">
-                <button type="button" onClick={() => setShowComments((value) => !value)} className="rounded-xl border border-[#95D5B2] bg-white px-4 py-2 font-['Cairo'] text-sm font-bold text-[#2D6A4F] hover:bg-[#EEF4EC]">{showComments ? "إخفاء التعليقات" : "التعليقات"}</button>
-                <button type="button" onClick={() => setShowApplications((value) => !value)} className="rounded-xl bg-[#2D6A4F] px-4 py-2 font-['Cairo'] text-sm font-bold text-white hover:bg-[#358062]">{showApplications ? "إخفاء التطبيقات" : "التطبيقات"}</button>
+                <button type="button" onClick={() => setShowComments((value) => !value)} className="rounded-xl border border-[#93b7e7] bg-white px-4 py-2 font-['Cairo'] text-sm font-bold text-[#123c69] hover:bg-[#eaf2ff]">{showComments ? "إخفاء التعليقات" : "التعليقات"}</button>
+                <button type="button" onClick={() => setShowApplications((value) => !value)} className="rounded-xl bg-[#123c69] px-4 py-2 font-['Cairo'] text-sm font-bold text-white hover:bg-[#0f2f57]">{showApplications ? "إخفاء التطبيقات" : "التطبيقات"}</button>
               </div>
               {showComments ? (
                 <LanguageComments storageKey={`nakhla-language-comments:${entry?.id || selectedPostId || active.key}`} />
@@ -2452,14 +2452,14 @@ function LanguagePreview({ posts, selectedPostId }: { posts: AdminSectionPost[];
         {isKhulasa && "concept" in active ? (
           <div className="grid gap-4 md:grid-cols-2">
             <div className="overflow-hidden rounded-2xl border border-[#E8E1D4] bg-white">
-              <div className="bg-[#16352A] px-4 py-3 text-center font-['Cairo'] text-base font-extrabold text-white">المفهوم والأركان</div>
+              <div className="bg-[#0b2447] px-4 py-3 text-center font-['Cairo'] text-base font-extrabold text-white">المفهوم والأركان</div>
               <div className="space-y-3 p-4">
                 <LanguageLines text={active.concept || ""} />
-                {active.examples ? <div className="whitespace-pre-wrap rounded-xl bg-[#FCF9F2] p-3 font-['Amiri'] text-lg leading-8 text-[#1E2B26]">{active.examples}</div> : null}
+                {active.examples ? <div className="whitespace-pre-wrap rounded-xl bg-[#f5f9ff] p-3 font-['Amiri'] text-lg leading-8 text-[#1E2B26]">{active.examples}</div> : null}
               </div>
             </div>
             <div className="overflow-hidden rounded-2xl border border-[#E8E1D4] bg-white">
-              <div className="bg-[#16352A] px-4 py-3 text-center font-['Cairo'] text-base font-extrabold text-white">الأنواع</div>
+              <div className="bg-[#0b2447] px-4 py-3 text-center font-['Cairo'] text-base font-extrabold text-white">الأنواع</div>
               <div className="p-4"><LanguageLines text={active.types || ""} /></div>
             </div>
           </div>
@@ -2467,23 +2467,23 @@ function LanguagePreview({ posts, selectedPostId }: { posts: AdminSectionPost[];
 
         {isTawdif && "reminder" in active && active.reminder ? (
           <div className="overflow-hidden rounded-2xl border border-[#E8E1D4] bg-white">
-            <div className="bg-[#16352A] px-4 py-3 text-center font-['Cairo'] text-base font-extrabold text-white">تذكّر قبل التوظيف</div>
+            <div className="bg-[#0b2447] px-4 py-3 text-center font-['Cairo'] text-base font-extrabold text-white">تذكّر قبل التوظيف</div>
             <div className="p-4"><LanguageLines text={active.reminder} /></div>
           </div>
         ) : null}
         {isTawdif && "image" in active && active.image?.fileUrl ? (
-          <div className="rounded-2xl border border-[#95D5B2] bg-[#EEF4EC] p-3">{renderMedia(active.image, "max-h-[260px]")}</div>
+          <div className="rounded-2xl border border-[#93b7e7] bg-[#eaf2ff] p-3">{renderMedia(active.image, "max-h-[260px]")}</div>
         ) : null}
 
         {isKhulasa && "questionsTitle" in active && active.questions.length > 0 ? (
-          <div className="rounded-xl bg-[#EEF4EC] px-4 py-3 text-right font-['Cairo'] text-sm font-extrabold text-[#2D6A4F]">
+          <div className="rounded-xl bg-[#eaf2ff] px-4 py-3 text-right font-['Cairo'] text-sm font-extrabold text-[#123c69]">
             {active.questionsTitle}
           </div>
         ) : null}
 
         {((!active.videoEnabled && active.questions.length > 0) || showApplications) ? (
           active.questions.length > 0 ? (
-            <QuestionStage groups={active.questions} sequential variant="nakhla" />
+            <QuestionStage groups={active.questions} sequential variant="default" />
           ) : (
             <EmptyComponentState text="لم يضف الأستاذ تطبيقات هذا الجزء بعد." />
           )
@@ -2608,9 +2608,9 @@ const WRITING_CRITERIA = [
 const WRITING_MIND_NODES = [
   { key: "shakhsiyat", icon: "👥", title: "الشخصيات", color: "#2E6FA8", bg: "#DCEAF7", desc: "مَن تدورُ حولَهم الأحداثُ؛ منها الرئيسةُ والثانويّة.", ex: "الرئيسة: عائشةُ (الأمّ). الثانويّة: الطبيبُ إبراهيم، الأبناء، الزبونات." },
   { key: "ahdath", icon: "📜", title: "الأحداث", color: "#7B4B9B", bg: "#ECE0F2", desc: "وقائعُ متسلسلةٌ تُروى بأفعالٍ تُكوّنُ الحبكة.", ex: "«جاءَ الطبيبُ… أُصيبت… سهِرت… فتحوا بابَ غرفتِها… وجدوها»." },
-  { key: "zaman", icon: "🗺️", title: "الزمان والمكان", color: "#358062", bg: "#D8F0E2", desc: "الإطارُ الزمكانيُّ الذي تجري فيه الأحداث.", ex: "الزمان: اللياليَ، ذاتَ صباحٍ. المكان: الغرفةُ الصغيرة، ماكينةُ الخياطة." },
+  { key: "zaman", icon: "🗺️", title: "الزمان والمكان", color: "#0f2f57", bg: "#dbeafe", desc: "الإطارُ الزمكانيُّ الذي تجري فيه الأحداث.", ex: "الزمان: اللياليَ، ذاتَ صباحٍ. المكان: الغرفةُ الصغيرة، ماكينةُ الخياطة." },
   { key: "sarid", icon: "👁️", title: "السارد والرؤية", color: "#5C6B63", bg: "#E7EAE6", desc: "مَن يَروي القصّةَ، وزاويةُ النظرِ التي يَحكي منها.", ex: "راوٍ يَسردُ بضميرِ الغائبِ من موقعِ العارفِ بأحوالِ الشخصية." },
-  { key: "binya", icon: "🧱", title: "بنيةُ السرد", color: "#2D6A4F", bg: "#CDE9D7", desc: "هيكلُ القصّةِ: بدايةٌ ← عقدةٌ ← نهاية.", ex: "البداية: العملُ في الخياطة. العقدة: المرضُ والمعاناة. النهاية: الوفاةُ على مقعدِها." },
+  { key: "binya", icon: "🧱", title: "بنيةُ السرد", color: "#123c69", bg: "#bfdbfe", desc: "هيكلُ القصّةِ: بدايةٌ ← عقدةٌ ← نهاية.", ex: "البداية: العملُ في الخياطة. العقدة: المرضُ والمعاناة. النهاية: الوفاةُ على مقعدِها." },
   { key: "wasf", icon: "🎨", title: "الوصف", color: "#C96B6B", bg: "#FAD9D9", desc: "يُرافِقُ السردَ فيَرسمُ الشخصيّةَ والمكانَ ويُعمّقُ التأثير.", ex: "«غرفتُها الصغيرة»، «رأسُها الذي كساه شعرٌ أبيض»." },
 ] as const;
 
@@ -2619,7 +2619,7 @@ function WritingMindMap() {
   const node = WRITING_MIND_NODES.find((item) => item.key === active);
   return (
     <div className="mt-4 space-y-3">
-      <div className="rounded-xl border border-[#95D5B2] bg-[#D8F0E2] px-4 py-3 font-['Cairo'] text-sm leading-7 text-[#16352A]">
+      <div className="rounded-xl border border-[#93b7e7] bg-[#dbeafe] px-4 py-3 font-['Cairo'] text-sm leading-7 text-[#0b2447]">
         🧠 أحسنت، اكتملت الأنشطة! هذه خطاطةٌ ذهنيّةٌ تفاعليّةٌ تُلخّصُ خصائصَ النصِّ السرديّ — انقُرْ أيَّ عنصرٍ لِتَكشِفَ تعريفَه ومثالَه.
       </div>
       <div className="grid gap-2 sm:grid-cols-2">
@@ -2643,7 +2643,7 @@ function WritingMindMap() {
               {node.icon} {node.title}
             </h5>
             <p className="mb-2 font-['Tajawal'] text-[0.96rem] leading-7 text-[#1E2B26]">{node.desc}</p>
-            <p className="rounded-lg border-r-[3px] border-[#40916C] bg-[#EEF4EC] px-3 py-2 font-['Amiri'] text-[1.08rem] leading-8 text-[#16352A]">
+            <p className="rounded-lg border-r-[3px] border-[#1d4f8a] bg-[#eaf2ff] px-3 py-2 font-['Amiri'] text-[1.08rem] leading-8 text-[#0b2447]">
               <b className="font-['Cairo']">من النصّ:</b> {node.ex}
             </p>
           </>
@@ -2668,17 +2668,17 @@ function WritingCriteriaGrid() {
   const totalItems = WRITING_CRITERIA.reduce((sum, section) => sum + section.items.length, 0);
   const allDone = checked.size >= totalItems;
   return (
-    <div className="my-4 overflow-hidden rounded-2xl border border-[#95D5B2]">
-      <div className="flex items-center gap-2 bg-[#16352A] px-4 py-3 font-['Cairo'] text-[0.95rem] font-bold text-white">
+    <div className="my-4 overflow-hidden rounded-2xl border border-[#93b7e7]">
+      <div className="flex items-center gap-2 bg-[#0b2447] px-4 py-3 font-['Cairo'] text-[0.95rem] font-bold text-white">
         <span>🧾 شبكةُ معاييرِ الإنجاز (تقويمٌ ذاتيّ)</span>
         <span className="mr-auto rounded-full bg-white/15 px-3 py-0.5 text-[0.82rem]">المجموع: 6 نقاط</span>
       </div>
       <div className="bg-white px-4 pb-3">
         {WRITING_CRITERIA.map((section) => (
           <div key={section.title} className="border-b border-[#E8E1D4] py-3 last:border-b-0">
-            <div className="mb-2 flex items-center gap-2 font-['Cairo'] text-[0.95rem] font-bold text-[#2D6A4F]">
+            <div className="mb-2 flex items-center gap-2 font-['Cairo'] text-[0.95rem] font-bold text-[#123c69]">
               <span>{section.title}</span>
-              <span className="mr-auto rounded-full bg-[#D8F0E2] px-2.5 py-0.5 text-[0.78rem]">{section.points}</span>
+              <span className="mr-auto rounded-full bg-[#dbeafe] px-2.5 py-0.5 text-[0.78rem]">{section.points}</span>
             </div>
             {section.items.map((item, index) => {
               const id = `${section.title}-${index}`;
@@ -2690,7 +2690,7 @@ function WritingCriteriaGrid() {
                   onClick={() => toggle(id)}
                   className="flex w-full items-start gap-2.5 py-1.5 text-right font-['Tajawal'] text-[0.95rem] leading-7"
                 >
-                  <span className={`mt-0.5 grid h-[21px] w-[21px] shrink-0 place-items-center rounded-md border-2 border-[#40916C] text-xs text-white ${on ? "bg-[#40916C]" : ""}`}>
+                  <span className={`mt-0.5 grid h-[21px] w-[21px] shrink-0 place-items-center rounded-md border-2 border-[#1d4f8a] text-xs text-white ${on ? "bg-[#1d4f8a]" : ""}`}>
                     {on ? "✓" : ""}
                   </span>
                   <span>{item}</span>
@@ -2701,7 +2701,7 @@ function WritingCriteriaGrid() {
         ))}
       </div>
       {allDone ? (
-        <div className="mx-3 mb-3 rounded-xl border border-[#95D5B2] bg-[#D8F0E2] px-3 py-2.5 font-['Cairo'] text-sm font-bold text-[#2D6A4F]">
+        <div className="mx-3 mb-3 rounded-xl border border-[#93b7e7] bg-[#dbeafe] px-3 py-2.5 font-['Cairo'] text-sm font-bold text-[#123c69]">
           أحسنت — استوفى إنتاجُك جميعَ معاييرِ الإنجازِ الثلاثة. راجِعْه مرّةً أخيرةً ثمّ أرسِلْه إلى أستاذِك.
         </div>
       ) : null}
@@ -2726,32 +2726,32 @@ function WritingStoryPlanner({ onInsert }: { onInsert: (text: string) => void })
   };
   return (
     <div className="rounded-2xl border border-[#E8E1D4] bg-white p-4">
-      <h4 className="mb-2 font-['Cairo'] text-base font-extrabold text-[#2D6A4F]">🧩 خطاطةُ تخطيطِ القصّة — خطّطْ قبلَ أن تكتُب</h4>
+      <h4 className="mb-2 font-['Cairo'] text-base font-extrabold text-[#123c69]">🧩 خطاطةُ تخطيطِ القصّة — خطّطْ قبلَ أن تكتُب</h4>
       <p className="mb-3 font-['Cairo'] text-[0.78rem] leading-6 text-[#5C6B63]">
         املأِ الخاناتِ لِتَرسُمَ هيكلَ قصّتِك، ثمّ اضغطْ «أدرِجْ مخطّطي» فيَنتقلَ إلى مساحةِ الكتابةِ هيكلًا تُوسّعُه.
       </p>
       <div className="grid gap-2.5 sm:grid-cols-2">
-        <div className="rounded-xl border border-[#E8E1D4] border-r-4 border-r-[#2E6FA8] bg-[#FCF9F2] p-3">
-          <div className="mb-2 font-['Cairo'] text-sm font-bold text-[#16352A]">١) البداية — الوضعيّةُ الأولى</div>
+        <div className="rounded-xl border border-[#E8E1D4] border-r-4 border-r-[#2E6FA8] bg-[#f5f9ff] p-3">
+          <div className="mb-2 font-['Cairo'] text-sm font-bold text-[#0b2447]">١) البداية — الوضعيّةُ الأولى</div>
           <input value={plan.who} onChange={(e) => setPlan((p) => ({ ...p, who: e.target.value }))} placeholder="مَن الشخصيّةُ؟" className="mb-2 w-full rounded-lg border px-2.5 py-2 text-sm" />
           <input value={plan.place} onChange={(e) => setPlan((p) => ({ ...p, place: e.target.value }))} placeholder="أين؟" className="mb-2 w-full rounded-lg border px-2.5 py-2 text-sm" />
           <input value={plan.time} onChange={(e) => setPlan((p) => ({ ...p, time: e.target.value }))} placeholder="متى؟" className="w-full rounded-lg border px-2.5 py-2 text-sm" />
         </div>
-        <div className="rounded-xl border border-[#E8E1D4] border-r-4 border-r-[#7B4B9B] bg-[#FCF9F2] p-3">
-          <div className="mb-2 font-['Cairo'] text-sm font-bold text-[#16352A]">٢) العقدة — الحدثُ / التضحية</div>
+        <div className="rounded-xl border border-[#E8E1D4] border-r-4 border-r-[#7B4B9B] bg-[#f5f9ff] p-3">
+          <div className="mb-2 font-['Cairo'] text-sm font-bold text-[#0b2447]">٢) العقدة — الحدثُ / التضحية</div>
           <input value={plan.knot} onChange={(e) => setPlan((p) => ({ ...p, knot: e.target.value }))} placeholder="ما التضحيةُ أو المشكلةُ؟" className="mb-2 w-full rounded-lg border px-2.5 py-2 text-sm" />
           <input value={plan.develop} onChange={(e) => setPlan((p) => ({ ...p, develop: e.target.value }))} placeholder="كيف تطوّرت الأحداث؟" className="w-full rounded-lg border px-2.5 py-2 text-sm" />
         </div>
-        <div className="rounded-xl border border-[#E8E1D4] border-r-4 border-r-[#40916C] bg-[#FCF9F2] p-3">
-          <div className="mb-2 font-['Cairo'] text-sm font-bold text-[#16352A]">٣) النهاية — الوضعيّةُ النهائيّة</div>
+        <div className="rounded-xl border border-[#E8E1D4] border-r-4 border-r-[#1d4f8a] bg-[#f5f9ff] p-3">
+          <div className="mb-2 font-['Cairo'] text-sm font-bold text-[#0b2447]">٣) النهاية — الوضعيّةُ النهائيّة</div>
           <input value={plan.end} onChange={(e) => setPlan((p) => ({ ...p, end: e.target.value }))} placeholder="كيف انتهت القصّة؟" className="w-full rounded-lg border px-2.5 py-2 text-sm" />
         </div>
-        <div className="rounded-xl border border-[#E8E1D4] border-r-4 border-r-[#C96B6B] bg-[#FCF9F2] p-3">
-          <div className="mb-2 font-['Cairo'] text-sm font-bold text-[#16352A]">✦ لمسةُ وصف</div>
+        <div className="rounded-xl border border-[#E8E1D4] border-r-4 border-r-[#C96B6B] bg-[#f5f9ff] p-3">
+          <div className="mb-2 font-['Cairo'] text-sm font-bold text-[#0b2447]">✦ لمسةُ وصف</div>
           <input value={plan.desc} onChange={(e) => setPlan((p) => ({ ...p, desc: e.target.value }))} placeholder="صفْ شخصيّةً أو مكانًا" className="w-full rounded-lg border px-2.5 py-2 text-sm" />
         </div>
       </div>
-      <button type="button" onClick={build} className="mt-3 rounded-xl border border-[#95D5B2] bg-[#EEF4EC] px-4 py-2 font-['Cairo'] text-sm font-bold text-[#2D6A4F] hover:bg-[#D8F0E2]">
+      <button type="button" onClick={build} className="mt-3 rounded-xl border border-[#93b7e7] bg-[#eaf2ff] px-4 py-2 font-['Cairo'] text-sm font-bold text-[#123c69] hover:bg-[#dbeafe]">
         📝 أدرِجْ مخطّطي في مساحةِ الكتابة
       </button>
     </div>
@@ -2784,14 +2784,14 @@ function WritingCorrectionPanel() {
   }, []);
 
   return (
-    <div className="rounded-2xl border border-[#95D5B2] bg-[#EEF4EC] p-4 text-right">
-      <div className="mb-2 font-['Cairo'] text-lg font-extrabold text-[#2D6A4F]">تصحيح الأستاذ</div>
+    <div className="rounded-2xl border border-[#93b7e7] bg-[#eaf2ff] p-4 text-right">
+      <div className="mb-2 font-['Cairo'] text-lg font-extrabold text-[#123c69]">تصحيح الأستاذ</div>
       {correction ? (
-        <div className="rounded-xl border border-[#95D5B2] bg-white p-4 text-sm font-semibold leading-8 text-[#16352A] whitespace-pre-wrap">
+        <div className="rounded-xl border border-[#93b7e7] bg-white p-4 text-sm font-semibold leading-8 text-[#0b2447] whitespace-pre-wrap">
           {correction}
         </div>
       ) : (
-        <div className="rounded-xl border border-dashed border-[#95D5B2] bg-white p-4 text-sm font-semibold text-[#5C6B63]">
+        <div className="rounded-xl border border-dashed border-[#93b7e7] bg-white p-4 text-sm font-semibold text-[#5C6B63]">
           لم يصلك تصحيح بعد. من بعد ما الأستاذ يصحح الإنتاج غادي يبان هنا بوحدك.
         </div>
       )}
@@ -2877,8 +2877,8 @@ function WritingPreview({ posts }: { posts: AdminSectionPost[] }) {
       onClick={() => setTab(key)}
       className={`flex-1 border-b-[3px] px-2 py-2.5 font-['Cairo'] text-sm font-bold transition sm:px-4 sm:py-3.5 sm:text-base ${
         tab === key
-          ? "border-[#40916C] bg-white text-[#2D6A4F]"
-          : "border-transparent bg-[#FCF9F2] text-[#5C6B63] hover:text-[#2D6A4F]"
+          ? "border-[#1d4f8a] bg-white text-[#123c69]"
+          : "border-transparent bg-[#f5f9ff] text-[#5C6B63] hover:text-[#123c69]"
       }`}
     >
       {label}
@@ -2886,8 +2886,8 @@ function WritingPreview({ posts }: { posts: AdminSectionPost[] }) {
   );
 
   return (
-    <div className="mx-auto max-w-[1080px] overflow-hidden rounded-[20px] border border-[#E8E1D4] bg-white shadow-[0_10px_30px_-12px_rgba(22,53,42,0.22)]" dir="rtl">
-      <div className="sticky top-0 z-[5] flex border-b border-[#E8E1D4] bg-[#FCF9F2]">
+    <div className="mx-auto max-w-[1080px] overflow-hidden rounded-[20px] border border-[#E8E1D4] bg-white shadow-[0_10px_30px_-12px_rgba(11,36,71,0.22)]" dir="rtl">
+      <div className="sticky top-0 z-[5] flex border-b border-[#E8E1D4] bg-[#f5f9ff]">
         {tabBtn("acquisition", "الاكتساب")}
         {tabBtn("application", "التطبيق")}
         {tabBtn("correction", "تصحيح")}
@@ -2897,13 +2897,13 @@ function WritingPreview({ posts }: { posts: AdminSectionPost[] }) {
         {tab === "acquisition" ? (
           <div className="grid gap-5 lg:grid-cols-2">
             <section className="lg:sticky lg:top-[calc(var(--app-chrome-h)+0.5rem)] lg:max-h-[calc(100dvh-var(--app-chrome-h)-1rem)] lg:overflow-y-auto">
-              <div className="mb-4 flex flex-wrap items-center gap-2.5 rounded-[14px] border border-[#95D5B2] bg-[#EEF4EC] px-4 py-3 font-['Cairo'] text-[0.84rem]">
-                <span><b className="text-[#2D6A4F]">الكاتب:</b> {author || "—"}</span>
-                <span className="text-[#5C6B63]"><b className="text-[#2D6A4F]">المصدر:</b> {source || "—"}</span>
+              <div className="mb-4 flex flex-wrap items-center gap-2.5 rounded-[14px] border border-[#93b7e7] bg-[#eaf2ff] px-4 py-3 font-['Cairo'] text-[0.84rem]">
+                <span><b className="text-[#123c69]">الكاتب:</b> {author || "—"}</span>
+                <span className="text-[#5C6B63]"><b className="text-[#123c69]">المصدر:</b> {source || "—"}</span>
                 <span className="mr-auto rounded-full border border-[#e6cfa6] bg-[#F4E6CF] px-3 py-1 text-[0.78rem] font-bold text-[#8a5a1c]">نصّ انطلاق</span>
               </div>
-              <h2 className="text-center font-['Cairo'] text-xl font-extrabold text-[#2D6A4F] sm:text-[1.4rem]">{title || "الإنتاج الكتابي"}</h2>
-              <div className="mx-auto my-2 h-1 w-[60px] rounded bg-[#40916C] opacity-55" />
+              <h2 className="text-center font-['Cairo'] text-xl font-extrabold text-[#123c69] sm:text-[1.4rem]">{title || "الإنتاج الكتابي"}</h2>
+              <div className="mx-auto my-2 h-1 w-[60px] rounded bg-[#1d4f8a] opacity-55" />
               <div className="mb-1 flex flex-wrap gap-2">
                 {Object.entries(WRITING_HL_STYLES).map(([key, style]) => (
                   <button
@@ -2912,7 +2912,7 @@ function WritingPreview({ posts }: { posts: AdminSectionPost[] }) {
                     onClick={() => toggleHighlight(key)}
                     className={`flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 font-['Cairo'] text-[0.84rem] font-bold transition ${
                       highlight.has(key)
-                        ? "border-[#40916C] bg-white shadow-[0_0_0_2px_#D8F0E2]"
+                        ? "border-[#1d4f8a] bg-white shadow-[0_0_0_2px_#dbeafe]"
                         : "border-[#E8E1D4] bg-white text-[#5C6B63]"
                     }`}
                   >
@@ -2923,13 +2923,13 @@ function WritingPreview({ posts }: { posts: AdminSectionPost[] }) {
                 <button
                   type="button"
                   onClick={toggleAllHighlights}
-                  className="rounded-full border border-[#40916C] bg-[#358062] px-3.5 py-1.5 font-['Cairo'] text-[0.84rem] font-bold text-white"
+                  className="rounded-full border border-[#1d4f8a] bg-[#0f2f57] px-3.5 py-1.5 font-['Cairo'] text-[0.84rem] font-bold text-white"
                 >
                   الكل
                 </button>
               </div>
               <p className="mb-3 font-['Cairo'] text-[0.74rem] text-[#5C6B63]">انقُرْ لإبرازِ عناصرِ السردِ في النصّ.</p>
-              <div className="mb-3 rounded-[14px] border border-[#E8E1D4] bg-[#FCF9F2] p-4">
+              <div className="mb-3 rounded-[14px] border border-[#E8E1D4] bg-[#f5f9ff] p-4">
                 {renderWritingModelText(
                   modelText || "سيظهر هنا نص الاكتساب بعد أن يملأه الأستاذ من التحكم عن بعد.",
                   highlight,
@@ -2938,24 +2938,24 @@ function WritingPreview({ posts }: { posts: AdminSectionPost[] }) {
               <button
                 type="button"
                 onClick={() => speakArabic(rawModelText || stripWritingHighlightTags(modelText))}
-                className="rounded-[11px] border border-[#95D5B2] bg-[#FCF9F2] px-4 py-2 font-['Cairo'] text-sm font-bold text-[#2D6A4F] hover:bg-[#D8F0E2]"
+                className="rounded-[11px] border border-[#93b7e7] bg-[#f5f9ff] px-4 py-2 font-['Cairo'] text-sm font-bold text-[#123c69] hover:bg-[#dbeafe]"
               >
                 🔊 استماع إلى النصّ
               </button>
             </section>
 
             <section>
-              <div className="mb-4 rounded-xl border border-[#E8E1D4] bg-[#EEF4EC] px-3.5 py-3 font-['Cairo'] text-[0.9rem] leading-7 text-[#5C6B63]">
+              <div className="mb-4 rounded-xl border border-[#E8E1D4] bg-[#eaf2ff] px-3.5 py-3 font-['Cairo'] text-[0.9rem] leading-7 text-[#5C6B63]">
                 {objective || "أجب عن أسئلة الاكتساب اعتمادًا على نص الانطلاق، ثم انتقل إلى التطبيق."}
               </div>
               {acqProgress.total > 0 ? (
                 <div className="mb-4">
-                  <div className="mb-1 flex items-center justify-between font-['Cairo'] text-xs font-bold text-[#2D6A4F]">
+                  <div className="mb-1 flex items-center justify-between font-['Cairo'] text-xs font-bold text-[#123c69]">
                     <span>تقدّمُ الاكتساب</span>
                     <span>{acqProgress.correct}/{acqProgress.total}</span>
                   </div>
                   <div className="h-2 overflow-hidden rounded-full bg-[#E8E1D4]">
-                    <div className="h-full rounded-full bg-[#40916C] transition-all" style={{ width: `${acqPct}%` }} />
+                    <div className="h-full rounded-full bg-[#1d4f8a] transition-all" style={{ width: `${acqPct}%` }} />
                   </div>
                 </div>
               ) : null}
@@ -2963,7 +2963,7 @@ function WritingPreview({ posts }: { posts: AdminSectionPost[] }) {
                 <QuestionStage
                   groups={writingQuestionGroups}
                   sequential
-                  variant="nakhla"
+                  variant="default"
                   onProgress={setAcqProgress}
                 />
               ) : (
@@ -2976,16 +2976,16 @@ function WritingPreview({ posts }: { posts: AdminSectionPost[] }) {
 
         {tab === "application" ? (
           <div className="space-y-5">
-            <div className="rounded-2xl border border-[#95D5B2] bg-gradient-to-br from-[#F0F6EE] to-[#E4EFDE] p-5">
-              <div className="mb-2 flex items-center gap-2 font-['Cairo'] text-[0.85rem] font-extrabold tracking-wide text-[#2D6A4F]">📋 الوضعية الواقعية</div>
+            <div className="rounded-2xl border border-[#93b7e7] bg-gradient-to-br from-[#F0F6EE] to-[#E4EFDE] p-5">
+              <div className="mb-2 flex items-center gap-2 font-['Cairo'] text-[0.85rem] font-extrabold tracking-wide text-[#123c69]">📋 الوضعية الواقعية</div>
               <p className="font-['Tajawal'] text-[1.05rem] leading-[1.9] text-[#1E2B26]">{situation}</p>
-              <div className="mt-3 rounded-xl border border-dashed border-[#40916C] bg-white px-3.5 py-3 font-['Tajawal'] text-[1.02rem] leading-[1.9]">
-                <b className="font-['Cairo'] text-[#2D6A4F]">المطلوب:</b> {task}
+              <div className="mt-3 rounded-xl border border-dashed border-[#1d4f8a] bg-white px-3.5 py-3 font-['Tajawal'] text-[1.02rem] leading-[1.9]">
+                <b className="font-['Cairo'] text-[#123c69]">المطلوب:</b> {task}
               </div>
             </div>
 
             <div className="rounded-2xl border border-[#E8E1D4] bg-white p-4">
-              <div className="mb-1 font-['Cairo'] text-base font-extrabold text-[#2D6A4F]">🧰 موارد داعمة للإنتاج</div>
+              <div className="mb-1 font-['Cairo'] text-base font-extrabold text-[#123c69]">🧰 موارد داعمة للإنتاج</div>
               <p className="mb-3 font-['Cairo'] text-[0.74rem] text-[#5C6B63]">انقُرْ أيَّ موردٍ لِيُدرَجَ في مساحةِ الكتابة.</p>
               {(
                 [
@@ -2997,7 +2997,7 @@ function WritingPreview({ posts }: { posts: AdminSectionPost[] }) {
                 ] as const
               ).map(([label, items, dot]) => (
                 <div key={label} className="mb-3">
-                  <div className="mb-1.5 flex items-center gap-2 font-['Cairo'] text-[0.86rem] font-bold text-[#2D6A4F]">
+                  <div className="mb-1.5 flex items-center gap-2 font-['Cairo'] text-[0.86rem] font-bold text-[#123c69]">
                     <span className={`h-3 w-3 rounded-full ${dot}`} />
                     {label}
                   </div>
@@ -3007,7 +3007,7 @@ function WritingPreview({ posts }: { posts: AdminSectionPost[] }) {
                         key={item}
                         type="button"
                         onClick={() => insertResource(item)}
-                        className="rounded-full border border-[#E8E1D4] bg-[#FCF9F2] px-3 py-1.5 font-['Tajawal'] text-[0.92rem] transition hover:border-[#40916C] hover:bg-[#D8F0E2]"
+                        className="rounded-full border border-[#E8E1D4] bg-[#f5f9ff] px-3 py-1.5 font-['Tajawal'] text-[0.92rem] transition hover:border-[#1d4f8a] hover:bg-[#dbeafe]"
                       >
                         {item}
                       </button>
@@ -3020,12 +3020,12 @@ function WritingPreview({ posts }: { posts: AdminSectionPost[] }) {
             <WritingStoryPlanner onInsert={insertPlanner} />
 
             <div className="rounded-2xl border border-[#E8E1D4] bg-white p-4">
-              <div className="mb-3 font-['Cairo'] text-base font-extrabold text-[#2D6A4F]">✍️ مساحة الإنتاج</div>
+              <div className="mb-3 font-['Cairo'] text-base font-extrabold text-[#123c69]">✍️ مساحة الإنتاج</div>
               <textarea
                 value={answer}
                 onChange={(e) => setAnswer(e.target.value)}
                 placeholder="اكتب نصك السردي هنا..."
-                className="min-h-[200px] w-full resize-y rounded-[14px] border border-[#E8E1D4] bg-[#FCF9F2] p-4 font-['Amiri'] text-[1.2rem] leading-8 outline-none focus:border-[#40916C] focus:outline focus:outline-2 focus:outline-[#95D5B2]"
+                className="min-h-[200px] w-full resize-y rounded-[14px] border border-[#E8E1D4] bg-[#f5f9ff] p-4 font-['Amiri'] text-[1.2rem] leading-8 outline-none focus:border-[#1d4f8a] focus:outline focus:outline-2 focus:outline-[#93b7e7]"
               />
               <div className="mt-1.5 text-left font-['Cairo'] text-[0.76rem] text-[#5C6B63]">
                 الكلمات: {wordCount} · الأسطر: {lineCount}
@@ -3035,7 +3035,7 @@ function WritingPreview({ posts }: { posts: AdminSectionPost[] }) {
                   type="button"
                   onClick={() => speakArabic(answer)}
                   disabled={!answer.trim()}
-                  className="rounded-[11px] border border-[#95D5B2] bg-[#FCF9F2] px-4 py-2 font-['Cairo'] text-sm font-bold text-[#2D6A4F] hover:bg-[#D8F0E2] disabled:opacity-50"
+                  className="rounded-[11px] border border-[#93b7e7] bg-[#f5f9ff] px-4 py-2 font-['Cairo'] text-sm font-bold text-[#123c69] hover:bg-[#dbeafe] disabled:opacity-50"
                 >
                   🔊 استماع لنصّي
                 </button>
@@ -3051,11 +3051,11 @@ function WritingPreview({ posts }: { posts: AdminSectionPost[] }) {
                 <button
                   type="button"
                   onClick={submit}
-                  className="rounded-[11px] bg-[#358062] px-5 py-2.5 font-['Cairo'] text-sm font-bold text-white hover:bg-[#2D6A4F]"
+                  className="rounded-[11px] bg-[#0f2f57] px-5 py-2.5 font-['Cairo'] text-sm font-bold text-white hover:bg-[#123c69]"
                 >
                   إرسال إلى الأستاذ
                 </button>
-                {sent ? <span className="text-sm font-bold text-[#2D6A4F]">تم الإرسال، انتظر التصحيح.</span> : null}
+                {sent ? <span className="text-sm font-bold text-[#123c69]">تم الإرسال، انتظر التصحيح.</span> : null}
               </div>
             </div>
 
@@ -3276,7 +3276,6 @@ function DomainContent({
   const writingLessonOpen = activeComponent.key === "writing";
   const nakhlaLessonOpen =
     readingLessonOpen || writingLessonOpen || languageLessonOpen;
-  const hideComponentTabs = readingLessonOpen || languageLessonOpen;
   const componentPosts = posts.filter(
     (post) =>
       post.category === activeComponent.key ||
@@ -3290,14 +3289,18 @@ function DomainContent({
     ) : null}
     <Card
       id={domain.id}
-      className={`flex min-h-0 flex-1 flex-col overflow-hidden rounded-[22px] border shadow-sm ${
+      className={`flex min-h-0 flex-1 flex-col rounded-[22px] border shadow-sm ${
         nakhlaLessonOpen
-          ? "border-[#E8E1D4] bg-[#FBF7F0]"
+          ? "border-blue-100 bg-[#f8fbff]"
           : "border-white/70 bg-white/92"
       }`}
     >
       <CardContent className={`flex min-h-0 flex-1 flex-col gap-4 overflow-visible ${nakhlaLessonOpen ? "p-2 md:p-2" : "p-3 md:p-4"}`}>
-        <section className={`grid shrink-0 grid-cols-2 gap-2 sm:gap-3 ${hideComponentTabs ? "hidden" : "md:grid-cols-2 xl:grid-cols-4"}`}>
+        <section
+          className={`domain-component-tabs-bar grid shrink-0 grid-cols-2 gap-2 sm:gap-3 md:grid-cols-2 xl:grid-cols-4 ${
+            nakhlaLessonOpen ? "bg-[#f8fbff]/95" : "bg-white/95"
+          }`}
+        >
           {domain.components.map((component) => {
             const Icon = component.icon;
             return (
@@ -3322,7 +3325,7 @@ function DomainContent({
         <section
           className={`min-h-0 flex-1 overflow-auto text-right ${
             nakhlaLessonOpen
-              ? "rounded-[18px] bg-[#FBF7F0] p-0"
+              ? "rounded-[18px] bg-[#f8fbff] p-0"
               : "rounded-[18px] bg-white p-3 md:p-4"
           }`}
         >
@@ -3340,7 +3343,7 @@ function DomainContent({
                   onClick={() => setOpenedPostId(null)}
                   className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-bold shadow-sm ${
                     nakhlaLessonOpen
-                      ? "m-3 border-[#95D5B2] bg-white text-[#2D6A4F] hover:bg-[#EEF4EC]"
+                      ? "m-3 border-[#93b7e7] bg-white text-[#123c69] hover:bg-[#eaf2ff]"
                       : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
                   }`}
                 >

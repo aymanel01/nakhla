@@ -7,6 +7,11 @@ const dbPath = process.env.DB_PATH || path.resolve('teaching-app.db')
 const password = process.env.STUDENT_PASSWORD || '12345678'
 
 const students = [
+  { fullName: 'Walid Settih', email: 'settihwalid724@gmail.com' },
+  { fullName: 'Walid Settih', email: 'walidsettih14@gmail.com' },
+  { fullName: 'asma', email: 'asmaalaoui51@gmail.com' },
+  { fullName: 'سهيل ديدي عمر', email: 'itachididiomar@gmail.com' },
+  { fullName: 'سهيل ديدي عمر', email: 'souhaildidiomar123@gmail.com' },
   { fullName: 'Ismaili', email: 'ismaili@nakhla.com' },
   { fullName: 'Bassma', email: 'bassma@nakhla.com' },
   { fullName: 'Khadija', email: 'khadija@nakhla.com' },

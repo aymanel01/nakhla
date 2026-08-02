@@ -15,7 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { User as UserIcon, LogOut, Camera, Save, Search, Radio, Home, Sparkles, Users, MessageCircle, FileText, Palette, HelpCircle, Mail, Phone, Bell, X } from 'lucide-react'
+import { User as UserIcon, LogOut, Camera, Save, Search, Radio, Home, Sparkles, BookText, Users, MessageCircle, FileText, Palette, HelpCircle, Mail, Phone, Bell, X } from 'lucide-react'
 import { fuzzyMatchScore, rankFuzzySearch } from '@/lib/fuzzy-search'
 interface AuthContextType {
   user: User | null
@@ -115,6 +115,9 @@ function getNotificationFromEvent(type: string, data: any, user: User | null): O
   if (type === 'registration:requested' && user?.role === 'admin') {
     return { title: 'طلب تسجيل جديد', message: `${actor} يطلب إنشاء حساب وينتظر الموافقة.`, kind: 'admin' }
   }
+  if (type === 'password-reset:requested' && user?.role === 'admin') {
+    return { title: 'طلب استعادة كلمة المرور', message: `${actor} نسي كلمة المرور وينتظر مساعدتك.`, kind: 'admin' }
+  }
   if (type === 'admin-content:created') {
     return { title: 'محتوى جديد من الأستاذ', message: 'تمت إضافة محتوى جديد في المجالات.', kind: 'admin' }
   }
@@ -192,10 +195,17 @@ function RootComponent() {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [profileOpen, setProfileOpen] = useState(false)
+  const [profileTab, setProfileTab] = useState<'profile' | 'email' | 'password'>('profile')
   const [profileName, setProfileName] = useState('')
   const [profileFile, setProfileFile] = useState<File | null>(null)
   const [profileSaving, setProfileSaving] = useState(false)
   const [profileError, setProfileError] = useState('')
+  const [profileSuccess, setProfileSuccess] = useState('')
+  const [profileEmail, setProfileEmail] = useState('')
+  const [emailPassword, setEmailPassword] = useState('')
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [searchValue, setSearchValue] = useState('')
   const [searchFeedback, setSearchFeedback] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
@@ -269,9 +279,16 @@ function RootComponent() {
   }
 
   const openProfile = () => {
+    setProfileTab('profile')
     setProfileName(user?.fullName || user?.email?.split('@')[0] || '')
+    setProfileEmail(user?.email || '')
     setProfileFile(null)
+    setEmailPassword('')
+    setCurrentPassword('')
+    setNewPassword('')
+    setConfirmPassword('')
     setProfileError('')
+    setProfileSuccess('')
     setProfileOpen(true)
   }
 
@@ -282,6 +299,7 @@ function RootComponent() {
     }
     setProfileSaving(true)
     setProfileError('')
+    setProfileSuccess('')
     try {
       let profilePhotoUrl = user?.profilePhotoUrl ?? null
       if (profileFile) {
@@ -291,9 +309,61 @@ function RootComponent() {
         profilePhotoUrl = uploaded.file.fileUrl
       }
       await updateProfile({ fullName: profileName.trim(), profilePhotoUrl })
-      setProfileOpen(false)
+      setProfileSuccess('تم حفظ الملف الشخصي')
     } catch (err) {
       setProfileError(err instanceof Error ? err.message : 'تعذر تعديل الملف الشخصي')
+    } finally {
+      setProfileSaving(false)
+    }
+  }
+
+  const saveEmail = async () => {
+    if (!profileEmail.trim() || !emailPassword) {
+      setProfileError('أدخل البريد الجديد وكلمة المرور الحالية')
+      return
+    }
+    setProfileSaving(true)
+    setProfileError('')
+    setProfileSuccess('')
+    try {
+      const { user: updatedUser } = await api.patch<{ user: User }>('/auth/email', {
+        currentPassword: emailPassword,
+        newEmail: profileEmail.trim(),
+      })
+      setUser(updatedUser)
+      setEmailPassword('')
+      setProfileSuccess('تم تحديث البريد الإلكتروني')
+    } catch (err) {
+      setProfileError(err instanceof Error ? err.message : 'تعذر تحديث البريد الإلكتروني')
+    } finally {
+      setProfileSaving(false)
+    }
+  }
+
+  const savePassword = async () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setProfileError('أكمل جميع حقول كلمة المرور')
+      return
+    }
+    if (newPassword.length < 8) {
+      setProfileError('كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل')
+      return
+    }
+    if (newPassword !== confirmPassword) {
+      setProfileError('تأكيد كلمة المرور غير مطابق')
+      return
+    }
+    setProfileSaving(true)
+    setProfileError('')
+    setProfileSuccess('')
+    try {
+      await api.patch('/auth/password', { currentPassword, newPassword })
+      setCurrentPassword('')
+      setNewPassword('')
+      setConfirmPassword('')
+      setProfileSuccess('تم تحديث كلمة المرور. ستحتاج لتسجيل الدخول مجدداً على الأجهزة الأخرى.')
+    } catch (err) {
+      setProfileError(err instanceof Error ? err.message : 'تعذر تحديث كلمة المرور')
     } finally {
       setProfileSaving(false)
     }
@@ -347,7 +417,7 @@ function RootComponent() {
         keywords: ['الظاهرة اللغوية', 'لغوية', 'قواعد', 'language', 'نحو', 'بلاغة'],
         to: '/important-content',
         hash: 'social-economic--language',
-        icon: Sparkles,
+        icon: BookText,
       },
       {
         label: 'الإنتاج الكتابي',
@@ -703,33 +773,98 @@ function RootComponent() {
           <Dialog open={profileOpen} onOpenChange={setProfileOpen}>
             <DialogContent dir="rtl" className="sm:max-w-md">
               <DialogHeader>
-                <DialogTitle>تعديل الملف الشخصي</DialogTitle>
-                <DialogDescription>يمكنك تغيير الاسم الكامل وصورة الحساب.</DialogDescription>
+                <DialogTitle>إعدادات الحساب</DialogTitle>
+                <DialogDescription>عدّل اسمك، بريدك الإلكتروني، أو كلمة المرور.</DialogDescription>
               </DialogHeader>
+              <div className="flex flex-wrap gap-2">
+                {([
+                  ['profile', 'الملف الشخصي'],
+                  ['email', 'البريد الإلكتروني'],
+                  ['password', 'كلمة المرور'],
+                ] as const).map(([value, label]) => (
+                  <Button
+                    key={value}
+                    type="button"
+                    size="sm"
+                    variant={profileTab === value ? 'default' : 'outline'}
+                    onClick={() => {
+                      setProfileTab(value)
+                      setProfileError('')
+                      setProfileSuccess('')
+                    }}
+                  >
+                    {label}
+                  </Button>
+                ))}
+              </div>
               <div className="space-y-4 py-2">
                 {profileError && <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{profileError}</div>}
-                <div className="flex flex-col items-center gap-3">
-                  <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-primary/10 text-2xl font-bold text-primary ring-4 ring-primary/10">
-                    {profileFile ? (
-                      <img src={URL.createObjectURL(profileFile)} alt="profile preview" className="h-full w-full object-cover" />
-                    ) : user.profilePhotoUrl ? (
-                      <img src={user.profilePhotoUrl} alt={user.fullName} className="h-full w-full object-cover" />
-                    ) : (
-                      (user.fullName || user.email).slice(0, 1).toUpperCase()
-                    )}
-                  </div>
-                  <input ref={profileFileRef} type="file" accept="image/*" className="hidden" onChange={(e) => setProfileFile(e.target.files?.[0] ?? null)} />
-                  <Button type="button" variant="outline" onClick={() => profileFileRef.current?.click()} className="gap-2">
-                    <Camera className="h-4 w-4" /> اختيار صورة
-                  </Button>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="profileName">الاسم الكامل</Label>
-                  <Input id="profileName" value={profileName} onChange={(e) => setProfileName(e.target.value)} placeholder="الاسم الكامل" />
-                </div>
+                {profileSuccess && <div className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800">{profileSuccess}</div>}
+
+                {profileTab === 'profile' ? (
+                  <>
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-primary/10 text-2xl font-bold text-primary ring-4 ring-primary/10">
+                        {profileFile ? (
+                          <img src={URL.createObjectURL(profileFile)} alt="profile preview" className="h-full w-full object-cover" />
+                        ) : user.profilePhotoUrl ? (
+                          <img src={user.profilePhotoUrl} alt={user.fullName} className="h-full w-full object-cover" />
+                        ) : (
+                          (user.fullName || user.email).slice(0, 1).toUpperCase()
+                        )}
+                      </div>
+                      <input ref={profileFileRef} type="file" accept="image/*" className="hidden" onChange={(e) => setProfileFile(e.target.files?.[0] ?? null)} />
+                      <Button type="button" variant="outline" onClick={() => profileFileRef.current?.click()} className="gap-2">
+                        <Camera className="h-4 w-4" /> اختيار صورة
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="profileName">الاسم الكامل</Label>
+                      <Input id="profileName" value={profileName} onChange={(e) => setProfileName(e.target.value)} placeholder="الاسم الكامل" />
+                    </div>
+                  </>
+                ) : null}
+
+                {profileTab === 'email' ? (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="profileEmail">البريد الإلكتروني الجديد</Label>
+                      <Input id="profileEmail" type="email" value={profileEmail} onChange={(e) => setProfileEmail(e.target.value)} dir="ltr" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="emailPassword">كلمة المرور الحالية</Label>
+                      <Input id="emailPassword" type="password" value={emailPassword} onChange={(e) => setEmailPassword(e.target.value)} dir="ltr" />
+                    </div>
+                  </>
+                ) : null}
+
+                {profileTab === 'password' ? (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="currentPassword">كلمة المرور الحالية</Label>
+                      <Input id="currentPassword" type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} dir="ltr" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="newPassword">كلمة المرور الجديدة</Label>
+                      <Input id="newPassword" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} dir="ltr" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="confirmPassword">تأكيد كلمة المرور</Label>
+                      <Input id="confirmPassword" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} dir="ltr" />
+                    </div>
+                  </>
+                ) : null}
               </div>
               <DialogFooter>
-                <Button onClick={saveProfile} disabled={profileSaving} className="gap-2">
+                <Button
+                  onClick={() => {
+                    if (profileTab === 'profile') void saveProfile()
+                    else if (profileTab === 'email') void saveEmail()
+                    else void savePassword()
+                  }}
+                  disabled={profileSaving}
+                  className="gap-2"
+                >
                   {profileSaving ? <Save className="h-4 w-4 animate-pulse" /> : <Save className="h-4 w-4" />}
                   حفظ التعديلات
                 </Button>
