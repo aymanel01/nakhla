@@ -23,6 +23,7 @@ import {
   computeReadAlongProgress,
   progressToActiveWordCount,
 } from "@/lib/read-along-sync";
+import { AuthenticatedFileFrame } from "@/components/media-viewer";
 import { ThemedActionButton } from "@/components/section-banner";
 
 export const Route = createFileRoute("/_authenticated/important-content")({
@@ -765,57 +766,28 @@ function GlossaryTerm({
   explanation: string;
 }) {
   const [open, setOpen] = useState(false);
-  const termRef = useRef<HTMLButtonElement | null>(null);
-
-  useEffect(() => {
-    if (!open) return;
-
-    const handleClickOutside = (event: MouseEvent) => {
-      if (termRef.current && !termRef.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    };
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setOpen(false);
-      }
-    };
-
-    // Delay attaching listeners to prevent the opening click from immediately closing
-    const timeoutId = window.setTimeout(() => {
-      document.addEventListener("click", handleClickOutside);
-      document.addEventListener("keydown", handleEscape);
-    }, 50);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-      document.removeEventListener("click", handleClickOutside);
-      document.removeEventListener("keydown", handleEscape);
-    };
-  }, [open]);
 
   return (
-    <span className="relative inline-flex">
-      <button
-        ref={termRef}
-        type="button"
-        aria-expanded={open}
-        onClick={(event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          setOpen((value) => !value);
-        }}
-        onMouseEnter={() => setOpen(true)}
-        className={`mx-0.5 inline cursor-pointer rounded-[3px] border-b-2 border-dotted border-[#1d4f8a] px-0.5 font-bold text-[#123c69] transition hover:bg-[#dbeafe] focus:outline-none focus:ring-2 focus:ring-[#93b7e7] ${open ? "bg-[#dbeafe]" : ""}`}
+    <span
+      className="relative inline-flex align-baseline"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+      onFocus={() => setOpen(true)}
+      onBlur={() => setOpen(false)}
+    >
+      <span
+        tabIndex={0}
+        role="button"
+        aria-label={`${term}: ${explanation}`}
+        className={`mx-0.5 inline cursor-help rounded-[3px] border-b-2 border-dotted border-[#2D6A4F] px-0.5 font-bold text-[#1B4332] transition-colors hover:bg-[#D8F0E2] focus:outline-none focus:ring-2 focus:ring-[#95D5B2] ${open ? "bg-[#D8F0E2]" : "bg-[#EEF4EC]/80"}`}
       >
         {term}
-      </button>
+      </span>
       {open ? (
-        <span className="absolute right-0 top-full z-30 mt-2 w-max max-w-[min(290px,calc(100vw-2rem))] rounded-[14px] bg-[#0b2447] px-4 py-3 text-[0.95rem] leading-7 text-white shadow-[0_18px_40px_-10px_rgba(0,0,0,.4)] sm:bottom-full sm:top-auto sm:mb-2 sm:mt-0">
-          <span className="mb-1 block font-['Cairo'] text-[1.05rem] font-extrabold text-[#93b7e7]">{term}</span>
+        <span className="pointer-events-none absolute right-0 top-full z-30 mt-2 w-max max-w-[min(290px,calc(100vw-2rem))] rounded-[14px] bg-[#16352A] px-4 py-3 text-[0.95rem] leading-7 text-white shadow-[0_18px_40px_-10px_rgba(0,0,0,.4)] sm:bottom-full sm:top-auto sm:mb-2 sm:mt-0">
+          <span className="mb-1 block font-['Cairo'] text-[1.05rem] font-extrabold text-[#95D5B2]">{term}</span>
           {explanation}
-          <span className="absolute right-6 top-[-7px] border-x-[7px] border-b-[7px] border-x-transparent border-b-[#0b2447] sm:bottom-[-7px] sm:top-auto sm:border-b-0 sm:border-t-[7px] sm:border-t-[#0b2447]" />
+          <span className="absolute right-6 top-[-7px] border-x-[7px] border-b-[7px] border-x-transparent border-b-[#16352A] sm:bottom-[-7px] sm:top-auto sm:border-b-0 sm:border-t-[7px] sm:border-t-[#16352A]" />
         </span>
       ) : null}
     </span>
@@ -840,7 +812,7 @@ function GlossaryPanel({
           <span className="h-[22px] w-1.5 rounded bg-[#C0813B]" />
         </h4>
         <p className="font-['Cairo'] text-sm text-[#5C6B63]">
-          الكلمات نفسها التي وردت في النص، مجموعة للمراجعة والتثبيت. انقر على الكلمات الملوّنة في النص لتظهر معانيها.
+          الكلمات نفسها التي وردت في النص، مجموعة للمراجعة والتثبيت. مرّر المؤشر فوق الكلمات الملوّنة في النص لتظهر معانيها.
         </p>
         <div className="grid gap-2.5">
           {items.map((item) => (
@@ -863,7 +835,7 @@ function GlossaryPanel({
       <div className="mb-4 text-right">
         <div className="text-base font-bold text-amber-800">{label}</div>
         <div className="text-xs text-amber-700/80">
-          اضغط على الكلمة المظللة ليظهر شرحها مباشرة.
+          مرّر المؤشر فوق الكلمة الملوّنة ليظهر شرحها مباشرة.
         </div>
       </div>
       <div className="grid gap-3 md:grid-cols-2">
@@ -929,10 +901,11 @@ function renderMedia(post: AdminSectionPost | null, className?: string) {
     fileName.toLowerCase().endsWith(".pdf")
   ) {
     return (
-      <iframe
-        src={post.fileUrl}
+      <AuthenticatedFileFrame
+        fileUrl={post.fileUrl}
         title={fileName}
-        className={`min-h-[170px] w-full rounded-[22px] border bg-white ${className || ""}`}
+        className={className}
+        minHeight="170px"
       />
     );
   }
@@ -2012,7 +1985,7 @@ function LessonLikeLayout({
               )}
             </div>
             <div className="mt-2 rounded-xl bg-blue-50 px-3 py-2 text-xs font-semibold leading-6 text-blue-900">
-              ● انقر على الكلمات الملوّنة إن أضاف المشرف شروحاتها في المعجم.
+              ● مرّر المؤشر فوق الكلمات الملوّنة إن أضاف المشرف شروحاتها في المعجم.
             </div>
           </div>
         </section>

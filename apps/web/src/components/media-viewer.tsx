@@ -226,6 +226,90 @@ function AudioPlayerPanel({
   )
 }
 
+function isProtectedFileUrl(fileUrl: string) {
+  return fileUrl.startsWith('/api/files/')
+}
+
+/** Auth-protected files must be fetched with cookies, then shown via blob URL. */
+export function AuthenticatedFileFrame({
+  fileUrl,
+  title,
+  className,
+  minHeight = '80vh',
+}: {
+  fileUrl: string
+  title?: string
+  className?: string
+  minHeight?: string
+}) {
+  const [blobUrl, setBlobUrl] = useState<string | null>(null)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (!isProtectedFileUrl(fileUrl)) {
+      setBlobUrl(fileUrl)
+      return
+    }
+
+    let alive = true
+    let objectUrl: string | null = null
+
+    fetch(fileUrl, { credentials: 'include' })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(response.status === 404 ? 'الملف غير موجود' : 'تعذر تحميل الملف')
+        }
+        const blob = await response.blob()
+        objectUrl = URL.createObjectURL(blob)
+        if (alive) {
+          setBlobUrl(objectUrl)
+          setError('')
+        }
+      })
+      .catch((err) => {
+        if (alive) {
+          setBlobUrl(null)
+          setError(err instanceof Error ? err.message : 'تعذر تحميل الملف')
+        }
+      })
+
+    return () => {
+      alive = false
+      if (objectUrl) URL.revokeObjectURL(objectUrl)
+    }
+  }, [fileUrl])
+
+  if (error) {
+    return (
+      <div className={cn('flex min-h-[170px] items-center justify-center rounded-2xl border border-dashed bg-muted/30 p-6 text-center', className)}>
+        <div>
+          <div className="text-sm font-semibold text-destructive">{error}</div>
+          <a href={fileUrl} target="_blank" rel="noreferrer" className="mt-2 inline-block text-sm text-primary underline-offset-4 hover:underline">
+            فتح الملف في نافذة جديدة
+          </a>
+        </div>
+      </div>
+    )
+  }
+
+  if (!blobUrl) {
+    return (
+      <div
+        className={cn('flex items-center justify-center rounded-2xl border bg-white text-sm text-muted-foreground', className)}
+        style={{ minHeight }}
+      >
+        جاري تحميل الملف...
+      </div>
+    )
+  }
+
+  return (
+    <div className={cn('overflow-hidden rounded-2xl border bg-white shadow-sm', className)}>
+      <iframe src={blobUrl} title={title || 'document'} className="w-full border-0" style={{ minHeight }} />
+    </div>
+  )
+}
+
 /**
  * Clean, YouTube-style media viewer used by both the digital library and the
  * student-creations sections. The media sits in a single framed surface with no
@@ -291,13 +375,13 @@ export function MediaViewer({
     )
   }
 
-  // PDF and plain-text both render natively in an iframe (the API now sends the
-  // correct Content-Type), so they preview inline like a YouTube-style frame.
   if (kind === 'pdf' || kind === 'text') {
     return (
-      <div className={cn('overflow-hidden rounded-2xl border bg-white shadow-sm', className)}>
-        <iframe src={fileUrl} title={fileName || title || 'document'} className="h-[80vh] w-full border-0" />
-      </div>
+      <AuthenticatedFileFrame
+        fileUrl={fileUrl}
+        title={fileName || title || 'document'}
+        className={className}
+      />
     )
   }
 
