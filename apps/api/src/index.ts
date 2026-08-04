@@ -144,6 +144,26 @@ api.get('/files/:name', authMiddleware, async (c) => {
 app.route('/api', api)
 
 if (isProduction) {
+  const noCache = {
+    'Cache-Control': 'no-cache, no-store, must-revalidate',
+    Pragma: 'no-cache',
+  }
+
+  app.get('/sw.js', async (c) => {
+    const content = await fs.readFile(path.join(webDist, 'sw.js'))
+    return c.body(content, 200, { 'Content-Type': 'application/javascript', ...noCache })
+  })
+
+  app.get('/registerSW.js', async (c) => {
+    const content = await fs.readFile(path.join(webDist, 'registerSW.js'))
+    return c.body(content, 200, { 'Content-Type': 'application/javascript', ...noCache })
+  })
+
+  app.get('/', async (c) => {
+    const content = await fs.readFile(path.join(webDist, 'index.html'))
+    return c.body(content, 200, { 'Content-Type': 'text/html; charset=utf-8', ...noCache })
+  })
+
   app.use('/assets/*', serveStatic({ root: webDist }))
   app.use('/important-content/*', serveStatic({ root: webDist }))
   app.use('/quiz-videos/*', serveStatic({ root: webDist }))

@@ -4,7 +4,7 @@ import type { Lecture } from '@teaching-app/shared'
 import { api } from '@/lib/api'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { BookOpen, CheckCircle2, Download, Headphones, Loader2, Mic, PanelsTopLeft, PlayCircle, Star } from 'lucide-react'
+import { BookMarked, BookOpen, CheckCircle2, Download, Loader2, Mic, PlayCircle, Star } from 'lucide-react'
 import { SectionBanner, ThemedActionButton, sectionThemeMap } from '@/components/section-banner'
 import { MediaCard, MediaViewer } from '@/components/media-viewer'
 
@@ -19,17 +19,18 @@ export const Route = createFileRoute('/_authenticated/lectures')({
 
 const libraryTypes = [
   { type: 'قصص', title: 'قصص', icon: BookOpen },
-  { type: 'قصص مرقمنة', title: 'قصص مرقمنة', icon: Headphones },
-  { type: 'قصص مصورة', title: 'قصص مصورة', icon: PanelsTopLeft },
   { type: 'بودكاست', title: 'بودكاست', icon: Mic },
   { type: 'لغتي', title: 'لغتي', icon: Star },
-  { type: 'الدرس المفضل', title: 'الدرس المفضل', icon: Star },
+  { type: 'بنك الكلمات', title: 'بنك الكلمات', icon: BookMarked },
 ] as const
 
 type LibraryType = typeof libraryTypes[number]['type']
 
 function getLibraryType(lecture: Lecture): LibraryType {
-  return (libraryTypes.find((item) => item.type === lecture.keyPoints)?.type || 'قصص') as LibraryType
+  const keyPoints = lecture.keyPoints
+  if (keyPoints === 'قصص مرقمنة' || keyPoints === 'قصص مصورة') return 'قصص'
+  if (keyPoints === 'الدرس المفضل') return 'بنك الكلمات'
+  return (libraryTypes.find((item) => item.type === keyPoints)?.type || 'قصص') as LibraryType
 }
 
 function LecturesPage() {
@@ -116,10 +117,10 @@ function LecturesPage() {
   return (
     <div className="w-full space-y-4" dir="rtl">
       <SectionBanner imageSrc={sectionThemeMap.lectures.image} alt="المكتبة الرقمية" />
-      <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-6">
+      <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {libraryTypes.map(({ type, title, icon: Icon }) => (
-          <ThemedActionButton key={type} type="button" theme="lectures" active={selectedType === type} className="w-full justify-start p-4 text-right" onClick={() => setSelectedType(type)}>
-            <Icon className="h-5 w-5" />
+          <ThemedActionButton key={type} type="button" theme="lectures" active={selectedType === type} className="flex w-full items-center justify-center gap-2 p-4 text-center sm:justify-start sm:text-right" onClick={() => setSelectedType(type)}>
+            <Icon className="h-5 w-5 shrink-0" />
             {title}
           </ThemedActionButton>
         ))}
@@ -134,7 +135,7 @@ function LecturesPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,280px),1fr))] gap-6">
           {filteredLectures.map((lecture) => {
             const Icon = libraryTypes.find((item) => item.type === getLibraryType(lecture))?.icon
             return (

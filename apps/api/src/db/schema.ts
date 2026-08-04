@@ -44,6 +44,19 @@ function runAdminSectionMigration(db: Database.Database): void {
   }
 }
 
+function runDigitalLibraryTypeMigration(db: Database.Database): void {
+  if (!tableExists(db, 'lectures')) return
+  const done = db
+    .prepare("SELECT 1 AS ok FROM schema_migrations WHERE name = 'digital_library_type_merge'")
+    .get() as { ok: number } | undefined
+  if (done) return
+  db.exec(`
+    UPDATE lectures SET key_points = 'قصص' WHERE key_points IN ('قصص مرقمنة', 'قصص مصورة');
+    UPDATE lectures SET key_points = 'بنك الكلمات' WHERE key_points = 'الدرس المفضل';
+  `)
+  db.prepare("INSERT INTO schema_migrations (name) VALUES ('digital_library_type_merge')").run()
+}
+
 function runExerciseDomainMigration(db: Database.Database): void {
   if (!tableExists(db, 'exercises')) return
   try {
@@ -506,6 +519,7 @@ export function initializeDatabase(db: Database.Database): void {
 
   db.exec('INSERT OR IGNORE INTO chat_settings (id, users_can_send) VALUES (1, 0);')
   runAdminSectionMigration(db)
+  runDigitalLibraryTypeMigration(db)
   runExerciseDomainMigration(db)
   seedDefaultQuizStageConfigs(db)
 

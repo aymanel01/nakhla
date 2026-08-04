@@ -75,7 +75,7 @@ function AdminPage() {
     { value: 'helper', label: 'مرشد نخلة', icon: Sparkles, description: 'تعديل نصوص المساعدة وموضع المرشد على الشاشة' },
     { value: 'domains', label: 'المجالات', icon: BookOpenCheck, description: 'إضافة محتوى للمجالات' },
     { value: 'creations', label: 'إبداعات التلاميذ', icon: Palette, description: 'بودكاست، قصص مصورة، قصص قصيرة، وصورة و تعليق' },
-    { value: 'lectures', label: 'المكتبة الرقمية', icon: PlayCircle, description: 'قصص، قصص مرقمنة، قصص مصورة، بودكاست، لغتي، والدرس المفضل' },
+    { value: 'lectures', label: 'المكتبة الرقمية', icon: PlayCircle, description: 'قصص، بودكاست، لغتي، وبنك الكلمات' },
     { value: 'exercises', label: 'تقويم الوحدة', icon: FileText, description: 'إدارة تقويم الوحدة والحقول' },
     { value: 'homework', label: 'مشاريع المجموعات', icon: ClipboardList, description: 'مشاريع المجموعات والتسليمات' },
     { value: 'mapQuiz', label: 'أبواب القصر', icon: ChevronLeft, description: 'أسئلة الأبواب وأسئلة المسار' },
@@ -1486,12 +1486,15 @@ function GroupsAdmin() {
 }
 
 
-const digitalLibraryTypes = ['قصص', 'قصص مرقمنة', 'قصص مصورة', 'بودكاست', 'لغتي', 'الدرس المفضل'] as const
+const digitalLibraryTypes = ['قصص', 'بودكاست', 'لغتي', 'بنك الكلمات'] as const
 
 type DigitalLibraryType = typeof digitalLibraryTypes[number]
 
 function getDigitalLibraryType(lecture: Lecture): DigitalLibraryType {
-  return (digitalLibraryTypes.find((type) => type === lecture.keyPoints) || 'قصص') as DigitalLibraryType
+  const keyPoints = lecture.keyPoints
+  if (keyPoints === 'قصص مرقمنة' || keyPoints === 'قصص مصورة') return 'قصص'
+  if (keyPoints === 'الدرس المفضل') return 'بنك الكلمات'
+  return (digitalLibraryTypes.find((type) => type === keyPoints) || 'قصص') as DigitalLibraryType
 }
 
 function LecturesAdmin() {
@@ -1620,13 +1623,13 @@ function LecturesAdmin() {
         <CardHeader className="text-right">
           <CardTitle>المكتبة الرقمية</CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <CardContent className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {digitalLibraryTypes.map((type) => (
             <Button
               key={type}
               type="button"
               variant={activeType === type ? 'default' : 'outline'}
-              className="h-auto justify-between rounded-2xl p-5 text-right"
+              className="h-auto w-full justify-between rounded-2xl p-5 text-right"
               onClick={() => {
                 setActiveType(type)
                 setCreateForm({ title: '', description: '', youtubeUrl: '', keyPoints: type, order: 0 })
