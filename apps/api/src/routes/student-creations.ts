@@ -6,7 +6,7 @@ import type { CreateStudentCreationRequest, StudentCreation, StudentCreationType
 
 const studentCreations = new Hono()
 
-const validTypes = new Set<StudentCreationType>(['بودكاست', 'قصص مصورة', 'قصص قصيرة', 'صورة و تعليق'])
+const validTypes = new Set<StudentCreationType>(['بودكاست', 'قصص مصورة', 'قصص قصيرة', 'صورة و تعليق', 'الشعر'])
 
 interface DbStudentCreation {
   id: number

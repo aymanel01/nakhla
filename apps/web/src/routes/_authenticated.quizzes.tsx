@@ -994,7 +994,7 @@ function QuizzesPage() {
                 <button type="button" onClick={() => setRankingOpen(false)} className="rounded-full bg-amber-950/10 px-3 py-1.5 text-xs font-bold text-amber-950 hover:bg-amber-950/18">إغلاق</button>
                 <div className="text-right">
                   <div className="text-xl font-black">ترتيب نقاط المكافآت</div>
-                  <div className="text-[12px] text-amber-950/70">اضغط على زر الترتيب باش يطلع rank ديالك</div>
+                  <div className="text-[12px] text-amber-950/70">اضغط على زر الترتيب ليظهر ترتيبك</div>
                 </div>
                 <Trophy className="h-7 w-7 text-amber-700" />
               </div>
@@ -1020,7 +1020,7 @@ function QuizzesPage() {
             <div className="max-h-[46vh] overflow-y-auto px-4 pb-4 pt-3">
               <div className="grid gap-3 md:grid-cols-2">
                 {leaderboard.length === 0 ? (
-                  <div className="col-span-full rounded-2xl bg-white/45 p-6 text-center text-sm font-semibold text-amber-950/70">مازال ما كاين حتى ترتيب.</div>
+                  <div className="col-span-full rounded-2xl bg-white/45 p-6 text-center text-sm font-semibold text-amber-950/70">لا يوجد ترتيب بعد.</div>
                 ) : leaderboard.map((entry) => (
                   <div key={entry.id} className="ranking-row rounded-2xl px-4 py-3 shadow-sm">
                     <div className="flex items-center justify-between gap-3 text-amber-950">

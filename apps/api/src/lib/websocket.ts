@@ -12,6 +12,7 @@ export type WSEventType =
   | 'exercise:corrected'
   | 'exercise:submitted'
   | 'exercise:submission-deleted'
+  | 'tarkib:submitted'
   | 'quiz:created'
   | 'quiz:updated'
   | 'quiz:deleted'

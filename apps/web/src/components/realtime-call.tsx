@@ -484,14 +484,14 @@ export function useRealtimeCall({ room, userId, userName, title, isAdmin = false
 
         if (message.type === 'call:mute') {
           setLocalAudioEnabled(false)
-          setStatus('قام المشرف بكتم الميكروفون ديالك')
+          setStatus('قام المشرف بكتم الميكروفون لديك')
           return
         }
 
         if (message.type === 'call:unmute' || message.type === 'call:grant') {
           setLocalAudioEnabled(true)
           setHandRaised(false)
-          setStatus(message.type === 'call:grant' ? 'قبل المشرف طلبك وفتح لك الميكروفون' : 'قام المشرف بإعادة فتح الميكروفون ديالك')
+          setStatus(message.type === 'call:grant' ? 'قبل المشرف طلبك وفتح لك الميكروفون' : 'قام المشرف بإعادة فتح الميكروفون لديك')
           return
         }
 

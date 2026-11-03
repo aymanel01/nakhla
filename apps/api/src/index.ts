@@ -16,6 +16,7 @@ import { uploads, uploadDir } from './routes/uploads.js'
 import { progress } from './routes/progress.js'
 import { adminContent } from './routes/admin-content.js'
 import { studentCreations } from './routes/student-creations.js'
+import { tarkib } from './routes/tarkib.js'
 import { search } from './routes/search.js'
 import { authMiddleware } from './middleware/auth.js'
 import { wsManager } from './lib/websocket.js'
@@ -77,6 +78,7 @@ api.route('/uploads', uploads)
 api.route('/progress', progress)
 api.route('/admin/content', adminContent)
 api.route('/student-creations', studentCreations)
+api.route('/tarkib', tarkib)
 api.route('/search', search)
 
 const MIME_TYPES: Record<string, string> = {

@@ -647,6 +647,20 @@ body::before {
     gap: .5rem;
   }
 
+  /* Keep tutorial video form stacked so long Arabic labels don't collide. */
+  .admin-compact-shell .tutorial-videos-form {
+    max-width: none;
+  }
+
+  .admin-compact-shell .tutorial-videos-field {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: .5rem !important;
+    max-width: none !important;
+    grid-template-columns: none !important;
+  }
+
   .admin-compact-shell .space-y-2:has(> label):has(> textarea) {
     max-width: 650px;
   }
@@ -1308,7 +1322,10 @@ body::before {
   body.admin-route-active .platform-main-nav [role='tab'] {
     position: relative;
     isolation: isolate;
-    overflow: hidden;
+    overflow: visible;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    max-width: none !important;
     border-radius: 15px !important;
     border: 1px solid rgba(15, 118, 110, .12) !important;
     background: rgba(255,255,255,.72) !important;

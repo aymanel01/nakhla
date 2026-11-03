@@ -112,7 +112,7 @@ export function PlatformHelper({ accent = '#0f766e' }: PlatformHelperProps) {
         if (peekOnly) expand()
         else setOpen((prev) => !prev)
       }}
-      className="platform-helper-character pointer-events-auto relative flex h-[124px] w-[72px] shrink-0 items-end justify-center sm:h-[140px] sm:w-[80px]"
+      className="platform-helper-character pointer-events-auto relative flex h-[190px] w-[110px] shrink-0 items-end justify-center sm:h-[215px] sm:w-[125px]"
       aria-label={open && !peekOnly ? 'طي نصيحة المرشد' : 'فتح مرشد نخلة'}
     >
       <span className="platform-helper-float pointer-events-none flex items-end justify-center">
@@ -124,7 +124,7 @@ export function PlatformHelper({ accent = '#0f766e' }: PlatformHelperProps) {
           onError={() => {
             if (imageSrc !== FALLBACK_HELPER_IMAGE) setImageSrc(FALLBACK_HELPER_IMAGE)
           }}
-          className={`platform-helper-image block h-[108px] w-[63px] max-w-none object-contain object-bottom sm:h-[124px] sm:w-[72px] ${characterPointsLeft ? 'scale-x-[-1]' : ''}`}
+          className={`platform-helper-image block h-[168px] w-[98px] max-w-none object-contain object-bottom sm:h-[190px] sm:w-[110px] ${characterPointsLeft ? 'scale-x-[-1]' : ''}`}
           draggable={false}
         />
       </span>

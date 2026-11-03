@@ -85,6 +85,10 @@ function getNotificationFromEvent(type: string, data: any, user: User | null): O
   if (type === 'exercise:submitted' && user?.role === 'admin') {
     return { title: 'جواب جديد في تقويم الوحدة', message: `${actor} أرسل جواب ${title ? `على: ${title}` : ''}`, kind: 'success' }
   }
+  if (type === 'tarkib:submitted' && user?.role === 'admin') {
+    const who = data?.displayName || actor
+    return { title: 'جواب تركيب جديد', message: `${who} أرسل جواب التركيب`, kind: 'success' }
+  }
   if (type === 'exercise:corrected' && data?.userId === user?.id) {
     return { title: 'وصل تصحيح جديد', message: title ? `تم تصحيح جوابك في: ${title}` : 'الأستاذ أرسل لك تصحيحاً جديداً', kind: 'success' }
   }
@@ -554,8 +558,10 @@ function RootComponent() {
                     <div className="flex h-7 w-20 items-center justify-center overflow-hidden bg-transparent px-0 transition duration-300 group-hover:-translate-y-0.5 group-hover:scale-105 sm:w-28">
                       <img src="/branding/university-fpd-logo.jpeg" alt="شعار الكلية" className="university-logo-clean h-full w-full object-contain" />
                     </div>
-                    <div className="text-right">
-                      <p className="text-[10px] font-black text-white sm:text-xs">الكلية متعددة التخصصات بالراشدية</p>
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-right">
+                      <p className="text-[10px] font-black text-white sm:text-xs">كلية اللغات والاداب والفنون بالرشيدية</p>
+                      <span className="hidden h-3 w-px bg-white/40 sm:inline-block" aria-hidden />
+                      <p className="text-[10px] font-black text-white/95 sm:text-xs">مختبر العلوم الإنسانية والرقمنة</p>
                     </div>
                   </Link>
 

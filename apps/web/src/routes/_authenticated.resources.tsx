@@ -4,7 +4,7 @@ import type { StudentCreation, StudentCreationType } from '@teaching-app/shared'
 import { api } from '@/lib/api'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { BookOpen, Download, Image, Loader2, Mic, Palette, PanelsTopLeft } from 'lucide-react'
+import { BookOpen, Download, Feather, Image, Loader2, Mic, Palette, PanelsTopLeft } from 'lucide-react'
 import { SectionBanner, ThemedActionButton, sectionThemeMap } from '@/components/section-banner'
 import { MediaCard, MediaViewer } from '@/components/media-viewer'
 
@@ -17,6 +17,7 @@ const creationTypes: { type: StudentCreationType; title: string; icon: typeof Pa
   { type: 'قصص مصورة', title: 'قصص مصورة', icon: PanelsTopLeft, description: 'قصص مرئية ورسومات متسلسلة.' },
   { type: 'قصص قصيرة', title: 'قصص قصيرة', icon: BookOpen, description: 'كتابات قصيرة وأعمال سردية.' },
   { type: 'صورة و تعليق', title: 'صورة و تعليق', icon: Image, description: 'صور مرفقة بتعليقات وأفكار.' },
+  { type: 'الشعر', title: 'الشعر', icon: Feather, description: 'قصائد وإبداعات شعرية من إنجاز التلاميذ.' },
 ]
 
 function formatCreationMeta(creation: StudentCreation) {
@@ -103,7 +104,7 @@ function StudentCreationsPage() {
   return (
     <div className="w-full space-y-4 pb-4" dir="rtl">
       <SectionBanner imageSrc={sectionThemeMap.resources.image} alt="إبداعات التلاميذ" />
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <section className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-5">
         {creationTypes.map(({ type, title, icon: Icon }) => (
           <ThemedActionButton key={type} type="button" theme="resources" active={selectedType === type} className="w-full justify-start p-4 text-right" onClick={() => setSelectedType(type)}>
             <Icon className="h-5 w-5" />

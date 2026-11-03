@@ -44,6 +44,45 @@ function runAdminSectionMigration(db: Database.Database): void {
   }
 }
 
+function runStudentCreationPoetryMigration(db: Database.Database): void {
+  if (!tableExists(db, 'student_creations')) return
+  const done = db
+    .prepare("SELECT 1 AS ok FROM schema_migrations WHERE name = 'student_creation_poetry'")
+    .get() as { ok: number } | undefined
+  if (done) return
+  try {
+    db.exec(`
+      PRAGMA foreign_keys=OFF;
+      DROP TABLE IF EXISTS student_creations_migration;
+      CREATE TABLE student_creations_migration (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        type TEXT NOT NULL CHECK(type IN ('بودكاست', 'قصص مصورة', 'قصص قصيرة', 'صورة و تعليق', 'الشعر')),
+        description TEXT,
+        file_url TEXT,
+        file_name TEXT,
+        file_type TEXT,
+        file_size INTEGER,
+        thumbnail_url TEXT,
+        creator_name TEXT,
+        section_name TEXT,
+        created_by INTEGER NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
+      );
+      INSERT INTO student_creations_migration (id, title, type, description, file_url, file_name, file_type, file_size, thumbnail_url, creator_name, section_name, created_by, created_at)
+      SELECT id, title, type, description, file_url, file_name, file_type, file_size, thumbnail_url, creator_name, section_name, created_by, created_at
+      FROM student_creations;
+      DROP TABLE student_creations;
+      ALTER TABLE student_creations_migration RENAME TO student_creations;
+      PRAGMA foreign_keys=ON;
+    `)
+    db.prepare("INSERT INTO schema_migrations (name) VALUES ('student_creation_poetry')").run()
+  } catch {
+    db.exec('DROP TABLE IF EXISTS student_creations_migration;')
+  }
+}
+
 function runDigitalLibraryTypeMigration(db: Database.Database): void {
   if (!tableExists(db, 'lectures')) return
   const done = db
@@ -358,10 +397,20 @@ export function initializeDatabase(db: Database.Database): void {
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
 
+    CREATE TABLE IF NOT EXISTS tarkib_submissions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      title TEXT NOT NULL DEFAULT 'التركيب',
+      display_name TEXT,
+      answer TEXT NOT NULL,
+      submitted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
     CREATE TABLE IF NOT EXISTS student_creations (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT NOT NULL,
-      type TEXT NOT NULL CHECK(type IN ('بودكاست', 'قصص مصورة', 'قصص قصيرة', 'صورة و تعليق')),
+      type TEXT NOT NULL CHECK(type IN ('بودكاست', 'قصص مصورة', 'قصص قصيرة', 'صورة و تعليق', 'الشعر')),
       description TEXT,
       file_url TEXT,
       file_name TEXT,
@@ -520,6 +569,7 @@ export function initializeDatabase(db: Database.Database): void {
   db.exec('INSERT OR IGNORE INTO chat_settings (id, users_can_send) VALUES (1, 0);')
   runAdminSectionMigration(db)
   runDigitalLibraryTypeMigration(db)
+  runStudentCreationPoetryMigration(db)
   runExerciseDomainMigration(db)
   seedDefaultQuizStageConfigs(db)
 
@@ -545,6 +595,8 @@ export function initializeDatabase(db: Database.Database): void {
     CREATE INDEX IF NOT EXISTS idx_admin_section_posts_section ON admin_section_posts(section);
     CREATE INDEX IF NOT EXISTS idx_admin_section_posts_created_at ON admin_section_posts(created_at);
     DROP INDEX IF EXISTS idx_admin_section_posts_unique_category;
+    CREATE INDEX IF NOT EXISTS idx_tarkib_submissions_user_id ON tarkib_submissions(user_id);
+    CREATE INDEX IF NOT EXISTS idx_tarkib_submissions_submitted_at ON tarkib_submissions(submitted_at);
     CREATE INDEX IF NOT EXISTS idx_email_verification_tokens_user_id ON email_verification_tokens(user_id);
     CREATE INDEX IF NOT EXISTS idx_student_creations_type ON student_creations(type);
     CREATE INDEX IF NOT EXISTS idx_student_creations_created_at ON student_creations(created_at);

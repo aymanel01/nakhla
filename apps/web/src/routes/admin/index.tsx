@@ -1,7 +1,7 @@
 import { createFileRoute, Navigate } from '@tanstack/react-router'
 import { useState, useEffect, type ReactNode } from 'react'
 import { useAuth } from '../__root'
-import type { Lecture, Exercise, ExerciseSubmission, Quiz, User, Group, ExerciseField, QuizQuestion, Homework, HomeworkSubmission, QuizDifficulty, StudentCreation, StudentCreationType, UnitEvaluationDomain, StudentFullProgress, AdminSectionPost, PasswordResetRequest } from '@teaching-app/shared'
+import type { Lecture, Exercise, ExerciseSubmission, Quiz, User, Group, ExerciseField, QuizQuestion, Homework, HomeworkSubmission, QuizDifficulty, StudentCreation, StudentCreationType, UnitEvaluationDomain, StudentFullProgress, AdminSectionPost, PasswordResetRequest, TarkibSubmission } from '@teaching-app/shared'
 import { api } from '@/lib/api'
 import { AdminSectionBoard, makeQuestion } from '@/components/admin-section-board'
 import { DomainCardsAdmin, type DomainCardConfig } from '@/components/domain-cards-admin'
@@ -22,7 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { PlayCircle, FileText, Users, Plus, Pencil, Trash2, Loader2, ClipboardList, Eye, BarChart3, ChevronLeft, Shield, UserPlus, Upload, Paperclip, Palette, BookOpenCheck, Mic, Image, PanelsTopLeft, Search, Download, GraduationCap, CheckCircle2, XCircle, Sparkles, KeyRound } from 'lucide-react'
+import { PlayCircle, FileText, Users, Plus, Pencil, Trash2, Loader2, ClipboardList, Eye, BarChart3, ChevronLeft, Shield, UserPlus, Upload, Paperclip, Palette, BookOpenCheck, Mic, Image, PanelsTopLeft, Feather, Search, Download, GraduationCap, CheckCircle2, XCircle, Sparkles, KeyRound } from 'lucide-react'
 import { PlatformHelperAdmin } from '@/components/platform-helper-admin'
 import { matchesFuzzySearchAny } from '@/lib/fuzzy-search'
 
@@ -71,15 +71,15 @@ function AdminPage() {
 
   const sections = [
     { value: 'groups', label: 'المجموعات', icon: Users, description: 'إنشاء المجموعات وإضافة الأعضاء' },
-    { value: 'tutorials', label: 'فيديوهات الشرح', icon: PlayCircle, description: 'التحكم في أزرار الفيديو التوضيحي داخل الأقسام' },
+    { value: 'tutorials', label: 'فيديو توضيحي', icon: PlayCircle, description: 'التحكم في أزرار الفيديو التوضيحي داخل الأقسام' },
     { value: 'helper', label: 'مرشد نخلة', icon: Sparkles, description: 'تعديل نصوص المساعدة وموضع المرشد على الشاشة' },
     { value: 'domains', label: 'المجالات', icon: BookOpenCheck, description: 'إضافة محتوى للمجالات' },
-    { value: 'creations', label: 'إبداعات التلاميذ', icon: Palette, description: 'بودكاست، قصص مصورة، قصص قصيرة، وصورة و تعليق' },
+    { value: 'creations', label: 'إبداعات التلاميذ', icon: Palette, description: 'بودكاست، قصص مصورة، قصص قصيرة، صورة و تعليق، والشعر' },
     { value: 'lectures', label: 'المكتبة الرقمية', icon: PlayCircle, description: 'قصص، بودكاست، لغتي، وبنك الكلمات' },
     { value: 'exercises', label: 'تقويم الوحدة', icon: FileText, description: 'إدارة تقويم الوحدة والحقول' },
     { value: 'homework', label: 'مشاريع المجموعات', icon: ClipboardList, description: 'مشاريع المجموعات والتسليمات' },
     { value: 'mapQuiz', label: 'أبواب القصر', icon: ChevronLeft, description: 'أسئلة الأبواب وأسئلة المسار' },
-    { value: 'progress', label: 'تقدم الطلاب', icon: BarChart3, description: 'ترتيب التقدم والتوقف' },
+    { value: 'progress', label: 'تتبع تقدم التلاميذ', icon: BarChart3, description: 'ترتيب التقدم والتوقف' },
     { value: 'registrations', label: 'طلبات التسجيل', icon: CheckCircle2, description: 'الموافقة على طلبات إنشاء الحسابات أو رفضها' },
     { value: 'users', label: 'المستخدمين', icon: UserPlus, description: 'إدارة المستخدمين والصلاحيات' },
   ]
@@ -109,12 +109,12 @@ function AdminPage() {
                     key={section.value}
                     value={section.value}
                     title={section.description}
-                    className="group flex h-auto shrink-0 items-center gap-1 rounded-lg border border-transparent bg-transparent px-2 py-1 text-right text-[11px] font-bold text-slate-700 shadow-none transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-900 data-[state=active]:border-emerald-200 data-[state=active]:bg-emerald-50 data-[state=active]:text-emerald-900 data-[state=active]:shadow-sm"
+                    className="group flex h-auto flex-none shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-transparent bg-transparent px-2.5 py-1.5 text-right text-[11px] font-bold text-slate-700 shadow-none transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-900 data-[state=active]:border-emerald-200 data-[state=active]:bg-emerald-50 data-[state=active]:text-emerald-900 data-[state=active]:shadow-sm"
                   >
-                    <span className="flex h-5 w-5 items-center justify-center rounded-md border border-black/5 bg-white/80 text-current transition-all duration-200 group-data-[state=active]:bg-white">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-black/5 bg-white/80 text-current transition-all duration-200 group-data-[state=active]:bg-white">
                       <Icon className="h-3 w-3" />
                     </span>
-                    <span>{section.label}</span>
+                    <span className="whitespace-nowrap leading-none">{section.label}</span>
                   </TabsTrigger>
                 )
               })}
@@ -314,12 +314,12 @@ function SectionTutorialVideosAdmin() {
   return (
     <Card className="rounded-[28px] border-emerald-100 bg-white/95 shadow-sm">
       <CardHeader className="border-b bg-emerald-50/70 pb-3 text-right">
-        <CardTitle className="text-emerald-950">فيديوهات الشرح</CardTitle>
+        <CardTitle className="text-emerald-950">فيديو توضيحي</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4 p-4">
-        <div className="grid gap-3 md:grid-cols-[220px_1fr_auto_auto] md:items-end">
-          <div className="space-y-2">
-            <Label className="font-bold text-emerald-900">القسم</Label>
+        <div className="tutorial-videos-form grid gap-4 lg:grid-cols-[minmax(220px,280px)_minmax(0,1fr)_auto]">
+          <div className="tutorial-videos-field flex flex-col gap-2">
+            <span className="text-sm font-bold text-emerald-900">القسم</span>
             <select
               className="h-11 w-full rounded-xl border border-emerald-200 bg-white px-3 text-sm font-bold text-emerald-950 shadow-sm outline-none focus:border-emerald-400"
               value={selectedCategory}
@@ -333,23 +333,25 @@ function SectionTutorialVideosAdmin() {
             </select>
           </div>
 
-          <div className="space-y-2">
-            <Label className="font-bold text-emerald-900">إرفاق ملف / صورة / صوت</Label>
+          <div className="tutorial-videos-field flex min-w-0 flex-col gap-2">
+            <span className="text-sm font-bold text-emerald-900">إرفاق ملف / صورة / صوت</span>
             <Input
               type="file"
               accept="video/*,image/*,audio/*,.mp4,.webm,.mov,.mp3,.wav,.m4a,.ogg"
               onChange={(event) => setFile(event.target.files?.[0] ?? null)}
-              className="h-11"
+              className="h-11 w-full max-w-full"
             />
           </div>
 
-          <Button type="button" onClick={saveVideo} disabled={!file || saving} className="h-11 gap-2">
-            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-            تعديل / حفظ
-          </Button>
-          <Button type="button" variant="destructive" onClick={deleteVideo} disabled={!currentVideo || saving} className="h-11 gap-2">
-            <Trash2 className="h-4 w-4" /> حذف
-          </Button>
+          <div className="flex flex-wrap items-end gap-2">
+            <Button type="button" onClick={saveVideo} disabled={!file || saving} className="h-11 gap-2">
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+              تعديل / حفظ
+            </Button>
+            <Button type="button" variant="destructive" onClick={deleteVideo} disabled={!currentVideo || saving} className="h-11 gap-2">
+              <Trash2 className="h-4 w-4" /> حذف
+            </Button>
+          </div>
         </div>
 
         {error && <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-bold text-red-700">{error}</div>}
@@ -372,7 +374,7 @@ function SectionTutorialVideosAdmin() {
           </div>
         ) : (
           <p className="rounded-xl border border-dashed border-emerald-200 bg-emerald-50/40 p-3 text-sm font-semibold text-emerald-800">
-            مازال ما كاين حتى ملف مرفوع لهذا القسم.
+            لا يوجد أي ملف مرفوع لهذا القسم بعد.
           </p>
         )}
       </CardContent>
@@ -385,7 +387,7 @@ const domainBoards = [
     key: 'reading',
     title: 'فهم المقروء',
     contentLabel: 'نص فهم المقروء — اكتب النص الكامل هنا',
-    contentPlaceholder: 'هنا كتب النص الكامل ديال فهم المقروء. مثال: فقرة 1... فقرة 2... تقدر تكتب النص كامل بسطر أو فقرات. الكلمات اللي بغيتي شرحها زيدها في خانة شروحات الكلمات تحت بصيغة: كلمة: الشرح',
+    contentPlaceholder: 'اكتب هنا النص الكامل لفهم المقروء. مثال: فقرة 1... فقرة 2... يمكنك كتابة النص كاملاً في أسطر أو فقرات. الكلمات التي تريد شرحها أضفها في خانة شروحات الكلمات تحت بصيغة: كلمة: الشرح',
     fileAccept: 'image/*,audio/*,.mp3,.wav,.m4a,.ogg,.pdf,.doc,.docx,.ppt,.pptx,.zip',
     categories: [
       { value: 'reading:title', label: 'عنوان البطاقة / النص' },
@@ -428,7 +430,7 @@ const domainBoards = [
     key: 'language',
     title: 'الظاهرة اللغوية',
     contentLabel: 'محتوى الظاهرة اللغوية',
-    contentPlaceholder: 'يعمر هذا المكون من الخانات المنظمة حسب الأزرار.',
+    contentPlaceholder: 'يُملأ هذا المكون من الخانات المنظمة حسب الأزرار.',
     fileAccept: 'image/*,video/*,.mp4,.webm,.mov,.pdf,.doc,.docx',
     hideMainContentField: true,
     categories: [
@@ -468,7 +470,7 @@ const domainBoards = [
     key: 'writing',
     title: 'الإنتاج الكتابي',
     contentLabel: 'نص الانطلاق أو نص الاكتساب',
-    contentPlaceholder: 'اكتب النص الذي سيظهر في قالب الإنتاج الكتابي. باقي الخانات كتعمّر القالب بشكل ديناميكي.',
+    contentPlaceholder: 'اكتب النص الذي سيظهر في قالب الإنتاج الكتابي. باقي الخانات تملأ القالب بشكل ديناميكي.',
     fileAccept: 'image/*,audio/*,video/*,.pdf,.doc,.docx,.ppt,.pptx,.zip',
       categories: [
         { value: 'writing:lesson:title', label: 'عنوان نص الانطلاق' },
@@ -813,7 +815,7 @@ function WritingProductionCorrectionsAdmin() {
         <CardContent className="space-y-3">
           {submissions.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-800">
-              مازال ما وصل حتى إنتاج كتابي.
+              لم يصل أي إنتاج كتابي بعد.
             </div>
           ) : submissions.map((item) => (
             <div key={item.id} className="rounded-2xl border bg-white p-4 text-right shadow-sm">
@@ -837,62 +839,88 @@ function WritingProductionCorrectionsAdmin() {
 
 function ReadingTarkibCorrectionsAdmin() {
   const [open, setOpen] = useState(false)
-  const [submissions, setSubmissions] = useState<{ id: string; title: string; answer: string; correction?: string; submittedAt: string }[]>([])
-  const [corrections, setCorrections] = useState<Record<string, string>>({})
+  const [submissions, setSubmissions] = useState<TarkibSubmission[]>([])
+  const [loading, setLoading] = useState(false)
+
+  const [loadError, setLoadError] = useState('')
 
   const load = () => {
-    if (typeof window === 'undefined') return
-    try {
-      const list = JSON.parse(window.localStorage.getItem('nakhla-reading-tarkib-submissions') || '[]') as { id: string; title: string; answer: string; correction?: string; submittedAt: string }[]
-      setSubmissions(list)
-      setCorrections(Object.fromEntries(list.map((item) => [item.id, item.correction || ''])))
-    } catch {
-      setSubmissions([])
-    }
+    setLoading(true)
+    setLoadError('')
+    api
+      .get<{ submissions: TarkibSubmission[] }>('/tarkib/admin')
+      .then(({ submissions }) => setSubmissions(submissions || []))
+      .catch((error) => {
+        setSubmissions([])
+        setLoadError(error instanceof Error ? error.message : 'تعذر تحميل أجوبة التركيب')
+      })
+      .finally(() => setLoading(false))
   }
 
   useEffect(() => {
     if (open) load()
   }, [open])
 
-  const save = (item: { id: string; title: string; answer: string; correction?: string; submittedAt: string }) => {
-    if (typeof window === 'undefined') return
-    const correction = corrections[item.id] || ''
-    const next = submissions.map((submission) => submission.id === item.id ? { ...submission, correction } : submission)
-    window.localStorage.setItem('nakhla-reading-tarkib-submissions', JSON.stringify(next))
-    const stored = JSON.parse(window.localStorage.getItem(item.id) || '{}') as Record<string, unknown>
-    window.localStorage.setItem(item.id, JSON.stringify({ ...stored, correction }))
-    setSubmissions(next)
-    alert('تم إرسال التصحيح لهذا التلميذ')
+  const handleDelete = async (id: number) => {
+    if (!confirm('هل تريد حذف هذا الجواب؟')) return
+    try {
+      await api.delete(`/tarkib/admin/${id}`)
+      setSubmissions((current) => current.filter((item) => item.id !== id))
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'تعذر حذف الجواب')
+    }
   }
 
   return (
     <Card className="rounded-[26px] border-emerald-100 bg-white/95 shadow-sm">
       <CardHeader className="text-right">
         <CardTitle className="flex items-center justify-between gap-3">
-          <span>تصحيح تركيب فهم المقروء</span>
-          <Button type="button" variant={open ? 'default' : 'outline'} onClick={() => setOpen((value) => !value)}>
-            تصحيح تركيب
+          <span>أجوبة تركيب فهم المقروء</span>
+          <Button
+            type="button"
+            variant={open ? 'default' : 'outline'}
+            onClick={() => setOpen((value) => !value)}
+          >
+            {open ? 'إخفاء الأجوبة' : 'عرض أجوبة التركيب'}
           </Button>
         </CardTitle>
       </CardHeader>
       {open ? (
         <CardContent className="space-y-3">
-          {submissions.length === 0 ? (
+          <div className="flex justify-end">
+            <Button type="button" variant="outline" size="sm" onClick={load} disabled={loading}>
+              {loading ? <Loader2 className="ml-2 h-4 w-4 animate-spin" /> : null}
+              تحديث القائمة
+            </Button>
+          </div>
+          {loadError ? (
+            <div className="rounded-2xl border border-dashed border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-800">
+              {loadError}
+            </div>
+          ) : null}
+          {loading && submissions.length === 0 ? (
+            <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
+          ) : submissions.length === 0 && !loadError ? (
             <div className="rounded-2xl border border-dashed border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-800">
-              مازال ما وصل حتى جواب تركيب.
+              لم يصل أي جواب تركيب بعد.
             </div>
           ) : submissions.map((item) => (
             <div key={item.id} className="rounded-2xl border bg-white p-4 text-right shadow-sm">
-              <div className="mb-2 text-sm font-bold text-emerald-800">{item.title || 'فهم المقروء'} • {new Date(item.submittedAt).toLocaleString('ar-MA')}</div>
-              <div className="mb-3 rounded-xl bg-slate-50 p-3 text-sm leading-7 text-slate-700">{item.answer}</div>
-              <Textarea
-                value={corrections[item.id] || ''}
-                onChange={(event) => setCorrections((current) => ({ ...current, [item.id]: event.target.value }))}
-                placeholder="اكتب التصحيح هنا..."
-                className="min-h-[90px] leading-7"
-              />
-              <Button type="button" onClick={() => save(item)} className="mt-3">إرسال التصحيح</Button>
+              <div className="mb-2 flex flex-wrap items-center justify-between gap-2 text-sm font-bold text-emerald-800">
+                <span>
+                  {item.displayName || item.userFullName || item.userEmail || 'تلميذ(ة)'}
+                  {item.title ? ` • ${item.title}` : ''}
+                  {' • '}
+                  {new Date(item.submittedAt).toLocaleString('ar-MA')}
+                </span>
+                <Button type="button" variant="destructive" size="sm" onClick={() => void handleDelete(item.id)}>
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              </div>
+              {item.userEmail ? (
+                <div className="mb-2 text-xs font-semibold text-muted-foreground">{item.userEmail}</div>
+              ) : null}
+              <div className="rounded-xl bg-slate-50 p-3 text-sm leading-7 text-slate-700 whitespace-pre-wrap">{item.answer}</div>
             </div>
           ))}
         </CardContent>
@@ -906,6 +934,7 @@ const creationTypes: { type: StudentCreationType; label: string; icon: typeof Pa
   { type: 'قصص مصورة', label: 'قصص مصورة', icon: PanelsTopLeft },
   { type: 'قصص قصيرة', label: 'قصص قصيرة', icon: BookOpenCheck },
   { type: 'صورة و تعليق', label: 'صورة و تعليق', icon: Image },
+  { type: 'الشعر', label: 'الشعر', icon: Feather },
 ]
 
 function StudentCreationsAdmin() {
@@ -1840,7 +1869,7 @@ function ExercisesAdmin() {
       fetchData()
       alert('تم حفظ التقويم بنجاح')
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'تعذر حفظ التقويم. تأكدي من JSON ديال الحقول.')
+      alert(error instanceof Error ? error.message : 'تعذر حفظ التقويم. تأكد من JSON الحقول.')
     } finally {
       setCreating(false)
     }
@@ -3422,7 +3451,7 @@ function MapQuizAdmin() {
     )
 
     if (!isComplete) {
-      alert(selectedType === 'main' ? 'كل باب خاصو 4 أسئلة، وكل سؤال خاصو 4 اختيارات وجواب صحيح.' : 'سؤال المسار خاصو سؤال واحد، 4 اختيارات، وجواب صحيح.')
+      alert(selectedType === 'main' ? 'كل باب يحتاج 4 أسئلة، وكل سؤال يحتاج 4 اختيارات وجوابًا صحيحًا.' : 'سؤال المسار يحتاج سؤالًا واحدًا، و4 اختيارات، وجوابًا صحيحًا.')
       return
     }
 
@@ -3625,7 +3654,7 @@ function StudentProgressAdmin() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>تقدم الطلاب في المنصة كاملة</CardTitle>
+        <CardTitle>تتبع تقدم التلاميذ في المنصة كاملة</CardTitle>
       </CardHeader>
       <CardContent>
         {students.length === 0 ? (

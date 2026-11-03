@@ -1163,6 +1163,9 @@ function QuestionStage({
   const [textAnswers, setTextAnswers] = useState<Record<string, string>>({});
   const [modelVisible, setModelVisible] = useState<Record<string, boolean>>({});
   const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
+  const groupsSignature = groups
+    .map((group) => `${group.key}:${group.questions.map((question, index) => question.id || `${index}:${question.question}`).join(",")}`)
+    .join("|");
 
   useEffect(() => {
     setActiveGroup(0);
@@ -1171,7 +1174,7 @@ function QuestionStage({
     setMatchState({});
     setTextAnswers({});
     setModelVisible({});
-  }, [groups]);
+  }, [groupsSignature]);
 
   useEffect(() => {
     setActiveQuestionIndex(0);
@@ -1281,7 +1284,19 @@ function QuestionStage({
     (active.key.includes("vocabulary") || active.label.includes("معجم"));
 
   const questionNavButtons = (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between" dir="rtl">
+      <button
+        type="button"
+        onClick={goPrevQuestion}
+        disabled={safeQuestionIndex <= 0}
+        className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border bg-white px-4 py-2 font-['Cairo'] text-sm font-bold disabled:opacity-50 ${nakhla ? "border-[#93b7e7] text-[#123c69] hover:bg-[#eaf2ff]" : "border-[#d5ddd7] text-[#123c69] hover:bg-slate-50"}`}
+      >
+        <ArrowRight className="h-4 w-4" />
+        رجوع
+      </button>
+      <div className={`hidden truncate text-center text-sm font-bold sm:block ${nakhla ? "text-[#123c69]" : "text-[#123c69]"}`}>
+        {active.label}
+      </div>
       <button
         type="button"
         onClick={goNextQuestion}
@@ -1290,18 +1305,6 @@ function QuestionStage({
       >
         التالي
         <ChevronLeft className="h-4 w-4" />
-      </button>
-      <div className={`hidden truncate text-center text-sm font-bold sm:block ${nakhla ? "text-[#123c69]" : "text-[#123c69]"}`}>
-        {active.label}
-      </div>
-      <button
-        type="button"
-        onClick={goPrevQuestion}
-        disabled={safeQuestionIndex <= 0}
-        className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border bg-white px-4 py-2 font-['Cairo'] text-sm font-bold disabled:opacity-50 ${nakhla ? "border-[#93b7e7] text-[#123c69] hover:bg-[#eaf2ff]" : "border-[#d5ddd7] text-[#123c69] hover:bg-slate-50"}`}
-      >
-        رجوع
-        <ArrowRight className="h-4 w-4" />
       </button>
     </div>
   );
@@ -1355,228 +1358,312 @@ function QuestionStage({
 
         {showVocabularyPanel ? glossaryPanel : null}
 
-        {sequential ? (
-          <div className={`mb-5 rounded-[18px] border p-3 text-right ${nakhla ? "border-[#93b7e7] bg-[#eaf2ff]" : "border-[#93b7e7] bg-[#eaf2ff]"}`}>
-            <div className="mb-2 flex items-center gap-3">
-              <span className={`font-['Cairo'] text-base font-extrabold ${nakhla ? "text-[#0b2447]" : "text-[#0b2447]"}`}>السؤال {safeQuestionIndex + 1} من {groupQuestionCount}</span>
-              <span className={`h-2 flex-1 overflow-hidden rounded-full ${nakhla ? "bg-[#dbeafe]" : "bg-[#bfd7ff]"}`}><i className={`block h-full ${nakhla ? "bg-[#123c69]" : "bg-[#123c69]"}`} style={{ width: `${((safeQuestionIndex + 1) / Math.max(groupQuestionCount, 1)) * 100}%` }} /></span>
-            </div>
-            {questionNavButtons}
-          </div>
-        ) : null}
-
-        <div className="space-y-4">
-          {visibleQuestions.map((question, questionIndex) => {
-            const actualQuestionIndex = sequential ? safeQuestionIndex : questionIndex;
-            const questionKey = `${active.key}:${question.id || actualQuestionIndex}`;
-            const type = question.type || "multiple-choice";
-            const selectedAnswer = answers[questionKey];
-            const hasAnswered = selectedAnswer !== undefined;
-            const isCorrect = hasAnswered && selectedAnswer === question.correctAnswer;
-            const fallbackWrongFeedback =
-              type === "fill-blank"
-                ? "هذا الاختيار غير مناسب للفراغ. راجع سياق الجملة وحاول مرة أخرى."
-                : "هذا الجواب غير صحيح. راجع السؤال وحاول مرة أخرى.";
-            const fallbackCorrectFeedback = "أحسنت، جوابك صحيح.";
-            const feedback = hasAnswered
-              ? question.feedbacks?.[selectedAnswer] || (isCorrect ? fallbackCorrectFeedback : fallbackWrongFeedback)
-              : "";
-            const pairState = matchState[questionKey] || { selected: null, matched: [] };
-            const matchPairs = question.matchPairs || [];
-            const matchDone = type === "match" && matchPairs.length > 0 && pairState.matched.length >= matchPairs.length;
-            const leftItems = matchPairs.map((pair, index) => ({ ...pair, index }));
-            const rightItems = matchPairs.map((pair, index) => ({ ...pair, index }));
-
-            return (
-              <div
-                key={questionKey}
-                className="rounded-[16px] border border-[#e8e1d4] bg-[#fcf9f2] p-4 text-right"
-              >
-                <div className={`mb-3 flex items-start gap-2 rounded-[10px] border border-dashed bg-white px-3 py-2 font-['Cairo'] text-xs font-bold leading-6 ${nakhla ? "border-[#93b7e7] text-[#123c69]" : "border-[#93b7e7] text-[#123c69]"}`}>
-                  <span>🎯</span>
-                  <span className="flex-1">{question.objective || "الهدف التعليمي الخاص بهذا السؤال"}</span>
-                  {question.level ? (
-                    <span className={levelBadgeClass(question.level, nakhla)}>
-                      {question.level}
-                    </span>
-                  ) : null}
+        {isTarkibGroup(active) ? (
+          <TarkibSendPanel
+            title={active.label}
+            prompt={
+              [
+                active.lead,
+                ...questions.map((question, index) => {
+                  const text = question.question?.trim();
+                  if (!text) return "";
+                  return questions.length > 1 ? `${index + 1}. ${text}` : text;
+                }),
+              ]
+                .filter(Boolean)
+                .join("\n\n")
+            }
+          />
+        ) : (
+          <>
+            {sequential ? (
+              <div className={`mb-5 rounded-[18px] border p-3 text-right ${nakhla ? "border-[#93b7e7] bg-[#eaf2ff]" : "border-[#93b7e7] bg-[#eaf2ff]"}`}>
+                <div className="mb-2 flex items-center gap-3">
+                  <span className={`font-['Cairo'] text-base font-extrabold ${nakhla ? "text-[#0b2447]" : "text-[#0b2447]"}`}>السؤال {safeQuestionIndex + 1} من {groupQuestionCount}</span>
+                  <span className={`h-2 flex-1 overflow-hidden rounded-full ${nakhla ? "bg-[#dbeafe]" : "bg-[#bfd7ff]"}`}><i className={`block h-full ${nakhla ? "bg-[#123c69]" : "bg-[#123c69]"}`} style={{ width: `${((safeQuestionIndex + 1) / Math.max(groupQuestionCount, 1)) * 100}%` }} /></span>
                 </div>
+                {questionNavButtons}
+              </div>
+            ) : null}
 
-                <div className="mb-3 text-[1.04rem] font-semibold leading-8 text-[#1E2B26]">
-                  <span className={`ml-2 inline-grid h-7 w-7 place-items-center rounded-full font-['Cairo'] text-sm font-extrabold ${nakhla ? "bg-[#dbeafe] text-[#123c69]" : "bg-[#dbeafe] text-[#123c69]"}`}>
-                    {sequential ? safeQuestionIndex + 1 : questionIndex + 1}
-                  </span>
-                  <span className={`ml-2 rounded-full px-2 py-0.5 font-['Cairo'] text-[11px] font-bold ${nakhla ? "bg-[#eaf2ff] text-[#5C6B63]" : "bg-[#eaf2ff] text-[#475569]"}`}>
-                    {typeLabel(type)}
-                  </span>
-                  {question.question}
-                </div>
+            <div className="space-y-4">
+              {visibleQuestions.map((question, questionIndex) => {
+                const actualQuestionIndex = sequential ? safeQuestionIndex : questionIndex;
+                const questionKey = `${active.key}:${question.id || actualQuestionIndex}`;
+                const type = question.type || "multiple-choice";
+                const selectedAnswer = answers[questionKey];
+                const hasAnswered = selectedAnswer !== undefined;
+                const isCorrect = hasAnswered && selectedAnswer === question.correctAnswer;
+                const fallbackWrongFeedback =
+                  type === "fill-blank"
+                    ? "هذا الاختيار غير مناسب للفراغ. راجع سياق الجملة وحاول مرة أخرى."
+                    : "هذا الجواب غير صحيح. راجع السؤال وحاول مرة أخرى.";
+                const fallbackCorrectFeedback = "أحسنت، جوابك صحيح.";
+                const feedback = hasAnswered
+                  ? question.feedbacks?.[selectedAnswer] || (isCorrect ? fallbackCorrectFeedback : fallbackWrongFeedback)
+                  : "";
+                const pairState = matchState[questionKey] || { selected: null, matched: [] };
+                const matchPairs = question.matchPairs || [];
+                const matchDone = type === "match" && matchPairs.length > 0 && pairState.matched.length >= matchPairs.length;
+                const leftItems = matchPairs.map((pair, index) => ({ ...pair, index }));
+                const rightItems = matchPairs.map((pair, index) => ({ ...pair, index }));
 
-                {type === "match" ? (
-                  <div>
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      <div className="space-y-2">
-                        {leftItems.map((pair) => {
-                          const matched = pairState.matched.includes(pair.index);
-                          return (
-                            <button
-                              key={`left-${pair.index}`}
-                              type="button"
-                              disabled={matched}
-                              onClick={() => chooseMatchLeft(questionKey, pair.index)}
-                              className={`w-full rounded-xl border px-3 py-3 text-center text-sm font-bold transition ${
-                                matched
-                                  ? nakhla ? "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]"
-                                  : pairState.selected === pair.index
-                                    ? nakhla ? "border-[#123c69] bg-[#eaf2ff] text-[#123c69]" : "border-[#123c69] bg-[#eaf2ff] text-[#123c69]"
-                                    : nakhla ? "border-[#E8E1D4] bg-white text-[#1E2B26] hover:border-[#1d4f8a] hover:bg-[#eaf2ff]" : "border-[#e8e1d4] bg-white text-[#0f172a] hover:border-[#1d4f8a] hover:bg-[#eaf2ff]"
-                              }`}
-                            >
-                              {pair.left || `عنصر ${pair.index + 1}`}
-                            </button>
-                          );
-                        })}
-                      </div>
-                      <div className="space-y-2">
-                        {rightItems.map((pair) => {
-                          const matched = pairState.matched.includes(pair.index);
-                          const isWrong = pairState.wrong?.includes(`:${pair.index}:`);
-                          return (
-                            <button
-                              key={`right-${pair.index}`}
-                              type="button"
-                              disabled={matched}
-                              onClick={() => chooseMatchRight(questionKey, pair.index)}
-                              className={`w-full rounded-xl border px-3 py-3 text-center text-sm font-bold transition ${
-                                matched
-                                  ? nakhla ? "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]"
-                                  : isWrong
-                                    ? "border-[#c96b6b] bg-[#f7e3e3] text-[#7a2e2e]"
-                                    : nakhla ? "border-[#E8E1D4] bg-white text-[#1E2B26] hover:border-[#1d4f8a] hover:bg-[#eaf2ff]" : "border-[#e8e1d4] bg-white text-[#0f172a] hover:border-[#1d4f8a] hover:bg-[#eaf2ff]"
-                              }`}
-                            >
-                              {pair.right || `جواب ${pair.index + 1}`}
-                            </button>
-                          );
-                        })}
-                      </div>
+                return (
+                  <div
+                    key={questionKey}
+                    className="rounded-[16px] border border-[#e8e1d4] bg-[#fcf9f2] p-4 text-right"
+                  >
+                    <div className={`mb-3 flex items-start gap-2 rounded-[10px] border border-dashed bg-white px-3 py-2 font-['Cairo'] text-xs font-bold leading-6 ${nakhla ? "border-[#93b7e7] text-[#123c69]" : "border-[#93b7e7] text-[#123c69]"}`}>
+                      <span>🎯</span>
+                      <span className="flex-1">{question.objective || "الهدف التعليمي الخاص بهذا السؤال"}</span>
+                      {question.level ? (
+                        <span className={levelBadgeClass(question.level, nakhla)}>
+                          {question.level}
+                        </span>
+                      ) : null}
                     </div>
-                    <div className={`mt-3 rounded-[11px] border-r-4 px-3 py-2 text-sm font-semibold leading-7 ${matchDone ? nakhla ? "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]" : pairState.wrong ? "border-[#c96b6b] bg-[#f7e3e3] text-[#7a2e2e]" : nakhla ? "border-[#93b7e7] bg-[#eaf2ff] text-[#5C6B63]" : "border-[#93b7e7] bg-[#eaf2ff] text-[#475569]"}`}>
-                      {matchDone
-                        ? "أحسنت، تم الربط بنجاح."
-                        : pairState.wrong
-                          ? "هذا الربط غير صحيح. فكّر في العلاقة بين العنصرين وحاول مرة أخرى."
-                          : "انقر على عنصر من العمود الأول ثم اختر مطابقه من العمود الثاني."}
-                    </div>
-                  </div>
-                ) : type === "fill-blank" ? (
-                  <div>
-                    <div className="mb-3 rounded-xl bg-white p-3 leading-8 text-[#1E2B26]">
-                      <span className={`inline-block min-w-[90px] border-b-2 px-4 text-center font-bold ${hasAnswered && !isCorrect ? "border-[#c96b6b] text-[#c96b6b]" : nakhla ? "border-dashed border-[#1d4f8a] text-[#123c69]" : "border-dashed border-[#1d4f8a] text-[#123c69]"}`}>
-                        {hasAnswered ? question.options[selectedAnswer] : "…"}
+
+                    <div className="mb-3 text-[1.04rem] font-semibold leading-8 text-[#1E2B26]">
+                      <span className={`ml-2 inline-grid h-7 w-7 place-items-center rounded-full font-['Cairo'] text-sm font-extrabold ${nakhla ? "bg-[#dbeafe] text-[#123c69]" : "bg-[#dbeafe] text-[#123c69]"}`}>
+                        {sequential ? safeQuestionIndex + 1 : questionIndex + 1}
                       </span>
+                      <span className={`ml-2 rounded-full px-2 py-0.5 font-['Cairo'] text-[11px] font-bold ${nakhla ? "bg-[#eaf2ff] text-[#5C6B63]" : "bg-[#eaf2ff] text-[#475569]"}`}>
+                        {typeLabel(type)}
+                      </span>
+                      {question.question}
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                      {question.options.filter(Boolean).map((option, optionIndex) => {
-                        const revealCorrect = isCorrect && question.correctAnswer === optionIndex;
-                        const isWrongSelected = hasAnswered && selectedAnswer === optionIndex && !isCorrect;
-                        return (
-                          <button
-                            key={optionIndex}
-                            type="button"
-                            disabled={isCorrect}
-                            onClick={() => setAnswers((current) => ({ ...current, [questionKey]: optionIndex }))}
-                            className={`rounded-full border px-4 py-2 text-sm font-bold transition ${
-                              revealCorrect
-                                ? nakhla ? "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]"
-                                : isWrongSelected
-                                  ? "border-[#c96b6b] bg-[#f7e3e3] text-[#7a2e2e]"
-                                  : nakhla ? "border-[#93b7e7] bg-white text-[#123c69] hover:bg-[#eaf2ff]" : "border-[#93b7e7] bg-white text-[#123c69] hover:bg-[#eaf2ff]"
-                            }`}
-                          >
-                            {option}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ) : type === "communicative" ? (
-                  <div>
-                    <textarea
-                      value={textAnswers[questionKey] || ""}
-                      onChange={(event) => setTextAnswers((current) => ({ ...current, [questionKey]: event.target.value }))}
-                      placeholder="اكتب جوابك هنا..."
-                      className={`min-h-[100px] w-full rounded-xl border border-[#E8E1D4] bg-white p-3 leading-8 text-[#1E2B26] outline-none ${nakhla ? "focus:border-[#1d4f8a]" : "focus:border-[#1d4f8a]"}`}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setModelVisible((current) => ({ ...current, [questionKey]: !current[questionKey] }))}
-                      className={`mt-3 rounded-full px-4 py-2 font-['Cairo'] text-xs font-bold text-white ${nakhla ? "bg-[#123c69] hover:bg-[#0f2f57]" : "bg-[#123c69] hover:bg-[#0b2447]"}`}
-                    >
-                      أظهر إجابة مقترحة
-                    </button>
-                    {modelVisible[questionKey] ? (
-                      <div className={`mt-3 rounded-[11px] border-r-4 px-4 py-3 text-sm font-semibold leading-7 ${nakhla ? "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]"}`}>
-                        <span className="block font-['Cairo'] font-extrabold">إجابة مقترحة</span>
-                        {question.modelAnswer || "يضيف المشرف الإجابة المقترحة من التحكم عن بعد."}
+
+                    {type === "match" ? (
+                      <div>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <div className="space-y-2">
+                            {leftItems.map((pair) => {
+                              const matched = pairState.matched.includes(pair.index);
+                              return (
+                                <button
+                                  key={`left-${pair.index}`}
+                                  type="button"
+                                  disabled={matched}
+                                  onClick={() => chooseMatchLeft(questionKey, pair.index)}
+                                  className={`w-full rounded-xl border px-3 py-3 text-center text-sm font-bold transition ${
+                                    matched
+                                      ? nakhla ? "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]"
+                                      : pairState.selected === pair.index
+                                        ? nakhla ? "border-[#123c69] bg-[#eaf2ff] text-[#123c69]" : "border-[#123c69] bg-[#eaf2ff] text-[#123c69]"
+                                        : nakhla ? "border-[#E8E1D4] bg-white text-[#1E2B26] hover:border-[#1d4f8a] hover:bg-[#eaf2ff]" : "border-[#e8e1d4] bg-white text-[#0f172a] hover:border-[#1d4f8a] hover:bg-[#eaf2ff]"
+                                  }`}
+                                >
+                                  {pair.left || `عنصر ${pair.index + 1}`}
+                                </button>
+                              );
+                            })}
+                          </div>
+                          <div className="space-y-2">
+                            {rightItems.map((pair) => {
+                              const matched = pairState.matched.includes(pair.index);
+                              const isWrong = pairState.wrong?.includes(`:${pair.index}:`);
+                              return (
+                                <button
+                                  key={`right-${pair.index}`}
+                                  type="button"
+                                  disabled={matched}
+                                  onClick={() => chooseMatchRight(questionKey, pair.index)}
+                                  className={`w-full rounded-xl border px-3 py-3 text-center text-sm font-bold transition ${
+                                    matched
+                                      ? nakhla ? "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]"
+                                      : isWrong
+                                        ? "border-[#c96b6b] bg-[#f7e3e3] text-[#7a2e2e]"
+                                        : nakhla ? "border-[#E8E1D4] bg-white text-[#1E2B26] hover:border-[#1d4f8a] hover:bg-[#eaf2ff]" : "border-[#e8e1d4] bg-white text-[#0f172a] hover:border-[#1d4f8a] hover:bg-[#eaf2ff]"
+                                  }`}
+                                >
+                                  {pair.right || `جواب ${pair.index + 1}`}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                        <div className={`mt-3 rounded-[11px] border-r-4 px-3 py-2 text-sm font-semibold leading-7 ${matchDone ? nakhla ? "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]" : pairState.wrong ? "border-[#c96b6b] bg-[#f7e3e3] text-[#7a2e2e]" : nakhla ? "border-[#93b7e7] bg-[#eaf2ff] text-[#5C6B63]" : "border-[#93b7e7] bg-[#eaf2ff] text-[#475569]"}`}>
+                          {matchDone
+                            ? "أحسنت، تم الربط بنجاح."
+                            : pairState.wrong
+                              ? "هذا الربط غير صحيح. فكّر في العلاقة بين العنصرين وحاول مرة أخرى."
+                              : "انقر على عنصر من العمود الأول ثم اختر مطابقه من العمود الثاني."}
+                        </div>
+                      </div>
+                    ) : type === "fill-blank" ? (
+                      <div>
+                        <div className="mb-3 rounded-xl bg-white p-3 leading-8 text-[#1E2B26]">
+                          <span className={`inline-block min-w-[90px] border-b-2 px-4 text-center font-bold ${hasAnswered && !isCorrect ? "border-[#c96b6b] text-[#c96b6b]" : nakhla ? "border-dashed border-[#1d4f8a] text-[#123c69]" : "border-dashed border-[#1d4f8a] text-[#123c69]"}`}>
+                            {hasAnswered ? question.options[selectedAnswer] : "…"}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {question.options.filter(Boolean).map((option, optionIndex) => {
+                            const revealCorrect = isCorrect && question.correctAnswer === optionIndex;
+                            const isWrongSelected = hasAnswered && selectedAnswer === optionIndex && !isCorrect;
+                            return (
+                              <button
+                                key={optionIndex}
+                                type="button"
+                                disabled={isCorrect}
+                                onClick={() => setAnswers((current) => ({ ...current, [questionKey]: optionIndex }))}
+                                className={`rounded-full border px-4 py-2 text-sm font-bold transition ${
+                                  revealCorrect
+                                    ? nakhla ? "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]"
+                                    : isWrongSelected
+                                      ? "border-[#c96b6b] bg-[#f7e3e3] text-[#7a2e2e]"
+                                      : nakhla ? "border-[#93b7e7] bg-white text-[#123c69] hover:bg-[#eaf2ff]" : "border-[#93b7e7] bg-white text-[#123c69] hover:bg-[#eaf2ff]"
+                                }`}
+                              >
+                                {option}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ) : type === "communicative" ? (
+                      <div>
+                        <textarea
+                          value={textAnswers[questionKey] || ""}
+                          onChange={(event) => setTextAnswers((current) => ({ ...current, [questionKey]: event.target.value }))}
+                          placeholder="اكتب جوابك هنا..."
+                          className={`min-h-[100px] w-full rounded-xl border border-[#E8E1D4] bg-white p-3 leading-8 text-[#1E2B26] outline-none ${nakhla ? "focus:border-[#1d4f8a]" : "focus:border-[#1d4f8a]"}`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setModelVisible((current) => ({ ...current, [questionKey]: !current[questionKey] }))}
+                          className={`mt-3 rounded-full px-4 py-2 font-['Cairo'] text-xs font-bold text-white ${nakhla ? "bg-[#123c69] hover:bg-[#0f2f57]" : "bg-[#123c69] hover:bg-[#0b2447]"}`}
+                        >
+                          أظهر إجابة مقترحة
+                        </button>
+                        {modelVisible[questionKey] ? (
+                          <div className={`mt-3 rounded-[11px] border-r-4 px-4 py-3 text-sm font-semibold leading-7 ${nakhla ? "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]"}`}>
+                            <span className="block font-['Cairo'] font-extrabold">إجابة مقترحة</span>
+                            {question.modelAnswer || "يضيف المشرف الإجابة المقترحة من التحكم عن بعد."}
+                          </div>
+                        ) : null}
+                      </div>
+                    ) : (
+                      <div className="grid gap-2">
+                        {question.options.filter(Boolean).map((option, optionIndex) => {
+                          const revealCorrect = isCorrect && question.correctAnswer === optionIndex;
+                          const isWrongSelected = hasAnswered && selectedAnswer === optionIndex && !isCorrect;
+                          return (
+                            <button
+                              key={optionIndex}
+                              type="button"
+                              disabled={isCorrect}
+                              onClick={() => setAnswers((current) => ({ ...current, [questionKey]: optionIndex }))}
+                              className={`flex items-center gap-2 rounded-xl border px-3 py-3 text-right text-sm font-medium transition ${
+                                revealCorrect
+                                  ? nakhla ? "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]"
+                                  : isWrongSelected
+                                    ? "border-[#c96b6b] bg-[#f7e3e3] text-[#7a2e2e] opacity-100"
+                                    : hasAnswered && !isCorrect
+                                      ? "border-[#E8E1D4] bg-white text-[#1E2B26] opacity-50"
+                                      : nakhla ? "border-[#E8E1D4] bg-white text-[#1E2B26] hover:border-[#1d4f8a] hover:bg-[#eaf2ff]" : "border-[#e8e1d4] bg-white text-[#0f172a] hover:border-[#1d4f8a] hover:bg-[#eaf2ff]"
+                              }`}
+                            >
+                              <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-lg font-['Cairo'] text-xs font-extrabold ${revealCorrect ? nakhla ? "bg-[#1d4f8a] text-white" : "bg-[#1d4f8a] text-white" : isWrongSelected ? "bg-[#c96b6b] text-white" : nakhla ? "bg-[#eaf2ff] text-[#123c69]" : "bg-[#eaf2ff] text-[#123c69]"}`}>
+                                {optionIndex + 1}
+                              </span>
+                              <span>{option}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {feedback ? (
+                      <div className={`mt-3 rounded-[11px] border-r-4 px-4 py-3 text-sm font-semibold leading-7 ${
+                        isCorrect
+                          ? nakhla ? "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]"
+                          : "border-[#c96b6b] bg-[#f7e3e3] text-[#7a2e2e]"
+                      }`}>
+                        <span className="block font-['Cairo'] font-extrabold">
+                          {isCorrect ? "إجابة صحيحة" : "إجابة غير صحيحة — حاول مرة أخرى"}
+                        </span>
+                        {feedback}
                       </div>
                     ) : null}
                   </div>
-                ) : (
-                  <div className="grid gap-2">
-                    {question.options.filter(Boolean).map((option, optionIndex) => {
-                      const revealCorrect = isCorrect && question.correctAnswer === optionIndex;
-                      const isWrongSelected = hasAnswered && selectedAnswer === optionIndex && !isCorrect;
-                      return (
-                        <button
-                          key={optionIndex}
-                          type="button"
-                          disabled={isCorrect}
-                          onClick={() => setAnswers((current) => ({ ...current, [questionKey]: optionIndex }))}
-                          className={`flex items-center gap-2 rounded-xl border px-3 py-3 text-right text-sm font-medium transition ${
-                            revealCorrect
-                              ? nakhla ? "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]"
-                              : isWrongSelected
-                                ? "border-[#c96b6b] bg-[#f7e3e3] text-[#7a2e2e] opacity-100"
-                                : hasAnswered && !isCorrect
-                                  ? "border-[#E8E1D4] bg-white text-[#1E2B26] opacity-50"
-                                  : nakhla ? "border-[#E8E1D4] bg-white text-[#1E2B26] hover:border-[#1d4f8a] hover:bg-[#eaf2ff]" : "border-[#e8e1d4] bg-white text-[#0f172a] hover:border-[#1d4f8a] hover:bg-[#eaf2ff]"
-                          }`}
-                        >
-                          <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-lg font-['Cairo'] text-xs font-extrabold ${revealCorrect ? nakhla ? "bg-[#1d4f8a] text-white" : "bg-[#1d4f8a] text-white" : isWrongSelected ? "bg-[#c96b6b] text-white" : nakhla ? "bg-[#eaf2ff] text-[#123c69]" : "bg-[#eaf2ff] text-[#123c69]"}`}>
-                            {optionIndex + 1}
-                          </span>
-                          <span>{option}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
+                );
+              })}
+            </div>
 
-                {feedback ? (
-                  <div className={`mt-3 rounded-[11px] border-r-4 px-4 py-3 text-sm font-semibold leading-7 ${
-                    isCorrect
-                      ? nakhla ? "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]" : "border-[#1d4f8a] bg-[#dbeafe] text-[#0b2447]"
-                      : "border-[#c96b6b] bg-[#f7e3e3] text-[#7a2e2e]"
-                  }`}>
-                    <span className="block font-['Cairo'] font-extrabold">
-                      {isCorrect ? "إجابة صحيحة" : "إجابة غير صحيحة — حاول مرة أخرى"}
-                    </span>
-                    {feedback}
-                  </div>
-                ) : null}
+            {sequential ? (
+              <div className={`mt-5 border-t pt-4 ${nakhla ? "border-[#E8E1D4]" : "border-[#e8e1d4]"}`}>
+                {questionNavButtons}
               </div>
-            );
-          })}
-        </div>
-
-        {sequential ? (
-          <div className={`mt-5 border-t pt-4 ${nakhla ? "border-[#E8E1D4]" : "border-[#e8e1d4]"}`}>
-            {questionNavButtons}
-          </div>
-        ) : null}
+            ) : null}
+          </>
+        )}
       </div>
 
+    </div>
+  );
+}
+
+function isTarkibGroup(group: { key: string; label: string }) {
+  return /tarkib|تركيب/.test(`${group.key} ${group.label}`);
+}
+
+function TarkibSendPanel({ title, prompt }: { title: string; prompt?: string }) {
+  const [student, setStudent] = useState("");
+  const [answer, setAnswer] = useState("");
+  const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
+
+  const submit = async () => {
+    if (!answer.trim() || sending) return;
+    setSending(true);
+    setError("");
+    try {
+      await api.post("/tarkib/submit", {
+        title: title || "التركيب",
+        displayName: student.trim() || undefined,
+        answer: answer.trim(),
+      });
+      setSent(true);
+      setAnswer("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "تعذر إرسال الجواب. حاول مرة أخرى.");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <div className="mt-5 space-y-3 rounded-2xl border border-[#93b7e7] bg-[#eaf2ff] p-4 text-right">
+      <div className="font-['Cairo'] text-lg font-extrabold text-[#123c69]">إرسال جواب التركيب إلى الأستاذ</div>
+      {prompt ? (
+        <p className="font-['Cairo'] text-sm font-semibold leading-7 text-[#5C6B63] whitespace-pre-wrap">{prompt}</p>
+      ) : null}
+      <input
+        value={student}
+        onChange={(event) => setStudent(event.target.value)}
+        placeholder="اسمك (اختياري)"
+        className="w-full rounded-xl border border-[#E8E1D4] bg-white px-3 py-2 text-sm outline-none focus:border-[#123c69]"
+      />
+      <textarea
+        value={answer}
+        onChange={(event) => setAnswer(event.target.value)}
+        placeholder="اكتب فقرة التركيب هنا..."
+        className="min-h-[140px] w-full resize-y rounded-xl border border-[#E8E1D4] bg-white p-3 font-['Amiri'] text-lg leading-8 outline-none focus:border-[#123c69]"
+      />
+      <div className="flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          onClick={() => void submit()}
+          disabled={!answer.trim() || sending}
+          className="rounded-xl bg-[#123c69] px-5 py-2.5 font-['Cairo'] text-sm font-bold text-white hover:bg-[#0f2f57] disabled:opacity-50"
+        >
+          {sending ? "جاري الإرسال..." : "إرسال إلى الأستاذ"}
+        </button>
+        {sent ? <span className="text-sm font-bold text-[#123c69]">تم إرسال جوابك إلى الأستاذ.</span> : null}
+      </div>
+      {error ? <div className="text-sm font-bold text-[#7a2e2e]">{error}</div> : null}
     </div>
   );
 }
@@ -1932,7 +2019,7 @@ function LessonLikeLayout({
 
   return (
     <div className="overflow-hidden rounded-[28px] border border-[#e8e1d4] bg-[#fbf7f0] shadow-sm">
-      {/* تم حذف البار الداخلي باش يبقى قالب المجالات نقي بلا عنوان زائد. */}
+      {/* تم حذف البار الداخلي ليبقى قالب المجالات نقيًا بلا عنوان زائد. */}
 
       <div className="grid gap-3 p-3 xl:grid-cols-[0.92fr_1.08fr]">
         <section className="overflow-hidden rounded-[24px] border border-[#e8e1d4] bg-[#fcf9f2] shadow-sm">
@@ -2374,7 +2461,7 @@ function LanguagePreview({ posts, selectedPostId }: { posts: AdminSectionPost[];
   }, [activeTab]);
 
   if (!entry && posts.length === 0) {
-    return <EmptyComponentState text="لم يتم إعداد درس الظاهرة اللغوية بعد. خاص الأستاذ يعمره من التحكم عن بعد." />;
+    return <EmptyComponentState text="لم يتم إعداد درس الظاهرة اللغوية بعد. يجب على الأستاذ إعداده من التحكم عن بعد." />;
   }
 
   const isKhulasa = active.key === "language:tab:khulasa";
@@ -2765,7 +2852,7 @@ function WritingCorrectionPanel() {
         </div>
       ) : (
         <div className="rounded-xl border border-dashed border-[#93b7e7] bg-white p-4 text-sm font-semibold text-[#5C6B63]">
-          لم يصلك تصحيح بعد. من بعد ما الأستاذ يصحح الإنتاج غادي يبان هنا بوحدك.
+          لم يصلك تصحيح بعد. عندما يصحح الأستاذ الإنتاج سيظهر هنا لك وحدك.
         </div>
       )}
     </div>
@@ -2798,7 +2885,7 @@ function WritingPreview({ posts }: { posts: AdminSectionPost[] }) {
 
   if (!hasWritingContent) {
     return (
-      <EmptyComponentState text="لم يتم إعداد الإنتاج الكتابي بعد. خاص الأستاذ يعمر محتوى الإنتاج الكتابي من التحكم عن بعد عاد يبان للتلاميذ." />
+      <EmptyComponentState text="لم يتم إعداد الإنتاج الكتابي بعد. يجب على الأستاذ تعبئة محتوى الإنتاج الكتابي من التحكم عن بعد ليظهر للتلاميذ." />
     );
   }
 
@@ -2937,7 +3024,13 @@ function WritingPreview({ posts }: { posts: AdminSectionPost[] }) {
                   groups={writingQuestionGroups}
                   sequential
                   variant="default"
-                  onProgress={setAcqProgress}
+                  onProgress={(progress) =>
+                    setAcqProgress((current) =>
+                      current.correct === progress.correct && current.total === progress.total
+                        ? current
+                        : progress,
+                    )
+                  }
                 />
               ) : (
                 <EmptyComponentState text="لم يضف الأستاذ أسئلة الاكتساب بعد." />

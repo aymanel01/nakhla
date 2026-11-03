@@ -222,7 +222,7 @@ export interface CreateLectureRequest {
 }
 
 // Student creations (إبداعات التلاميذ)
-export type StudentCreationType = 'بودكاست' | 'قصص مصورة' | 'قصص قصيرة' | 'صورة و تعليق'
+export type StudentCreationType = 'بودكاست' | 'قصص مصورة' | 'قصص قصيرة' | 'صورة و تعليق' | 'الشعر'
 
 export interface StudentCreation {
   id: number
@@ -313,6 +313,23 @@ export interface ExerciseSubmission {
   correctionFileType?: string | null
   correctionFileSize?: number | null
   correctedAt?: string | null
+}
+
+export interface TarkibSubmission {
+  id: number
+  userId: number
+  userEmail?: string
+  userFullName?: string | null
+  displayName: string | null
+  title: string
+  answer: string
+  submittedAt: string
+}
+
+export interface CreateTarkibSubmissionRequest {
+  title?: string
+  displayName?: string
+  answer: string
 }
 
 // Quiz
